@@ -36,7 +36,10 @@ namespace FiveChess
         /// 棋盘交叉点是否为棋子，1 为棋子，0为空
         /// </summary>
         public int[,] isPiecesArry;
-        
+        /// <summary>
+        /// 棋盘中棋子的颜色标志，0：无颜色，1：己方棋子颜色，2：电脑棋子颜色
+        /// </summary>
+        public int[,] pcsClsFlg;
         /// <summary>
         /// 棋盘构造函数
         /// </summary>
@@ -54,6 +57,9 @@ namespace FiveChess
             InitPadInfo();
         }
 
+        /// <summary>
+        /// 初始化棋盘信息
+        /// </summary>
        public void InitPadInfo()
         {            
             for (int h = 0; h < lineCount; h++)

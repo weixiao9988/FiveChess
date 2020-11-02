@@ -62,17 +62,19 @@ namespace FiveChess
         };
         #endregion
 
+        private const int LINE_MAX = 15;
+
         private Rectangle drawRect = new Rectangle();
-        private Graphics bufGrp, memGrp, picGrp;
+        private Graphics bufGrp, picGrp;
         private MyDraw myDraw;
-        private const int LINE_MAX= 15;
-        private static Bitmap backBmp, memBmp;
+        
+        private static Bitmap backBmp ;
         //自己棋子的坐标点
         private List<PointF> ownChessArry;
         //电脑棋子的坐标点
         private List<PointF> cpuChessArry;
-
-
+        private ColorDialog colorDlg = new ColorDialog();
+        private List<Color> pcsColors = new List<Color>();
        
 
 
@@ -93,29 +95,42 @@ namespace FiveChess
 
         private void MainFrm_Load(object sender, EventArgs e)
         {
+            pcsColors.Add(Color.Khaki);
+            pcsColors.Add(ownColor_Btn.BackColor);
+            pcsColors.Add(cpuColor_Btn.BackColor);
+
             picGrp = picBox.CreateGraphics();
-            myDraw = new MyDraw(drawRect, LINE_MAX);
+            myDraw = new MyDraw(drawRect, LINE_MAX,pcsColors);
 
             DrawBackImg();
 
             ownChessArry = new List<PointF>();
             cpuChessArry = new List<PointF>();
 
-
+            
             //myDraw.DrawChessPad(picGrp);
         }
 
+        /// <summary>
+        /// 绘制picBox的背景为棋盘
+        /// </summary>
         public void DrawBackImg()
         {
             backBmp = new Bitmap(drawRect.Width, drawRect.Height);
             bufGrp = Graphics.FromImage(backBmp);
-            bufGrp.Clear(Color.Khaki);
+            bufGrp.Clear(pcsColors[0]);
 
             myDraw.DrawChessPad(bufGrp);
 
             picBox.BackgroundImage = GetCopyBmp(drawRect, backBmp);
         }
 
+        /// <summary>
+        /// 从虚拟画布中复制图像
+        /// </summary>
+        /// <param name="rect">源图像的尺寸</param>
+        /// <param name="srcBmp">源图像</param>
+        /// <returns>得到的目标图像</returns>
         private Bitmap GetCopyBmp(Rectangle rect, Bitmap srcBmp)
         {
             Bitmap b1 = new Bitmap(rect.Width + rect.X, rect.Height + rect.Y);
@@ -125,14 +140,12 @@ namespace FiveChess
             IntPtr hSrcBmp = srcBmp.GetHbitmap();
             IntPtr srcHdc = CreateCompatibleDC(hg1);
             IntPtr pOrig = SelectObject(srcHdc, hSrcBmp);
-
-            //int res = StretchBlt(hg1, roudw.X, roudw.Y, rect.Width-roudw.Width, rect.Height-roudw.Height, 
-            //                             srcHdc, 0, 0, srcBmp.Width , srcBmp.Height, TernaryRasterOperations.SRCCOPY);
+            
             StretchBlt(hg1, rect.X, rect.Y, rect.Width, rect.Height, srcHdc, 0, 0, srcBmp.Width, srcBmp.Height, TernaryRasterOperations.SRCCOPY);
             IntPtr pNew = SelectObject(srcHdc, pOrig);
             DeleteObject(pNew);
             DeleteDC(srcHdc);
-            //release handles
+            
             g1.ReleaseHdc(hg1);
             return b1;
         }
@@ -161,9 +174,9 @@ namespace FiveChess
                 e.Y >= 30 && e.Y <= (drawRect.Width / LINE_MAX - 1) * (LINE_MAX - 1) + 30)
                 {
                     label1.Text = e.X.ToString() + " - " + e.Y.ToString();
-                    ownChessArry.Add(new PointF(e.X, e.Y));
+                    //ownChessArry.Add(new PointF(e.X, e.Y));
 
-                    myDraw.DrawPieces(picGrp, new PointF(e.X, e.Y));
+                    myDraw.DrawPieces(picGrp, new PointF(e.X, e.Y),1);
                 }
                     
             }
@@ -174,7 +187,52 @@ namespace FiveChess
             //myDraw.DrawChessPad(e.Graphics);
         }
 
+        private void StartPlaye_Btn_Click(object sender, EventArgs e)
+        {
 
+        }
+
+        private void Back_Btn_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Cancel_Btn_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
+
+
+        private void ChsPadColor_Btn_Click(object sender, EventArgs e)
+        {
+            if (colorDlg.ShowDialog()==DialogResult.OK)
+            {
+                ChsPadColor_Btn.BackColor = colorDlg.Color;
+                ChsPadColor_Btn.Text = colorDlg.Color.Name;
+            }
+            pcsColors[0] = ChsPadColor_Btn.BackColor;
+        }
+        private void ownColor_Btn_Click(object sender, EventArgs e)
+        {
+            if (colorDlg.ShowDialog()==DialogResult.OK)
+            {
+                ownColor_Btn.BackColor = colorDlg.Color;
+                ownColor_Btn.Text = colorDlg.Color.Name;
+            }
+            pcsColors[1] = ownColor_Btn.BackColor;
+        }
+
+        private void cpuColor_Btn_Click(object sender, EventArgs e)
+        {
+            if (colorDlg.ShowDialog()==DialogResult.OK)
+            {
+                cpuColor_Btn.BackColor = colorDlg.Color;
+                cpuColor_Btn.Text = colorDlg.Color.Name;
+            }
+            pcsColors[2] = cpuColor_Btn.BackColor;
+        }
+
+       
 
         private void Timer_Tick(object sender, EventArgs e)
         {
