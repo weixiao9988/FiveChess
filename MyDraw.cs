@@ -72,7 +72,7 @@ namespace FiveChess
             {
                 if (pointF.Y - pointFs[i][0].Y<= 0)
                 {
-                    h = Math.Abs(pointF.Y - pointFs[0][i].Y) < Math.Abs(pointF.Y - pointFs[0][i - 1].Y) ? i : i - 1;
+                    h = Math.Abs(pointF.Y - pointFs[i][0].Y) < Math.Abs(pointF.Y - pointFs[i-1][0].Y) ? i : i - 1;
                     break;
                 }
             }
