@@ -29,6 +29,8 @@
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
+            this.Cancel_Btn = new System.Windows.Forms.Button();
+            this.Back_Btn = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.StartPlaye_Btn = new System.Windows.Forms.Button();
             this.picBox = new System.Windows.Forms.PictureBox();
@@ -36,18 +38,16 @@
             this.StatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.StatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.ownColor_Btn = new System.Windows.Forms.Button();
-            this.cpuColor_Btn = new System.Windows.Forms.Button();
-            this.label4 = new System.Windows.Forms.Label();
-            this.CPUAI_cbBox = new System.Windows.Forms.ComboBox();
-            this.label5 = new System.Windows.Forms.Label();
-            this.PalyModel_cbBox = new System.Windows.Forms.ComboBox();
-            this.Back_Btn = new System.Windows.Forms.Button();
-            this.Cancel_Btn = new System.Windows.Forms.Button();
-            this.label6 = new System.Windows.Forms.Label();
             this.ChsPadColor_Btn = new System.Windows.Forms.Button();
+            this.label6 = new System.Windows.Forms.Label();
+            this.gameMode_cbBox = new System.Windows.Forms.ComboBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.aiRank_cbBox = new System.Windows.Forms.ComboBox();
+            this.aiRank_Lab = new System.Windows.Forms.Label();
+            this.cpuColor_Btn = new System.Windows.Forms.Button();
+            this.ownColor_Btn = new System.Windows.Forms.Button();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picBox)).BeginInit();
             this.statusStrip1.SuspendLayout();
@@ -66,6 +66,28 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(123, 408);
             this.panel1.TabIndex = 0;
+            // 
+            // Cancel_Btn
+            // 
+            this.Cancel_Btn.Font = new System.Drawing.Font("等线", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.Cancel_Btn.Location = new System.Drawing.Point(18, 360);
+            this.Cancel_Btn.Name = "Cancel_Btn";
+            this.Cancel_Btn.Size = new System.Drawing.Size(87, 36);
+            this.Cancel_Btn.TabIndex = 3;
+            this.Cancel_Btn.Text = "退 出";
+            this.Cancel_Btn.UseVisualStyleBackColor = true;
+            this.Cancel_Btn.Click += new System.EventHandler(this.Cancel_Btn_Click);
+            // 
+            // Back_Btn
+            // 
+            this.Back_Btn.Font = new System.Drawing.Font("等线", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.Back_Btn.Location = new System.Drawing.Point(18, 98);
+            this.Back_Btn.Name = "Back_Btn";
+            this.Back_Btn.Size = new System.Drawing.Size(87, 36);
+            this.Back_Btn.TabIndex = 2;
+            this.Back_Btn.Text = "悔  棋";
+            this.Back_Btn.UseVisualStyleBackColor = true;
+            this.Back_Btn.Click += new System.EventHandler(this.Back_Btn_Click);
             // 
             // label1
             // 
@@ -142,10 +164,10 @@
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox1.Controls.Add(this.ChsPadColor_Btn);
             this.groupBox1.Controls.Add(this.label6);
-            this.groupBox1.Controls.Add(this.PalyModel_cbBox);
+            this.groupBox1.Controls.Add(this.gameMode_cbBox);
             this.groupBox1.Controls.Add(this.label5);
-            this.groupBox1.Controls.Add(this.CPUAI_cbBox);
-            this.groupBox1.Controls.Add(this.label4);
+            this.groupBox1.Controls.Add(this.aiRank_cbBox);
+            this.groupBox1.Controls.Add(this.aiRank_Lab);
             this.groupBox1.Controls.Add(this.cpuColor_Btn);
             this.groupBox1.Controls.Add(this.ownColor_Btn);
             this.groupBox1.Controls.Add(this.label3);
@@ -153,28 +175,99 @@
             this.groupBox1.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.groupBox1.Location = new System.Drawing.Point(614, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(170, 177);
+            this.groupBox1.Size = new System.Drawing.Size(170, 168);
             this.groupBox1.TabIndex = 3;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "设置";
             // 
-            // label2
+            // ChsPadColor_Btn
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(6, 56);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(63, 14);
-            this.label2.TabIndex = 0;
-            this.label2.Text = "己方颜色";
+            this.ChsPadColor_Btn.BackColor = System.Drawing.Color.Khaki;
+            this.ChsPadColor_Btn.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.ChsPadColor_Btn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.ChsPadColor_Btn.Location = new System.Drawing.Point(75, 26);
+            this.ChsPadColor_Btn.Margin = new System.Windows.Forms.Padding(0);
+            this.ChsPadColor_Btn.Name = "ChsPadColor_Btn";
+            this.ChsPadColor_Btn.Size = new System.Drawing.Size(83, 23);
+            this.ChsPadColor_Btn.TabIndex = 9;
+            this.ChsPadColor_Btn.Text = "卡其色";
+            this.ChsPadColor_Btn.UseVisualStyleBackColor = false;
+            this.ChsPadColor_Btn.Click += new System.EventHandler(this.ChsPadColor_Btn_Click);
             // 
-            // label3
+            // label6
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(6, 80);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(63, 14);
-            this.label3.TabIndex = 1;
-            this.label3.Text = "他方颜色";
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(6, 30);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(63, 14);
+            this.label6.TabIndex = 8;
+            this.label6.Text = "棋盘颜色";
+            // 
+            // gameMode_cbBox
+            // 
+            this.gameMode_cbBox.DisplayMember = "0";
+            this.gameMode_cbBox.FormattingEnabled = true;
+            this.gameMode_cbBox.Items.AddRange(new object[] {
+            "人人对战",
+            "人机对战"});
+            this.gameMode_cbBox.Location = new System.Drawing.Point(75, 112);
+            this.gameMode_cbBox.Name = "gameMode_cbBox";
+            this.gameMode_cbBox.Size = new System.Drawing.Size(83, 22);
+            this.gameMode_cbBox.TabIndex = 7;
+            this.gameMode_cbBox.Text = "人机对战";
+            this.gameMode_cbBox.ValueMember = "0";
+            this.gameMode_cbBox.SelectedIndexChanged += new System.EventHandler(this.gameMode_cbBox_SelectedIndexChanged);
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(6, 116);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(63, 14);
+            this.label5.TabIndex = 6;
+            this.label5.Text = "对战模式";
+            // 
+            // aiRank_cbBox
+            // 
+            this.aiRank_cbBox.FormattingEnabled = true;
+            this.aiRank_cbBox.Items.AddRange(new object[] {
+            "低级",
+            "初级",
+            "中级",
+            "高级"});
+            this.aiRank_cbBox.Location = new System.Drawing.Point(75, 139);
+            this.aiRank_cbBox.Name = "aiRank_cbBox";
+            this.aiRank_cbBox.Size = new System.Drawing.Size(83, 22);
+            this.aiRank_cbBox.TabIndex = 5;
+            this.aiRank_cbBox.Tag = "1";
+            this.aiRank_cbBox.Text = "初级";
+            this.aiRank_cbBox.Visible = false;
+            this.aiRank_cbBox.SelectedIndexChanged += new System.EventHandler(this.aiRank_cbBox_SelectedIndexChanged);
+            // 
+            // aiRank_Lab
+            // 
+            this.aiRank_Lab.AutoSize = true;
+            this.aiRank_Lab.Location = new System.Drawing.Point(6, 143);
+            this.aiRank_Lab.Name = "aiRank_Lab";
+            this.aiRank_Lab.Size = new System.Drawing.Size(63, 14);
+            this.aiRank_Lab.TabIndex = 4;
+            this.aiRank_Lab.Text = "机器智力";
+            this.aiRank_Lab.Visible = false;
+            // 
+            // cpuColor_Btn
+            // 
+            this.cpuColor_Btn.BackColor = System.Drawing.Color.Black;
+            this.cpuColor_Btn.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.cpuColor_Btn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.cpuColor_Btn.ForeColor = System.Drawing.Color.White;
+            this.cpuColor_Btn.Location = new System.Drawing.Point(75, 79);
+            this.cpuColor_Btn.Margin = new System.Windows.Forms.Padding(0);
+            this.cpuColor_Btn.Name = "cpuColor_Btn";
+            this.cpuColor_Btn.Size = new System.Drawing.Size(83, 23);
+            this.cpuColor_Btn.TabIndex = 3;
+            this.cpuColor_Btn.Text = "黑色";
+            this.cpuColor_Btn.UseVisualStyleBackColor = false;
+            this.cpuColor_Btn.Click += new System.EventHandler(this.cpuColor_Btn_Click);
             // 
             // ownColor_Btn
             // 
@@ -190,112 +283,23 @@
             this.ownColor_Btn.UseVisualStyleBackColor = false;
             this.ownColor_Btn.Click += new System.EventHandler(this.ownColor_Btn_Click);
             // 
-            // cpuColor_Btn
+            // label3
             // 
-            this.cpuColor_Btn.BackColor = System.Drawing.Color.Black;
-            this.cpuColor_Btn.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.cpuColor_Btn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.cpuColor_Btn.ForeColor = System.Drawing.Color.White;
-            this.cpuColor_Btn.Location = new System.Drawing.Point(75, 75);
-            this.cpuColor_Btn.Margin = new System.Windows.Forms.Padding(0);
-            this.cpuColor_Btn.Name = "cpuColor_Btn";
-            this.cpuColor_Btn.Size = new System.Drawing.Size(83, 23);
-            this.cpuColor_Btn.TabIndex = 3;
-            this.cpuColor_Btn.Text = "黑色";
-            this.cpuColor_Btn.UseVisualStyleBackColor = false;
-            this.cpuColor_Btn.Click += new System.EventHandler(this.cpuColor_Btn_Click);
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(6, 84);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(63, 14);
+            this.label3.TabIndex = 1;
+            this.label3.Text = "他方颜色";
             // 
-            // label4
+            // label2
             // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(6, 110);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(63, 14);
-            this.label4.TabIndex = 4;
-            this.label4.Text = "机器智力";
-            // 
-            // CPUAI_cbBox
-            // 
-            this.CPUAI_cbBox.FormattingEnabled = true;
-            this.CPUAI_cbBox.Items.AddRange(new object[] {
-            "低级",
-            "初级",
-            "中级",
-            "高级"});
-            this.CPUAI_cbBox.Location = new System.Drawing.Point(75, 106);
-            this.CPUAI_cbBox.Name = "CPUAI_cbBox";
-            this.CPUAI_cbBox.Size = new System.Drawing.Size(83, 22);
-            this.CPUAI_cbBox.TabIndex = 5;
-            this.CPUAI_cbBox.Tag = "1";
-            this.CPUAI_cbBox.Text = "初级";
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(6, 142);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(63, 14);
-            this.label5.TabIndex = 6;
-            this.label5.Text = "对战模式";
-            // 
-            // PalyModel_cbBox
-            // 
-            this.PalyModel_cbBox.DisplayMember = "0";
-            this.PalyModel_cbBox.FormattingEnabled = true;
-            this.PalyModel_cbBox.Items.AddRange(new object[] {
-            "人机对战",
-            "人人对战"});
-            this.PalyModel_cbBox.Location = new System.Drawing.Point(75, 138);
-            this.PalyModel_cbBox.Name = "PalyModel_cbBox";
-            this.PalyModel_cbBox.Size = new System.Drawing.Size(83, 22);
-            this.PalyModel_cbBox.TabIndex = 7;
-            this.PalyModel_cbBox.Text = "人机对战";
-            this.PalyModel_cbBox.ValueMember = "0";
-            // 
-            // Back_Btn
-            // 
-            this.Back_Btn.Font = new System.Drawing.Font("等线", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.Back_Btn.Location = new System.Drawing.Point(18, 98);
-            this.Back_Btn.Name = "Back_Btn";
-            this.Back_Btn.Size = new System.Drawing.Size(87, 36);
-            this.Back_Btn.TabIndex = 2;
-            this.Back_Btn.Text = "悔  棋";
-            this.Back_Btn.UseVisualStyleBackColor = true;
-            this.Back_Btn.Click += new System.EventHandler(this.Back_Btn_Click);
-            // 
-            // Cancel_Btn
-            // 
-            this.Cancel_Btn.Font = new System.Drawing.Font("等线", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.Cancel_Btn.Location = new System.Drawing.Point(18, 360);
-            this.Cancel_Btn.Name = "Cancel_Btn";
-            this.Cancel_Btn.Size = new System.Drawing.Size(87, 36);
-            this.Cancel_Btn.TabIndex = 3;
-            this.Cancel_Btn.Text = "退 出";
-            this.Cancel_Btn.UseVisualStyleBackColor = true;
-            this.Cancel_Btn.Click += new System.EventHandler(this.Cancel_Btn_Click);
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(6, 30);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(63, 14);
-            this.label6.TabIndex = 8;
-            this.label6.Text = "棋盘颜色";
-            // 
-            // ChsPadColor_Btn
-            // 
-            this.ChsPadColor_Btn.BackColor = System.Drawing.Color.Khaki;
-            this.ChsPadColor_Btn.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.ChsPadColor_Btn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.ChsPadColor_Btn.Location = new System.Drawing.Point(75, 26);
-            this.ChsPadColor_Btn.Margin = new System.Windows.Forms.Padding(0);
-            this.ChsPadColor_Btn.Name = "ChsPadColor_Btn";
-            this.ChsPadColor_Btn.Size = new System.Drawing.Size(83, 23);
-            this.ChsPadColor_Btn.TabIndex = 9;
-            this.ChsPadColor_Btn.Text = "卡其色";
-            this.ChsPadColor_Btn.UseVisualStyleBackColor = false;
-            this.ChsPadColor_Btn.Click += new System.EventHandler(this.ChsPadColor_Btn_Click);
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(6, 56);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(63, 14);
+            this.label2.TabIndex = 0;
+            this.label2.Text = "己方颜色";
             // 
             // MainFrm
             // 
@@ -332,10 +336,10 @@
         private System.Windows.Forms.ToolStripStatusLabel StatusLabel2;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.ComboBox PalyModel_cbBox;
+        private System.Windows.Forms.ComboBox gameMode_cbBox;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.ComboBox CPUAI_cbBox;
-        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.ComboBox aiRank_cbBox;
+        private System.Windows.Forms.Label aiRank_Lab;
         private System.Windows.Forms.Button cpuColor_Btn;
         private System.Windows.Forms.Button ownColor_Btn;
         private System.Windows.Forms.Label label3;
