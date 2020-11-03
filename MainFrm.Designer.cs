@@ -145,9 +145,8 @@
             // StatusLabel1
             // 
             this.StatusLabel1.Name = "StatusLabel1";
-            this.StatusLabel1.Size = new System.Drawing.Size(569, 20);
+            this.StatusLabel1.Size = new System.Drawing.Size(538, 20);
             this.StatusLabel1.Spring = true;
-            this.StatusLabel1.Text = "toolStripStatusLabel1";
             this.StatusLabel1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // StatusLabel2

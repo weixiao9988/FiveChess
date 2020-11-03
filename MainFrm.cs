@@ -77,9 +77,12 @@ namespace FiveChess
         private List<Color> pcsColors = new List<Color>();
         private int gameMode;
         private int AIRank;
-        private bool isMy = true;
+        
         private int pcsMax;
         private int pcsCount;
+
+        private bool isOver = false;
+        
 
         public MainFrm()
         {
@@ -160,12 +163,12 @@ namespace FiveChess
 
         private void picBox_MouseMove(object sender, MouseEventArgs e)
         {
-            float x1 = (float)drawRect.Width / padLineMax - 1;
-            float y1 = (float)drawRect.Width / padLineMax - 1;
-            if ((e.X >= 30 && e.X <= (int)(x1 * (padLineMax - 1) + 30)) &&
-                e.Y >= 30 && e.Y <= (int)((y1) * (padLineMax - 1) + 30))
+            float x1 = drawRect.Width / padLineMax - 1;
+            float y1 = drawRect.Width / padLineMax - 1;
+            if ((e.X >= padMargin && e.X <= (int)(x1 * (padLineMax - 1) + padMargin)) &&
+                e.Y >= padMargin && e.Y <= (int)((y1) * (padLineMax - 1) + padMargin))
             {
-                this.Cursor = Cursors.Cross;
+                this.Cursor = Cursors.Cross;                
             }
             else
                 this.Cursor = Cursors.Default;
@@ -179,27 +182,67 @@ namespace FiveChess
 
         private void picBox_MouseClick(object sender, MouseEventArgs e)
         {
-            float x1 = (float)drawRect.Width / padLineMax - 1;
-            float y1 = (float)drawRect.Width / padLineMax - 1;
-            int flg = isMy ? 1 : 2;
-
+            float x1 = drawRect.Width / padLineMax - 1;
+            float y1 = drawRect.Width / padLineMax - 1;
+            int flg = ChessPad.isMyPcs ? 1 : 2;
+            Point pt;
             
 
             if (e.Button==MouseButtons.Left)
             {
-                if ((e.X >= 30 && e.X <= (int)(x1 * (padLineMax - 1) + 30)) &&
-                e.Y >= 30 && e.Y <= (int)((y1) * (padLineMax - 1) + 30))
+                if ((e.X >= padMargin && e.X <= (int)(x1 * (padLineMax - 1) + padMargin)) &&
+                e.Y >= padMargin && e.Y <= (int)((y1) * (padLineMax - 1) + padMargin))
                 {
-                    if (pcsCount < pcsMax)
+                    if(! isOver)
                     {
-                        myDraw.DrawPieces(picGrp, new PointF(e.X, e.Y), flg);
-                        pcsCount++;
+                        //棋盘不满时
+                        if (pcsCount < pcsMax)
+                        {
+                            pt = ChessPad.GetRCSeir(e.X - padMargin, e.Y - padMargin);
+                            if (ChessPad.pcsClsFlg[pt.Y, pt.X] == 0)
+                            {
+                                myDraw.DrawPieces(picGrp, pt, flg);
+                                pcsCount++;
+                                int[] n = ChessPad.GetResult(pt, flg);
+
+                                if (n[0] == 5)
+                                {
+                                    isOver = true;
+                                    ShowResult(n);
+                                    return;
+                                }
+
+                                label1.Text = n[1].ToString() + "_" + n[0].ToString();
+                            }
+
+                        }
+                        else
+                            MessageBox.Show("棋盘已满！");
                     }
                     else
-                        MessageBox.Show("棋盘已满！");                    
-                }
+                    {
+                        MessageBox.Show("游戏已结束！");
+                        return;
+                    }
+
+                    //label1.Text = e.X.ToString() + " _ " + e.Y.ToString()+"_"+pcsCount.ToString();
+                }                
+            }            
+        }
+
+        public void ShowResult(int[] iArry)
+        {
+            switch (iArry[1])
+            {
+                case 1:
+                    MessageBox.Show("己方胜利！");
+                    return;
+                case 2:
+                    MessageBox.Show("他方胜利！");
+                    return;
+                default:
+                    break;
             }
-            isMy = !isMy;
         }
 
         private void picBox_Paint(object sender, PaintEventArgs e)
