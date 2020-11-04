@@ -46,8 +46,8 @@ namespace FiveChess
         /// </summary>
         public static List<List<int>> pcsClsFlg;
 
-        public static List<int> myChess = new List<int>();
-        public static List<int> otherChess = new List<int>();
+        public static List<Point> myChess = new List<Point>();
+        public static List<Point> otherChess = new List<Point>();
 
         /// <summary>
         /// 棋子在棋盘中的行列编号，x：列编号，y：行编号
@@ -67,6 +67,7 @@ namespace FiveChess
             pcsClsFlg = new List<List<int>>();
             padWid = (int)((count - 1) * space);
             lineSpace = space;
+            isMyPcs = true;
 
             for (int h = 0; h < lineCount; h++)
             {

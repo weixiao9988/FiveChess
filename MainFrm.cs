@@ -102,8 +102,8 @@ namespace FiveChess
 
         private void MainFrm_Load(object sender, EventArgs e)
         {
-            //pcsColors.Add(Color.Khaki);
-            pcsColors.Add(Color.White);
+            pcsColors.Add(Color.Khaki);
+            //pcsColors.Add(Color.White);
             pcsColors.Add(ownColor_Btn.BackColor);
             pcsColors.Add(cpuColor_Btn.BackColor);
 
@@ -163,6 +163,27 @@ namespace FiveChess
             return b1;
         }
 
+        private void StartPlaye_Btn_Click(object sender, EventArgs e)
+        {
+            Chess.InitPadInfo(padLineMax, drawRect.Width / padLineMax - 1);
+            isOver = false;
+            //pcsColors.Clear();
+            pcsColors.Add(Color.Khaki);
+            //pcsColors.Add(Color.White);
+            pcsColors.Add(ownColor_Btn.BackColor);
+            pcsColors.Add(cpuColor_Btn.BackColor);
+
+            
+            gameMode = gameMode_cbBox.SelectedIndex;
+            
+            
+            AIRank = aiRank_cbBox.SelectedIndex;
+
+            DrawBackImg();
+            picBox.Refresh();
+        }
+
+
         private void picBox_MouseMove(object sender, MouseEventArgs e)
         {
             float x1 = drawRect.Width / padLineMax - 1;
@@ -201,31 +222,29 @@ namespace FiveChess
                         if (pcsCount < pcsMax)
                         {
                             pt = Chess.GetRCSeir(e.X - padMargin, e.Y - padMargin);
-                            if (Chess.pcsClsFlg[pt.Y][ pt.X] == 0)
+                            if (Chess.pcsClsFlg[pt.Y][pt.X] == 0)
                             {
                                 myDraw.DrawPieces(picGrp, pt, flg);
                                 pcsCount++;
-                                mJudge = new Judge(Chess.pcsClsFlg);                               
+                                mJudge = new Judge(Chess.pcsClsFlg);
                                 int[] n = mJudge.GetResult(pt, flg);
 
                                 if (n[0] == 5)
                                 {
                                     isOver = true;
-                                    ShowResult(n);
+                                    ShowInfoDlg(flg);
                                     return;
                                 }
 
-                                label1.Text = n[1].ToString() + "_" + n[0].ToString();
+                                label1.Text = flg.ToString() + "_" + n[0].ToString();
                             }
-
                         }
                         else
-                            MessageBox.Show("棋盘已满！");
+                            ShowInfoDlg(4);
                     }
                     else
                     {
-                        MessageBox.Show("游戏已结束！");
-                        return;
+                        ShowInfoDlg(3);                       
                     }
 
                     //label1.Text = e.X.ToString() + " _ " + e.Y.ToString()+"_"+pcsCount.ToString();
@@ -233,15 +252,21 @@ namespace FiveChess
             }            
         }
 
-        public void ShowResult(int[] iArry)
+        public void ShowInfoDlg(int k)
         {
-            switch (iArry[1])
+            switch (k)
             {
                 case 1:
-                    MessageBox.Show("己方胜利！");
+                    MessageBox.Show("己方胜利！","提示", MessageBoxButtons.OK,MessageBoxIcon.Information);
                     return;
                 case 2:
-                    MessageBox.Show("他方胜利！");
+                    MessageBox.Show("他方胜利！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                case 3:
+                    MessageBox.Show("游戏已结束！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                case 4:
+                    MessageBox.Show("棋盘已满！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 default:
                     break;
@@ -253,10 +278,7 @@ namespace FiveChess
             //myDraw.DrawChessPad(e.Graphics);
         }
 
-        private void StartPlaye_Btn_Click(object sender, EventArgs e)
-        {
-
-        }
+        
 
         private void Back_Btn_Click(object sender, EventArgs e)
         {

@@ -67,18 +67,25 @@ namespace FiveChess
         public void DrawPieces(Graphics grp,Point xySeir, int nflag)
         {
             
-            PointF ptF = new PointF();
-            ptF.X = Chess.crossArry[xySeir.Y][xySeir.X].X;
-            ptF.Y = Chess.crossArry[xySeir.Y][xySeir.X].Y;
+            Point pt = new Point();
+            pt.X = Chess.crossArry[xySeir.Y][xySeir.X].X;
+            pt.Y = Chess.crossArry[xySeir.Y][xySeir.X].Y;
             
+            //判断输入的行、列有没有棋子
             if (Chess.pcsClsFlg[xySeir.Y][ xySeir.X] == 0)
             {
                 grp.FillEllipse(new SolidBrush(pcsColor[nflag]), 
-                    new RectangleF(p0.X + ptF.X - Chess.pcsSize, p0.Y + ptF.Y - Chess.pcsSize,
+                    new Rectangle(p0.X + pt.X - Chess.pcsSize, p0.Y + pt.Y - Chess.pcsSize,
                     Chess.pcsSize * 2, Chess.pcsSize * 2));
 
                 Chess.pcsClsFlg[xySeir.Y][ xySeir.X] = nflag;
                 Chess.isMyPcs = !Chess.isMyPcs;
+
+                //保存己方和他方的棋子
+                if (nflag == 1)
+                    Chess.myChess.Add(new Point(xySeir.X, xySeir.Y));
+                else if (nflag == 2)
+                    Chess.otherChess.Add(new Point(xySeir.X, xySeir.Y));
             }
             //else
             //    MessageBox.Show("此点已有棋子！");
