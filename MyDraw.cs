@@ -35,7 +35,7 @@ namespace FiveChess
             pp0.Y = pp0.X;
             pcsColor = colors;
 
-            ChessPad.InitPadInfo(num, pd);
+            Chess.InitPadInfo(num, pd);
             
         }
 
@@ -50,9 +50,9 @@ namespace FiveChess
             for (int i = 0; i < lineCount; i++)
             {
                 //绘制棋盘垂直线                
-                grp.DrawLine(mPen, p0.X + ChessPad.lineSpace * i, p0.Y, p0.X + ChessPad.lineSpace * i, p0.Y + ChessPad.padWid);
+                grp.DrawLine(mPen, p0.X + Chess.lineSpace * i, p0.Y, p0.X + Chess.lineSpace * i, p0.Y + Chess.padWid);
                 //绘制棋盘水平线                
-                grp.DrawLine(mPen, p0.X , p0.Y + ChessPad.lineSpace * i, p0.X + ChessPad.padWid , p0.Y + ChessPad.lineSpace * i);
+                grp.DrawLine(mPen, p0.X , p0.Y + Chess.lineSpace * i, p0.X + Chess.padWid , p0.Y + Chess.lineSpace * i);
 
                 grp.FillRectangle(new SolidBrush(Color.BlueViolet), new RectangleF(pp0.X - 7, pp0.Y - 7, 14, 14));
             }
@@ -68,17 +68,17 @@ namespace FiveChess
         {
             
             PointF ptF = new PointF();
-            ptF.X = ChessPad.crossArry[xySeir.Y][xySeir.X].X;
-            ptF.Y = ChessPad.crossArry[xySeir.Y][xySeir.X].Y;
+            ptF.X = Chess.crossArry[xySeir.Y][xySeir.X].X;
+            ptF.Y = Chess.crossArry[xySeir.Y][xySeir.X].Y;
             
-            if (ChessPad.pcsClsFlg[xySeir.Y, xySeir.X] == 0)
+            if (Chess.pcsClsFlg[xySeir.Y][ xySeir.X] == 0)
             {
                 grp.FillEllipse(new SolidBrush(pcsColor[nflag]), 
-                    new RectangleF(p0.X + ptF.X - ChessPad.pcsSize, p0.Y + ptF.Y - ChessPad.pcsSize,
-                    ChessPad.pcsSize * 2, ChessPad.pcsSize * 2));
+                    new RectangleF(p0.X + ptF.X - Chess.pcsSize, p0.Y + ptF.Y - Chess.pcsSize,
+                    Chess.pcsSize * 2, Chess.pcsSize * 2));
 
-                ChessPad.pcsClsFlg[xySeir.Y, xySeir.X] = nflag;
-                ChessPad.isMyPcs = !ChessPad.isMyPcs;
+                Chess.pcsClsFlg[xySeir.Y][ xySeir.X] = nflag;
+                Chess.isMyPcs = !Chess.isMyPcs;
             }
             //else
             //    MessageBox.Show("此点已有棋子！");

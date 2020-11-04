@@ -67,6 +67,7 @@ namespace FiveChess
         private Rectangle drawRect = new Rectangle();
         private Graphics bufGrp, picGrp;
         private MyDraw myDraw;
+        private Judge mJudge;
         
         private static Bitmap backBmp ;
         //自己棋子的坐标点
@@ -101,7 +102,8 @@ namespace FiveChess
 
         private void MainFrm_Load(object sender, EventArgs e)
         {
-            pcsColors.Add(Color.Khaki);
+            //pcsColors.Add(Color.Khaki);
+            pcsColors.Add(Color.White);
             pcsColors.Add(ownColor_Btn.BackColor);
             pcsColors.Add(cpuColor_Btn.BackColor);
 
@@ -184,7 +186,7 @@ namespace FiveChess
         {
             float x1 = drawRect.Width / padLineMax - 1;
             float y1 = drawRect.Width / padLineMax - 1;
-            int flg = ChessPad.isMyPcs ? 1 : 2;
+            int flg = Chess.isMyPcs ? 1 : 2;
             Point pt;
             
 
@@ -198,12 +200,13 @@ namespace FiveChess
                         //棋盘不满时
                         if (pcsCount < pcsMax)
                         {
-                            pt = ChessPad.GetRCSeir(e.X - padMargin, e.Y - padMargin);
-                            if (ChessPad.pcsClsFlg[pt.Y, pt.X] == 0)
+                            pt = Chess.GetRCSeir(e.X - padMargin, e.Y - padMargin);
+                            if (Chess.pcsClsFlg[pt.Y][ pt.X] == 0)
                             {
                                 myDraw.DrawPieces(picGrp, pt, flg);
                                 pcsCount++;
-                                int[] n = ChessPad.GetResult(pt, flg);
+                                mJudge = new Judge(Chess.pcsClsFlg);                               
+                                int[] n = mJudge.GetResult(pt, flg);
 
                                 if (n[0] == 5)
                                 {

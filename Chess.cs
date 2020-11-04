@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace FiveChess
 {
-    static class ChessPad
+    static class Chess
     {
         /// <summary>
         /// 棋盘线总数
@@ -40,17 +40,21 @@ namespace FiveChess
         /// 棋盘交叉点坐标数组
         /// </summary>
         public static List<List<Point>> crossArry;
+                
+        /// <summary>
+        /// 棋盘中棋子的颜色标志，0：无颜色，1：己方棋子颜色，2：电脑棋子颜色
+        /// </summary>
+        public static List<List<int>> pcsClsFlg;
+
+        public static List<int> myChess = new List<int>();
+        public static List<int> otherChess = new List<int>();
 
         /// <summary>
         /// 棋子在棋盘中的行列编号，x：列编号，y：行编号
         /// </summary>
         public static Point XYSeir = new Point();
-        
-        /// <summary>
-        /// 棋盘中棋子的颜色标志，0：无颜色，1：己方棋子颜色，2：电脑棋子颜色
-        /// </summary>
-        public static int[,] pcsClsFlg;
-        
+
+
         /// <summary>
         /// 初始化棋盘信息
         /// <param name="count">棋盘线总数</param>
@@ -59,22 +63,25 @@ namespace FiveChess
         public static void InitPadInfo(int count, int space)
         {
             lineCount = count;
-            crossArry = new List<List<Point>>();            
-            pcsClsFlg = new int[count, count];
+            crossArry = new List<List<Point>>();
+            pcsClsFlg = new List<List<int>>();
             padWid = (int)((count - 1) * space);
             lineSpace = space;
 
             for (int h = 0; h < lineCount; h++)
             {
                 List<Point> listPt = new List<Point>();
+                List<int> listInt = new List<int>();
                 Point pt = new Point();
                 for (int i = 0; i < lineCount; i++)
                 {
                     pt.X = i * lineSpace;
                     pt.Y = h * lineSpace;
                     listPt.Add(pt);
+                    listInt.Add(0);
                 }
                 crossArry.Add(listPt);
+                pcsClsFlg.Add(listInt);
             }
         }
 
@@ -125,51 +132,7 @@ namespace FiveChess
 
             return pt;
         }
-
-        public static int[] GetResult(Point pt, int flag)
-        {
-            int[] result = new int[2];
-
-            int xMin = 0;
-            int xMax = 0;
-
-            if (pt.X<=4)
-            {
-                xMin = 0;
-                xMax = pt.X+4 ;
-            }
-            else if (pt.X>4&&pt.X<lineCount-5)
-            {
-                xMin = pt.X - 4;
-                xMax = pt.X + 4;
-            }
-            else
-            {
-                xMin = pt.X - 4;
-                xMax = lineCount - 1;
-            }
-
-            for (int i = xMin; i <= xMax - 4; i++)
-            {
-                result[0] = 0;
-                for (int h = 0; h < 5; h++)
-                {
-                    if (pcsClsFlg[pt.Y,  i + h] == flag)
-                        ++result[0];
-                    else
-                        --result[0];
-                }
-
-                if (result[0] == 5)                
-                    break;
-
-            }
-
-            result[1] = flag;
-
-            return result;
-        }
-
+        
         
     }
 }
