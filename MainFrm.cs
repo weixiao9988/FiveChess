@@ -222,11 +222,11 @@ namespace FiveChess
                         if (pcsCount < pcsMax)
                         {
                             pt = Chess.GetRCSeir(e.X - padMargin, e.Y - padMargin);
-                            if (Chess.pcsClsFlg[pt.Y][pt.X] == 0)
+                            if (Chess.pcsFlg[pt.Y][pt.X] == 0)
                             {
                                 myDraw.DrawPieces(picGrp, pt, flg);
                                 pcsCount++;
-                                mJudge = new Judge(Chess.pcsClsFlg);
+                                mJudge = new Judge(Chess.pcsFlg);
                                 int[] n = mJudge.GetResult(pt, flg);
 
                                 if (n[0] == 5)
@@ -282,7 +282,16 @@ namespace FiveChess
 
         private void Back_Btn_Click(object sender, EventArgs e)
         {
+            mJudge = new Judge(Chess.pcsFlg);
+            List<string> list = new List<string>(mJudge.TypeScore.Keys);
+            int m=0;
+            for (int i = 0; i < mJudge.TypeScore.Count-1; i++)
+            {
+                if (list[i + 1] == list[i])
+                    m++;
+            }
 
+            label1.Text = m.ToString() + "_" + mJudge.TypeScore.Count.ToString();
         }
 
         private void Cancel_Btn_Click(object sender, EventArgs e)

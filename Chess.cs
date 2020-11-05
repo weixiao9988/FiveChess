@@ -42,9 +42,9 @@ namespace FiveChess
         public static List<List<Point>> crossArry;
                 
         /// <summary>
-        /// 棋盘中棋子的颜色标志，0：无颜色，1：己方棋子颜色，2：电脑棋子颜色
+        /// 棋盘中棋子的颜色标志，0:空，1:己方棋子，2:电脑棋子，5:己方最边缘棋子，6:电脑最边缘棋子
         /// </summary>
-        public static List<List<int>> pcsClsFlg;
+        public static List<List<int>> pcsFlg;
 
         public static List<Point> myChess = new List<Point>();
         public static List<Point> otherChess = new List<Point>();
@@ -64,7 +64,7 @@ namespace FiveChess
         {
             lineCount = count;
             crossArry = new List<List<Point>>();
-            pcsClsFlg = new List<List<int>>();
+            pcsFlg = new List<List<int>>();
             padWid = (int)((count - 1) * space);
             lineSpace = space;
             isMyPcs = true;
@@ -82,7 +82,7 @@ namespace FiveChess
                     listInt.Add(0);
                 }
                 crossArry.Add(listPt);
-                pcsClsFlg.Add(listInt);
+                pcsFlg.Add(listInt);
             }
         }
 
@@ -134,6 +134,25 @@ namespace FiveChess
             return pt;
         }
         
+        public static void SavePcsFlg(Point pt, int flg)
+        {
+            if (pt.X==0||pt.X==14||pt.Y==0||pt.Y==14 ||
+                (pt.X==1&&pt.Y==1) || (pt.X == 1 && pt.Y == 13) || 
+                (pt.X == 13 && pt.Y == 1) || (pt.X == 13 && pt.Y == 13))
+            {
+                pcsFlg[pt.Y][pt.X] = flg+4;
+            }
+            else
+            {
+                pcsFlg[pt.Y][pt.X] = flg;
+            }
+
+            //保存己方和他方的棋子
+            if (flg == 1)
+                myChess.Add(pt);
+            else if (flg == 2)
+                otherChess.Add(pt);
+        }
         
     }
 }
