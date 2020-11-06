@@ -102,8 +102,8 @@ namespace FiveChess
 
         private void MainFrm_Load(object sender, EventArgs e)
         {
-            pcsColors.Add(Color.Khaki);
-            //pcsColors.Add(Color.White);
+            //pcsColors.Add(Color.Khaki);
+            pcsColors.Add(ChsPadColor_Btn.BackColor);
             pcsColors.Add(ownColor_Btn.BackColor);
             pcsColors.Add(cpuColor_Btn.BackColor);
 

@@ -145,7 +145,7 @@
             // StatusLabel1
             // 
             this.StatusLabel1.Name = "StatusLabel1";
-            this.StatusLabel1.Size = new System.Drawing.Size(538, 20);
+            this.StatusLabel1.Size = new System.Drawing.Size(569, 20);
             this.StatusLabel1.Spring = true;
             this.StatusLabel1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -181,7 +181,7 @@
             // 
             // ChsPadColor_Btn
             // 
-            this.ChsPadColor_Btn.BackColor = System.Drawing.Color.Khaki;
+            this.ChsPadColor_Btn.BackColor = System.Drawing.Color.White;
             this.ChsPadColor_Btn.Cursor = System.Windows.Forms.Cursors.Hand;
             this.ChsPadColor_Btn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.ChsPadColor_Btn.Location = new System.Drawing.Point(75, 26);
@@ -189,7 +189,6 @@
             this.ChsPadColor_Btn.Name = "ChsPadColor_Btn";
             this.ChsPadColor_Btn.Size = new System.Drawing.Size(83, 23);
             this.ChsPadColor_Btn.TabIndex = 9;
-            this.ChsPadColor_Btn.Text = "卡其色";
             this.ChsPadColor_Btn.UseVisualStyleBackColor = false;
             this.ChsPadColor_Btn.Click += new System.EventHandler(this.ChsPadColor_Btn_Click);
             // 
@@ -255,7 +254,7 @@
             // 
             // cpuColor_Btn
             // 
-            this.cpuColor_Btn.BackColor = System.Drawing.Color.Black;
+            this.cpuColor_Btn.BackColor = System.Drawing.Color.White;
             this.cpuColor_Btn.Cursor = System.Windows.Forms.Cursors.Hand;
             this.cpuColor_Btn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.cpuColor_Btn.ForeColor = System.Drawing.Color.White;
@@ -264,13 +263,12 @@
             this.cpuColor_Btn.Name = "cpuColor_Btn";
             this.cpuColor_Btn.Size = new System.Drawing.Size(83, 23);
             this.cpuColor_Btn.TabIndex = 3;
-            this.cpuColor_Btn.Text = "黑色";
             this.cpuColor_Btn.UseVisualStyleBackColor = false;
             this.cpuColor_Btn.Click += new System.EventHandler(this.cpuColor_Btn_Click);
             // 
             // ownColor_Btn
             // 
-            this.ownColor_Btn.BackColor = System.Drawing.Color.White;
+            this.ownColor_Btn.BackColor = System.Drawing.Color.Black;
             this.ownColor_Btn.Cursor = System.Windows.Forms.Cursors.Hand;
             this.ownColor_Btn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.ownColor_Btn.Location = new System.Drawing.Point(75, 52);
@@ -278,7 +276,6 @@
             this.ownColor_Btn.Name = "ownColor_Btn";
             this.ownColor_Btn.Size = new System.Drawing.Size(83, 23);
             this.ownColor_Btn.TabIndex = 2;
-            this.ownColor_Btn.Text = "白色";
             this.ownColor_Btn.UseVisualStyleBackColor = false;
             this.ownColor_Btn.Click += new System.EventHandler(this.ownColor_Btn_Click);
             // 
