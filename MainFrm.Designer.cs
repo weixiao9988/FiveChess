@@ -48,6 +48,7 @@
             this.ownColor_Btn = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
+            this.StatusLabel3 = new System.Windows.Forms.ToolStripStatusLabel();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picBox)).BeginInit();
             this.statusStrip1.SuspendLayout();
@@ -133,20 +134,21 @@
             this.statusStrip1.GripMargin = new System.Windows.Forms.Padding(0);
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.StatusLabel1,
-            this.StatusLabel2});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 606);
+            this.StatusLabel2,
+            this.StatusLabel3});
+            this.statusStrip1.Location = new System.Drawing.Point(0, 604);
             this.statusStrip1.Margin = new System.Windows.Forms.Padding(0, 0, 0, 3);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(784, 25);
+            this.statusStrip1.Size = new System.Drawing.Size(784, 27);
             this.statusStrip1.SizingGrip = false;
             this.statusStrip1.TabIndex = 2;
             this.statusStrip1.Text = "statusStrip1";
             // 
             // StatusLabel1
             // 
+            this.StatusLabel1.AutoSize = false;
             this.StatusLabel1.Name = "StatusLabel1";
-            this.StatusLabel1.Size = new System.Drawing.Size(569, 20);
-            this.StatusLabel1.Spring = true;
+            this.StatusLabel1.Size = new System.Drawing.Size(300, 22);
             this.StatusLabel1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // StatusLabel2
@@ -155,7 +157,7 @@
             this.StatusLabel2.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left;
             this.StatusLabel2.BorderStyle = System.Windows.Forms.Border3DStyle.Sunken;
             this.StatusLabel2.Name = "StatusLabel2";
-            this.StatusLabel2.Size = new System.Drawing.Size(200, 20);
+            this.StatusLabel2.Size = new System.Drawing.Size(300, 22);
             this.StatusLabel2.Text = "toolStripStatusLabel1";
             // 
             // groupBox1
@@ -297,6 +299,15 @@
             this.label2.TabIndex = 0;
             this.label2.Text = "己方颜色";
             // 
+            // StatusLabel3
+            // 
+            this.StatusLabel3.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left;
+            this.StatusLabel3.BorderStyle = System.Windows.Forms.Border3DStyle.Sunken;
+            this.StatusLabel3.Name = "StatusLabel3";
+            this.StatusLabel3.Size = new System.Drawing.Size(138, 22);
+            this.StatusLabel3.Spring = true;
+            this.StatusLabel3.Text = "toolStripStatusLabel1";
+            // 
             // MainFrm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -344,6 +355,7 @@
         private System.Windows.Forms.Button Back_Btn;
         private System.Windows.Forms.Button ChsPadColor_Btn;
         private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.ToolStripStatusLabel StatusLabel3;
     }
 }
 

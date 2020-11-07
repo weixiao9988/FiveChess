@@ -93,7 +93,7 @@ namespace FiveChess
             timer.Interval = 1000;
             //timer.Enabled = true;
             timer.Tick += new EventHandler(Timer_Tick);
-            StatusLabel2.Text = string.Format("{0:yyyy-MM-dd  HH:mm:ss}", DateTime.Now);
+            StatusLabel3.Text = string.Format("{0:yyyy-MM-dd  HH:mm:ss}", DateTime.Now);
 
             drawRect = picBox.ClientRectangle;
         }
@@ -361,7 +361,7 @@ namespace FiveChess
 
         private void Timer_Tick(object sender, EventArgs e)
         {
-            StatusLabel2.Text = String.Format("{0:yyyy-MM-dd  HH:mm:ss}", DateTime.Now);
+            StatusLabel3.Text = String.Format("{0:yyyy-MM-dd  HH:mm:ss}", DateTime.Now);
         }
 
 
