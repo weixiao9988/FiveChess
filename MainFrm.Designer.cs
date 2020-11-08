@@ -37,6 +37,7 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.StatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.StatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.StatusLabel3 = new System.Windows.Forms.ToolStripStatusLabel();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.ChsPadColor_Btn = new System.Windows.Forms.Button();
             this.label6 = new System.Windows.Forms.Label();
@@ -48,7 +49,7 @@
             this.ownColor_Btn = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.StatusLabel3 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.listBox1 = new System.Windows.Forms.ListBox();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picBox)).BeginInit();
             this.statusStrip1.SuspendLayout();
@@ -58,6 +59,7 @@
             // panel1
             // 
             this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel1.Controls.Add(this.listBox1);
             this.panel1.Controls.Add(this.Cancel_Btn);
             this.panel1.Controls.Add(this.Back_Btn);
             this.panel1.Controls.Add(this.label1);
@@ -93,7 +95,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(32, 267);
+            this.label1.Location = new System.Drawing.Point(33, 330);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(49, 14);
             this.label1.TabIndex = 1;
@@ -136,10 +138,10 @@
             this.StatusLabel1,
             this.StatusLabel2,
             this.StatusLabel3});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 604);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 602);
             this.statusStrip1.Margin = new System.Windows.Forms.Padding(0, 0, 0, 3);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(784, 27);
+            this.statusStrip1.Size = new System.Drawing.Size(784, 29);
             this.statusStrip1.SizingGrip = false;
             this.statusStrip1.TabIndex = 2;
             this.statusStrip1.Text = "statusStrip1";
@@ -148,7 +150,7 @@
             // 
             this.StatusLabel1.AutoSize = false;
             this.StatusLabel1.Name = "StatusLabel1";
-            this.StatusLabel1.Size = new System.Drawing.Size(300, 22);
+            this.StatusLabel1.Size = new System.Drawing.Size(300, 24);
             this.StatusLabel1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // StatusLabel2
@@ -157,8 +159,17 @@
             this.StatusLabel2.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left;
             this.StatusLabel2.BorderStyle = System.Windows.Forms.Border3DStyle.Sunken;
             this.StatusLabel2.Name = "StatusLabel2";
-            this.StatusLabel2.Size = new System.Drawing.Size(300, 22);
+            this.StatusLabel2.Size = new System.Drawing.Size(300, 24);
             this.StatusLabel2.Text = "toolStripStatusLabel1";
+            // 
+            // StatusLabel3
+            // 
+            this.StatusLabel3.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left;
+            this.StatusLabel3.BorderStyle = System.Windows.Forms.Border3DStyle.Sunken;
+            this.StatusLabel3.Name = "StatusLabel3";
+            this.StatusLabel3.Size = new System.Drawing.Size(169, 24);
+            this.StatusLabel3.Spring = true;
+            this.StatusLabel3.Text = "toolStripStatusLabel1";
             // 
             // groupBox1
             // 
@@ -183,7 +194,7 @@
             // 
             // ChsPadColor_Btn
             // 
-            this.ChsPadColor_Btn.BackColor = System.Drawing.Color.White;
+            this.ChsPadColor_Btn.BackColor = System.Drawing.Color.Khaki;
             this.ChsPadColor_Btn.Cursor = System.Windows.Forms.Cursors.Hand;
             this.ChsPadColor_Btn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.ChsPadColor_Btn.Location = new System.Drawing.Point(75, 26);
@@ -299,14 +310,14 @@
             this.label2.TabIndex = 0;
             this.label2.Text = "己方颜色";
             // 
-            // StatusLabel3
+            // listBox1
             // 
-            this.StatusLabel3.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left;
-            this.StatusLabel3.BorderStyle = System.Windows.Forms.Border3DStyle.Sunken;
-            this.StatusLabel3.Name = "StatusLabel3";
-            this.StatusLabel3.Size = new System.Drawing.Size(138, 22);
-            this.StatusLabel3.Spring = true;
-            this.StatusLabel3.Text = "toolStripStatusLabel1";
+            this.listBox1.FormattingEnabled = true;
+            this.listBox1.ItemHeight = 14;
+            this.listBox1.Location = new System.Drawing.Point(0, 147);
+            this.listBox1.Name = "listBox1";
+            this.listBox1.Size = new System.Drawing.Size(120, 158);
+            this.listBox1.TabIndex = 4;
             // 
             // MainFrm
             // 
@@ -356,6 +367,7 @@
         private System.Windows.Forms.Button ChsPadColor_Btn;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.ToolStripStatusLabel StatusLabel3;
+        private System.Windows.Forms.ListBox listBox1;
     }
 }
 

@@ -18,7 +18,6 @@ namespace FiveChess
         /// <summary>
         /// 棋盘宽度
         /// </summary>
-        
         public static int padWid { get; set; }
         
         /// <summary>
@@ -46,8 +45,7 @@ namespace FiveChess
         /// </summary>
         public static List<List<int>> pcsFlg;
 
-        public static List<Point> myChess = new List<Point>();
-        public static List<Point> otherChess = new List<Point>();
+        
 
         /// <summary>
         /// 棋子在棋盘中的行列编号，x：列编号，y：行编号
@@ -147,11 +145,7 @@ namespace FiveChess
                 pcsFlg[pt.Y][pt.X] = flg;
             }
 
-            //保存己方和他方的棋子
-            if (flg == 1)
-                myChess.Add(pt);
-            else if (flg == 2)
-                otherChess.Add(pt);
+            
         }
         
     }

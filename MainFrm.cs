@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -76,14 +77,17 @@ namespace FiveChess
         private List<PointF> cpuChessArry;
         private ColorDialog colorDlg = new ColorDialog();
         private List<Color> pcsColors = new List<Color>();
-        private int gameMode;
+        private int gameMode=0;
         private int AIRank;
         
         private int pcsMax;
-        private int pcsCount;
-
-        private bool isOver = false;
         
+
+        private bool isWin = false;
+        public List<Point> ptLstBlack = new List<Point>();
+        public List<Point> ptLstWight = new List<Point>();
+
+        private Point backPos = new Point();
 
         public MainFrm()
         {
@@ -115,8 +119,8 @@ namespace FiveChess
             ownChessArry = new List<PointF>();
             cpuChessArry = new List<PointF>();
 
-            gameMode_cbBox.SelectedIndex = 0;
-            gameMode = 0;
+            gameMode_cbBox.SelectedIndex = 1;
+            gameMode = 1;
             pcsMax = padLineMax * padLineMax;
             aiRank_cbBox.SelectedIndex = 1;
             AIRank = 1;
@@ -166,7 +170,10 @@ namespace FiveChess
         private void StartPlaye_Btn_Click(object sender, EventArgs e)
         {
             Chess.InitPadInfo(padLineMax, drawRect.Width / padLineMax - 1);
-            isOver = false;
+            isWin = false;
+            ptLstBlack.Clear();
+            ptLstWight.Clear();
+
             //pcsColors.Clear();
             pcsColors.Add(Color.Khaki);
             //pcsColors.Add(Color.White);
@@ -174,9 +181,7 @@ namespace FiveChess
             pcsColors.Add(cpuColor_Btn.BackColor);
 
             
-            gameMode = gameMode_cbBox.SelectedIndex;
-            
-            
+            gameMode = gameMode_cbBox.SelectedIndex;  
             AIRank = aiRank_cbBox.SelectedIndex;
 
             DrawBackImg();
@@ -208,7 +213,6 @@ namespace FiveChess
             float x1 = drawRect.Width / padLineMax - 1;
             float y1 = drawRect.Width / padLineMax - 1;
             int flg = Chess.isMyPcs ? 1 : 2;
-            Point pt;
             
 
             if (e.Button==MouseButtons.Left)
@@ -216,40 +220,112 @@ namespace FiveChess
                 if ((e.X >= padMargin && e.X <= (int)(x1 * (padLineMax - 1) + padMargin)) &&
                 e.Y >= padMargin && e.Y <= (int)((y1) * (padLineMax - 1) + padMargin))
                 {
-                    if(! isOver)
+                    mJudge = new Judge(Chess.pcsFlg);
+                    mJudge.UpInfoEvt += this.UpdatStateBar;
+
+                    if (!isWin)
                     {
-                        //棋盘不满时
-                        if (pcsCount < pcsMax)
+                        Point pt = Chess.GetRCSeir(e.X - padMargin, e.Y - padMargin);
+                        if (Chess.pcsFlg[pt.Y][pt.X] == 0)      //棋盘有空位
                         {
-                            pt = Chess.GetRCSeir(e.X - padMargin, e.Y - padMargin);
-                            if (Chess.pcsFlg[pt.Y][pt.X] == 0)
+
+                            int[] n = gameMode == 0 ? PerVsPer(pt,flg) : PerVsAI(pt,flg);
+
+                            if (n.Length>0&& n[1] == 5)
                             {
-                                myDraw.DrawPieces(picGrp, pt, flg);
-                                pcsCount++;
-                                mJudge = new Judge(Chess.pcsFlg);
-                                int[] n = mJudge.GetResult(pt, flg);
-
-                                if (n[0] == 5)
-                                {
-                                    isOver = true;
-                                    ShowInfoDlg(flg);
-                                    return;
-                                }
-
-                                label1.Text = flg.ToString() + "_" + n[0].ToString();
+                                isWin = true;
+                                ShowInfoDlg(flg);
+                                return;
                             }
-                        }
-                        else
-                            ShowInfoDlg(4);
+                        }                        
                     }
                     else
-                    {
-                        ShowInfoDlg(3);                       
-                    }
-
-                    //label1.Text = e.X.ToString() + " _ " + e.Y.ToString()+"_"+pcsCount.ToString();
+                        ShowInfoDlg(3);
                 }                
             }            
+        }
+
+        /// <summary>
+        /// 返回人人对战的结果
+        /// </summary>
+        /// <param name="pt">输入点</param>
+        /// <param name="flg">输入点的标志</param>
+        /// <returns></returns>
+        public int[] PerVsPer(Point pt, int flg)
+        {
+            int[] tArry= { } ;
+            myDraw.DrawPieces(picGrp, pt, flg);
+            //保存己方和他方的棋子
+            if (flg == 1)
+                ptLstBlack.Add(pt);
+            else
+                ptLstWight.Add(pt);
+
+            tArry = mJudge.IsWin(pt, flg, Chess.pcsFlg, padLineMax);
+
+            StatusLabel2.Text = tArry[0].ToString() + " " + tArry[1].ToString();
+
+            //if (ptLstBlack.Count == 5 || ptLstWight.Count == 5)
+            //{
+            //    tArry=mJudge.GetResult(pt, flg);
+            //}
+            return tArry;
+        }
+
+        /// <summary>
+        /// 返回人机对战的结果
+        /// </summary>
+        /// <param name="pt">输入点</param>
+        /// <param name="flg">输入点标志</param>
+        /// <returns></returns>
+        public int[] PerVsAI(Point pt, int flg)
+        {
+            int[] tArry = { };
+            if (ptLstBlack.Count < 2)     //第一个黑子和白子随意落子，不用判断评分
+            {
+                myDraw.DrawPieces(picGrp, pt, 1);
+                myDraw.DrawPieces(picGrp, GetRandPt(pt, padLineMax), 2);
+
+                ptLstBlack.Add(pt);
+                ptLstWight.Add(GetRandPt(pt, padLineMax));
+            }
+            else
+            {
+                myDraw.DrawPieces(picGrp, pt, 1);
+                mJudge.GetResult(pt, flg);
+
+                myDraw.DrawPieces(picGrp, backPos, 2);
+                tArry = mJudge.GetResult(backPos, 2);
+
+                //保存己方和他方的棋子
+                if (flg == 1)
+                    ptLstBlack.Add(pt);
+                else
+                    ptLstWight.Add(pt);
+            }
+                return tArry;
+        }
+
+        /// <summary>
+        /// 在输入点周围随意找一个点
+        /// </summary>
+        /// <param name="pt">输入点</param>
+        /// <param name="max">棋盘界限</param>
+        /// <returns></returns>
+        public Point GetRandPt(Point pt, int max)
+        {
+            Point tmp = new Point();
+            for (int x = -1; x <=1; x++)
+            {
+                for (int y = -1; y <= 1; y++)
+                {
+                    tmp.X = pt.X + x;
+                    tmp.Y = pt.Y + y;
+                    if (tmp.X >= 0 && tmp.X < max && tmp.Y >= 0 && tmp.Y < max)
+                        return tmp;
+                }
+            }
+            return tmp;
         }
 
         public void ShowInfoDlg(int k)
@@ -257,10 +333,10 @@ namespace FiveChess
             switch (k)
             {
                 case 1:
-                    MessageBox.Show("己方胜利！","提示", MessageBoxButtons.OK,MessageBoxIcon.Information);
+                    MessageBox.Show("黑棋获胜！","提示", MessageBoxButtons.OK,MessageBoxIcon.Information);
                     return;
                 case 2:
-                    MessageBox.Show("他方胜利！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show("白棋获胜！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return;
                 case 3:
                     MessageBox.Show("游戏已结束！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -278,20 +354,25 @@ namespace FiveChess
             //myDraw.DrawChessPad(e.Graphics);
         }
 
+        private void UpdatStateBar(Point pt, string str)
+        {
+            backPos = pt;
+            StatusLabel1.Text =pt.X.ToString()+"_"+pt.Y.ToString()+"_"+ str;
+        }
         
 
         private void Back_Btn_Click(object sender, EventArgs e)
         {
-            mJudge = new Judge(Chess.pcsFlg);
-            List<string> list = new List<string>(mJudge.TypeScore.Keys);
-            int m=0;
-            for (int i = 0; i < mJudge.TypeScore.Count-1; i++)
-            {
-                if (list[i + 1] == list[i])
-                    m++;
-            }
+            int flg = 1;
+            string s = "001011110011";
+            string part = @"1+";
+            part=flg.ToString() + "+";
 
-            label1.Text = m.ToString() + "_" + mJudge.TypeScore.Count.ToString();
+            MatchCollection match = Regex.Matches(s, part);
+            foreach (var item in match)
+            {
+                listBox1.Items.Add(item);
+            }
         }
 
         private void Cancel_Btn_Click(object sender, EventArgs e)

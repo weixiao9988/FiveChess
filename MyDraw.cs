@@ -81,11 +81,7 @@ namespace FiveChess
                 Chess.pcsFlg[xySeir.Y][ xySeir.X] = nflag;
                 Chess.isMyPcs = !Chess.isMyPcs;
 
-                //保存己方和他方的棋子
-                if (nflag == 1)
-                    Chess.myChess.Add(xySeir);
-                else if (nflag == 2)
-                    Chess.otherChess.Add(xySeir);
+               
             }
             //else
             //    MessageBox.Show("此点已有棋子！");
