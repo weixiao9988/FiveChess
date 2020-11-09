@@ -203,7 +203,7 @@
             // 
             // ChsPadColor_Btn
             // 
-            this.ChsPadColor_Btn.BackColor = System.Drawing.Color.FloralWhite;
+            this.ChsPadColor_Btn.BackColor = System.Drawing.Color.Khaki;
             this.ChsPadColor_Btn.Cursor = System.Windows.Forms.Cursors.Hand;
             this.ChsPadColor_Btn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.ChsPadColor_Btn.Location = new System.Drawing.Point(75, 26);

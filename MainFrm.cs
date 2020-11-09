@@ -87,6 +87,9 @@ namespace FiveChess
         public List<Point> ptLstBlack = new List<Point>();
         public List<Point> ptLstWight = new List<Point>();
 
+        /// <summary>
+        /// 评分后返回的点
+        /// </summary>
         private Point backPos = new Point();
 
         public MainFrm()
@@ -231,7 +234,7 @@ namespace FiveChess
 
                             int[] n = gameMode == 0 ? PerVsPer(pt,flg) : PerVsAI(pt,flg);
 
-                            if (n.Length>0&& n[1] == 5)
+                            if (n.Length > 0 && n[1] >= 5)
                             {
                                 isWin = true;
                                 ShowInfoDlg(flg);
@@ -253,7 +256,7 @@ namespace FiveChess
         /// <returns></returns>
         public int[] PerVsPer(Point pt, int flg)
         {
-            int[] tArry= { } ;
+            int[] tArry= {0,0,0 } ;
             myDraw.DrawPieces(picGrp, pt, flg);
             //保存己方和他方的棋子
             if (flg == 1)
@@ -261,15 +264,16 @@ namespace FiveChess
             else
                 ptLstWight.Add(pt);
 
-            //tArry = mJudge.IsWin(pt, flg, Chess.pcsFlg, padLineMax);
-            tArry = mJudge.IsWin(pt, flg);
+            //tArry = mJudge.AnlyPcsCnnInfo(pt, flg, Chess.pcsFlg, padLineMax);
+            //tArry = mJudge.AnlyPcsCnnInfo(pt, flg);
 
-            StatusLabel2.Text = tArry[0].ToString() + " " + tArry[1].ToString();
+            
 
-            //if (ptLstBlack.Count == 5 || ptLstWight.Count == 5)
-            //{
-            //    tArry=mJudge.GetResult(pt, flg);
-            //}
+            if (ptLstBlack.Count >= 4 || ptLstWight.Count >= 4)
+            {
+                tArry = mJudge.AnlyPcsCnnInfo(pt, flg);
+            }
+            StatusLabel2.Text = tArry[0].ToString() + " " + tArry[1].ToString() + " " + tArry[2].ToString();
             return tArry;
         }
 

@@ -24,6 +24,11 @@ namespace FiveChess
         /// </summary>
         private List<List<Point>> lstPosInfo = new List<List<Point>>();
 
+        /// <summary>
+        /// 存储最长相连棋子坐标
+        /// </summary>
+        private List<Point> lstCnnPcsPos = new List<Point>();
+
         public delegate void UpStatInfo(Point pt, string s);
         public event UpStatInfo UpInfoEvt;
 
@@ -220,7 +225,7 @@ namespace FiveChess
         {
             int[] result = new int[2];
 
-            GetPcsStat(chessPadInfo, pt, 4, lineMax, lstPcsInfo, lstPosInfo);
+            //GetPcsStat(chessPadInfo, pt, 4, lineMax, lstPcsInfo, lstPosInfo);
             List<int> lstScore = new List<int>();
             List<Point> lstPts = new List<Point>();
             SortedDictionary<int, Point> sortDict = new SortedDictionary<int, Point>();
@@ -353,63 +358,7 @@ namespace FiveChess
             return s;
         }
        
-        /// <summary>
-        /// 获取落子后在四个方向一定范围内各自形成的棋子形势
-        /// </summary>
-        /// <param name="padInfo">落子后的棋盘信息</param>
-        /// <param name="pt">落子的位置</param>
-        /// <param name="incr">距离落子的范围</param>
-        /// <param name="lineCount">棋盘线总数</param>
-        /// <param name="lstPcs">返回每个点的棋子标志:(0空，1黑子，2白子)</param>
-        /// <param name="lstPts">返回每个点的坐标</param>
-        public void GetPcsStat(List<List<int>> padInfo, Point pt, int incr, int lineCount,List<string> lstPcs,List<List<Point>> lstPts)
-        {           
-            for (int t = 0; t < 4; t++)
-            {
-                string str = null;
-                List<Point> pts = new List<Point>();
-
-                for (int i = -incr; i <= incr; i++)
-                {
-                    switch (t)
-                    {
-                        case 0: /// 根据输入点和范围返回水平方向结果
-                            if (bInPad(pt.X + i, pt.Y + i, lineCount))
-                            {
-                                str += padInfo[pt.Y][pt.X + i].ToString();
-                                pts.Add(new Point(pt.X + i, pt.Y));
-                            }
-                            break;
-                        case 1:     // 根据输入点和范围返回垂直方向结果
-                            if (bInPad(pt.X, pt.Y + i, lineCount))
-                            {
-                                str += padInfo[pt.Y + i][pt.X].ToString();
-                                pts.Add(new Point(pt.X, pt.Y + i));
-                            }                                
-                            break;
-                        case 2:     // 根据输入点和范围返回撇[/]方向结果
-                            if (bInPad(pt.X - i, pt.Y + i, lineCount))
-                            {
-                                str += padInfo[pt.Y + i][pt.X - i].ToString();
-                                pts.Add(new Point(pt.X - i, pt.Y + i));
-                            }                                
-                            break;
-                        case 3:     // 根据输入点和范围返回捺[\]方向结果
-                            if (bInPad(pt.X + i, pt.Y + i, lineCount))
-                            {
-                                str += padInfo[pt.Y + i][pt.X + i].ToString();
-                                pts.Add(new Point(pt.X + i, pt.Y + i));
-                            }
-                            break;
-                        default:
-                            break;
-                    }
-                }
-                lstPcs.Add(str);
-                lstPts.Add(pts);                
-            }
-            
-        }
+       
 
         /// <summary>
         /// 判断输入点是否在棋盘内
@@ -449,19 +398,22 @@ namespace FiveChess
                 {
                     case 1:  /// 根据输入点和范围返回水平方向结果
                         {
-                            for (int i = xArr[0]; i <= xArr[1]; i++)
+                            vMin = xArr[0];
+                            vMax = xArr[1];
+                            for (int i = vMin; i <= vMax; i++)
                             {
                                 str += lstPad[pt.Y][i].ToString();
                                 pts.Add(new Point(i, pt.Y));
                             }
-
                             pcsLSt.Add(str);
                             posLst.Add(pts);
                             break;
                         }
                     case 2:     // 根据输入点和范围返回垂直方向结果
                         {
-                            for (int i = yArr[0]; i <= yArr[1]; i++)
+                            vMin = yArr[0];
+                            vMax = yArr[1];
+                            for (int i = vMin; i <= vMax; i++)
                             {
                                 str += lstPad[i][pt.X].ToString();
                                 pts.Add(new Point(pt.X, i));
@@ -500,34 +452,61 @@ namespace FiveChess
                         break;
                 }
             }
-
             pcsInfo = pcsLSt;
             posInfo = posLst;
         }
 
         /// <summary>
-        /// 落子后判断输赢
+        /// 落子后分析棋子相连情况
         /// </summary>
         /// <param name="pt">输入点</param>
         /// <param name="flg">棋子标志</param>        
-        /// <returns>返回int[]，[0]棋子标志，[1]</returns>
-        public int[] IsWin(Point pt, int flg)
+        /// <returns>返回int[]，[0]棋子标志，[1]连子数量，[2]四个方向之一</returns>
+        public int[] AnlyPcsCnnInfo(Point pt, int flg)
         {
-            int[] result = { flg, 0 };            
-            string part = @flg.ToString() + "+";
-            List<int> count = new List<int>();
+            int[] result = { flg, 0 ,0};            
+            string part = @flg.ToString() + "+";        //正则表达式
+            List<int> count = new List<int>() { };
+            List<List<Point>> lstPts = new List<List<Point>>() { };
+            List<List<Point>> tmpLstPts = new List<List<Point>>() { };
+            List<int> lstInt = new List<int>() { };
 
-            GetPointRoundInfo(chessPadInfo, pt, 4, lineMax, out lstPcsInfo,out lstPosInfo);
+            GetPointRoundInfo(chessPadInfo, pt, 4, lineMax, out lstPcsInfo, out lstPosInfo);
 
             for (int i = 0; i < 4; i++)
             {
-                MatchCollection match = Regex.Matches(lstPcsInfo[i], part);
+                //搜索字符串中标志相同的连在一起的
+                MatchCollection match = Regex.Matches(lstPcsInfo[i], part);     
+                
                 foreach (Match item in match)
-                    count.Add(item.Length);
-                if ((result[1] = count.Max()) == 5)
-                    return result;
+                {
+                    List<Point> pts = new List<Point>();
+                    if (item.Length>result[1])
+                    {
+                        result[1] = item.Length;
+                        for (int k=0; k < item.Length; k++)
+                            pts.Add(lstPosInfo[i][k+item.Index]);
+                        tmpLstPts.Add(pts);
+                        lstInt.Add(item.Length);
+                        
+                    }
+                }
 
+                lstPts.Add(tmpLstPts[lstInt.IndexOf(lstInt.Max())]);
+                count.Add(result[1]);
+                result[2] = count.IndexOf(count.Max());
+
+                if ((result[1] = count.Max()) >= 5)
+                {
+                    foreach (var vpt in lstPts[result[2]])
+                        lstCnnPcsPos.Add(vpt);
+                    return result; 
+                }
+                tmpLstPts.Clear();
+                lstInt.Clear();
             }
+            foreach (var ipt in lstPts[result[2]])
+                lstCnnPcsPos.Add(ipt);
             return result;
         }
 
@@ -539,7 +518,7 @@ namespace FiveChess
         /// <param name="lstPad">棋盘状态</param>
         /// <param name="lineCount">棋盘线最大值</param>
         /// <returns>返回int[]，[0]棋子标志，[1]</returns>
-        public int[] IsWin(Point pt, int flg,List<List<int>> lstPad, int lineCount)
+        public int[] AnlyPcsCnnInfo(Point pt, int flg,List<List<int>> lstPad, int lineCount)
         {            
             int[] result = { flg, 0 };
             int[] xArr = GetMinMax(pt.X, lineCount,4);
@@ -604,7 +583,7 @@ namespace FiveChess
                             foreach (Match item in match)
                                 count.Add(item.Length);
 
-                            if ((result[1] = count.Max()) == 5)
+                            if ((result[1] = count.Max()) >= 5)
                                 return result;
                             break;
                         }
@@ -722,7 +701,7 @@ namespace FiveChess
         {
             int[] arr = new int[2];
             //根据输入点计算可能的最小、最大编号;
-            if (val > wid && val <= count - wid)
+            if (val > wid && val < count - wid)
             {
                 arr[0]= val - wid;
                 arr[1] = val + wid;
