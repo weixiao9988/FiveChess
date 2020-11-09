@@ -261,7 +261,8 @@ namespace FiveChess
             else
                 ptLstWight.Add(pt);
 
-            tArry = mJudge.IsWin(pt, flg, Chess.pcsFlg, padLineMax);
+            //tArry = mJudge.IsWin(pt, flg, Chess.pcsFlg, padLineMax);
+            tArry = mJudge.IsWin(pt, flg);
 
             StatusLabel2.Text = tArry[0].ToString() + " " + tArry[1].ToString();
 

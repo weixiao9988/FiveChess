@@ -11,10 +11,18 @@ namespace FiveChess
 {
     class Judge
     {
-        private List<List<int>> pcsInfo;
+        private List<List<int>> chessPadInfo;
         private int lineMax;
-        private List<string> listPcsInfo = new List<string>();
-        private List<List<Point>> listPosInfo = new List<List<Point>>();
+
+        /// <summary>
+        /// 存储4个方向的棋子信息
+        /// </summary>
+        private List<string> lstPcsInfo = new List<string>();
+
+        /// <summary>
+        /// 存储4个方向的坐标信息
+        /// </summary>
+        private List<List<Point>> lstPosInfo = new List<List<Point>>();
 
         public delegate void UpStatInfo(Point pt, string s);
         public event UpStatInfo UpInfoEvt;
@@ -71,7 +79,7 @@ namespace FiveChess
             ["C00AA"] = 40,    /*眠3型*/
             ["C0A0A"] = 40,    /*眠3型*/            
             ["CA00A"] = 40,    /*眠3型*/
-            ["AA00A"] = 40,    /*眠3型*/
+            ["AA00C"] = 40,    /*眠3型*/
             ["A0A0C"] = 40,    /*眠3型*/
             ["A00AC"] = 40,    /*眠3型*/
             ["000AA0"] = 35, /*活2型*/
@@ -204,7 +212,7 @@ namespace FiveChess
 
         public Judge(List<List<int>> arry)
         {
-            pcsInfo = arry;
+            chessPadInfo = arry;
             lineMax = arry[0].Count;
         }
 
@@ -212,7 +220,7 @@ namespace FiveChess
         {
             int[] result = new int[2];
 
-            GetPcsStat(pcsInfo, pt, 4, lineMax, listPcsInfo, listPosInfo);
+            GetPcsStat(chessPadInfo, pt, 4, lineMax, lstPcsInfo, lstPosInfo);
             List<int> lstScore = new List<int>();
             List<Point> lstPts = new List<Point>();
             SortedDictionary<int, Point> sortDict = new SortedDictionary<int, Point>();
@@ -225,7 +233,7 @@ namespace FiveChess
                 foreach (var item in TypeScore.Keys)
                 {
                     str = GetNewStr(item, flag);                    
-                    int n = listPcsInfo[i].IndexOf(str);
+                    int n = lstPcsInfo[i].IndexOf(str);
                     if (n != -1)
                     {
                         if (str == "11111" || str == "22222")
@@ -256,7 +264,7 @@ namespace FiveChess
         {
             char[] ch;
             string str1;
-            int n = listPcsInfo[m].IndexOf(scStr);
+            int n = lstPcsInfo[m].IndexOf(scStr);
 
             for (int k = 0; k < scStr.Length; k++)
             {
@@ -276,14 +284,14 @@ namespace FiveChess
                         if (lstScore.Count == 0)
                         {
                             lstScore.Add(TypeScore[str1]);
-                            lstPts.Add(listPosInfo[m][n + k]);
+                            lstPts.Add(lstPosInfo[m][n + k]);
                         }
                         else
                         {
                             if (TypeScore[str1] > lstScore.Max())
                             {
                                 lstScore.Add(TypeScore[str1]);
-                                lstPts.Add(listPosInfo[m][n + k]);
+                                lstPts.Add(lstPosInfo[m][n + k]);
                             }
                         }
                     }
@@ -344,6 +352,7 @@ namespace FiveChess
             }
             return s;
         }
+       
         /// <summary>
         /// 获取落子后在四个方向一定范围内各自形成的棋子形势
         /// </summary>
@@ -417,6 +426,112 @@ namespace FiveChess
         }
 
         /// <summary>
+        /// 获取落子后在四个方向一定范围内各自的棋子信息和坐标
+        /// </summary>
+        /// <param name="lstPad">棋盘信息</param>
+        /// <param name="pt">输入点</param>
+        /// <param name="incr">距离落子的范围</param>
+        /// <param name="lineCount">棋盘线最大值</param>
+        /// <param name="pcsInfo">输出棋子信息</param>
+        /// <param name="posInfo">输出坐标信息</param>
+        public void GetPointRoundInfo(List<List<int>> lstPad, Point pt, int incr, int lineCount, out List<string> pcsInfo, out List<List<Point>> posInfo)
+        {
+            int[] xArr = GetMinMax(pt.X, lineCount,incr);
+            int[] yArr = GetMinMax(pt.Y, lineCount,incr);
+            int vMin, vMax;
+            List<string> pcsLSt = new List<string>();
+            List<List<Point>> posLst = new List<List<Point>>();
+            for (int t = 1; t <= 4; t++)
+            {
+                string str = null;
+                List<Point> pts = new List<Point>();
+                switch (t)
+                {
+                    case 1:  /// 根据输入点和范围返回水平方向结果
+                        {
+                            for (int i = xArr[0]; i <= xArr[1]; i++)
+                            {
+                                str += lstPad[pt.Y][i].ToString();
+                                pts.Add(new Point(i, pt.Y));
+                            }
+
+                            pcsLSt.Add(str);
+                            posLst.Add(pts);
+                            break;
+                        }
+                    case 2:     // 根据输入点和范围返回垂直方向结果
+                        {
+                            for (int i = yArr[0]; i <= yArr[1]; i++)
+                            {
+                                str += lstPad[i][pt.X].ToString();
+                                pts.Add(new Point(pt.X, i));
+                            }
+                            pcsLSt.Add(str);
+                            posLst.Add(pts);
+                            break;
+                        }
+                    case 3:     // 根据输入点和范围返回撇[/]方向结果
+                        {
+                            vMin = pt.Y - yArr[0] < xArr[1] - pt.X ? pt.Y - yArr[0] : xArr[1] - pt.X;
+                            vMax = pt.X - xArr[0] < yArr[1] - pt.Y ? pt.X - xArr[0] : yArr[1] - pt.Y;
+                            for (int i = -vMin; i <= vMax; i++)
+                            {
+                                str += lstPad[pt.Y + i][pt.X - i].ToString();
+                                pts.Add(new Point(pt.X - i, pt.Y + i));
+                            }
+                            pcsLSt.Add(str);
+                            posLst.Add(pts);
+                            break;
+                        }
+                    case 4:    // 根据输入点和范围返回捺[\]方向结果
+                        {
+                            vMin = pt.Y - yArr[0] < pt.X - xArr[0] ? pt.Y - yArr[0] : pt.X - xArr[0];
+                            vMax = xArr[1] - pt.X < yArr[1] - pt.Y ? xArr[1] - pt.X : yArr[1] - pt.Y;
+                            for (int i = -vMin; i <= vMax; i++)
+                            {
+                                str += lstPad[pt.Y + i][pt.X + i].ToString();
+                                pts.Add(new Point(pt.X - i, pt.Y + i));
+                            }
+                            pcsLSt.Add(str);
+                            posLst.Add(pts);
+                            break;
+                        }
+                    default:
+                        break;
+                }
+            }
+
+            pcsInfo = pcsLSt;
+            posInfo = posLst;
+        }
+
+        /// <summary>
+        /// 落子后判断输赢
+        /// </summary>
+        /// <param name="pt">输入点</param>
+        /// <param name="flg">棋子标志</param>        
+        /// <returns>返回int[]，[0]棋子标志，[1]</returns>
+        public int[] IsWin(Point pt, int flg)
+        {
+            int[] result = { flg, 0 };            
+            string part = @flg.ToString() + "+";
+            List<int> count = new List<int>();
+
+            GetPointRoundInfo(chessPadInfo, pt, 4, lineMax, out lstPcsInfo,out lstPosInfo);
+
+            for (int i = 0; i < 4; i++)
+            {
+                MatchCollection match = Regex.Matches(lstPcsInfo[i], part);
+                foreach (Match item in match)
+                    count.Add(item.Length);
+                if ((result[1] = count.Max()) == 5)
+                    return result;
+
+            }
+            return result;
+        }
+
+        /// <summary>
         /// 落子后判断输赢
         /// </summary>
         /// <param name="pt">输入点</param>
@@ -427,9 +542,9 @@ namespace FiveChess
         public int[] IsWin(Point pt, int flg,List<List<int>> lstPad, int lineCount)
         {            
             int[] result = { flg, 0 };
-            int[] xArr = GetMinMax(pt.X, lineCount);
-            int[] yArr = GetMinMax(pt.Y, lineCount);
-            int vMin, vMax, k;
+            int[] xArr = GetMinMax(pt.X, lineCount,4);
+            int[] yArr = GetMinMax(pt.Y, lineCount,4);
+            int vMin, vMax;
             string part = @flg.ToString() + "+";
             
             List<int> count = new List<int>();
@@ -509,12 +624,12 @@ namespace FiveChess
         /// <returns>结果数组，[0]：棋子数量，[1]：棋子标志</returns>
         public int GetHResult(Point pt, int flag)
         {
-            int[] arry = GetMinMax(pt.X, lineMax);
+            int[] arry = GetMinMax(pt.X, lineMax,4);
 
             int result = 0;
             for (int i = arry[0]; i <= arry[1]; i++)
             {
-                result = pcsInfo[pt.Y][i] == flag ? ++result : 0;
+                result = chessPadInfo[pt.Y][i] == flag ? ++result : 0;
 
                 if (result == 5)
                     break;
@@ -531,11 +646,11 @@ namespace FiveChess
         /// <returns>返回结果</returns>
         public int GetVResult(Point pt, int flag)
         {
-            int[] arry = GetMinMax(pt.Y, lineMax);
+            int[] arry = GetMinMax(pt.Y, lineMax,4);
             int result = 0;
             for (int i = arry[0]; i <= arry[1]; i++)
             {
-                result = pcsInfo[i][pt.X] == flag ? ++result : 0;
+                result = chessPadInfo[i][pt.X] == flag ? ++result : 0;
 
                 if (result == 5)
                     break;
@@ -552,8 +667,8 @@ namespace FiveChess
         /// <returns>返回结果</returns>
         public int GetPResult(Point pt, int flag)
         {
-            int[] xArr = GetMinMax(pt.X, lineMax);
-            int[] yArr = GetMinMax(pt.Y, lineMax);
+            int[] xArr = GetMinMax(pt.X, lineMax,4);
+            int[] yArr = GetMinMax(pt.Y, lineMax,4);
 
             int vMin = pt.Y - yArr[0] < xArr[1] - pt.X ? pt.Y - yArr[0] : xArr[1] - pt.X ;
             int vMax = pt.X - xArr[0] < yArr[1] - pt.Y ? pt.X - xArr[0] : yArr[1] - pt.Y;
@@ -562,7 +677,7 @@ namespace FiveChess
             int result = 0;
             for (int i = -vMin; i <= vMax; i++)
             {
-                result = pcsInfo[pt.Y+i][pt.X-i] == flag ? ++result : 0;
+                result = chessPadInfo[pt.Y+i][pt.X-i] == flag ? ++result : 0;
 
                 if (result == 5)
                     break;
@@ -579,8 +694,8 @@ namespace FiveChess
         /// <returns>返回结果</returns>
         public int GetLResult(Point pt, int flag)
         {
-            int[] xArr = GetMinMax(pt.X, lineMax);
-            int[] yArr = GetMinMax(pt.Y, lineMax);
+            int[] xArr = GetMinMax(pt.X, lineMax,4);
+            int[] yArr = GetMinMax(pt.Y, lineMax,4);
 
             int vMin = pt.Y - yArr[0] < pt.X - xArr[0] ? pt.Y - yArr[0] : pt.X - xArr[0];
             int vMax = xArr[1] - pt.X < yArr[1] - pt.Y ? xArr[1] - pt.X : yArr[1] - pt.Y;
@@ -589,7 +704,7 @@ namespace FiveChess
             int result = 0;
             for (int i = -vMin; i <= vMax; i++)
             {
-                result = pcsInfo[pt.Y + i][pt.X + i] == flag ? ++result : 0;
+                result = chessPadInfo[pt.Y + i][pt.X + i] == flag ? ++result : 0;
 
                 if (result == 5)
                     break;
@@ -603,19 +718,19 @@ namespace FiveChess
         /// <param name="val">输入值</param>
         /// <param name="count">棋盘最大格子数量</param>
         /// <returns>最小、最大编号数组，[0]：最小，[1]：最大</returns>
-        public int[] GetMinMax(int val, int count)
+        public int[] GetMinMax(int val, int count,int wid)
         {
             int[] arr = new int[2];
             //根据输入点计算可能的最小、最大编号;
-            if (val > 4 && val < count - 5)
+            if (val > wid && val <= count - wid)
             {
-                arr[0]= val - 4;
-                arr[1] = val + 4;
+                arr[0]= val - wid;
+                arr[1] = val + wid;
             }
             else
             {
-                arr[0] = val <= 4 ? 0 : val - 4;
-                arr[1] = val <= 4 ? val + 4 : count - 1;
+                arr[0] = val <= wid ? 0 : val - wid;
+                arr[1] = val <= wid ? val + wid : count - 1;
             }
             return arr;
         }
