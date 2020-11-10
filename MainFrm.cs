@@ -90,7 +90,7 @@ namespace FiveChess
         /// <summary>
         /// 评分后返回的点
         /// </summary>
-        private Point backPos = new Point();
+        private Point ReBackPos = new Point();
 
         public MainFrm()
         {
@@ -129,6 +129,9 @@ namespace FiveChess
             AIRank = 1;
 
             //myDraw.DrawChessPad(picGrp);
+
+            mJudge = new Judge(Chess.pcsFlg);
+            mJudge.UpInfoEvt += this.UpdatStateBar;
         }
 
         /// <summary>
@@ -223,8 +226,7 @@ namespace FiveChess
                 if ((e.X >= padMargin && e.X <= (int)(x1 * (padLineMax - 1) + padMargin)) &&
                 e.Y >= padMargin && e.Y <= (int)((y1) * (padLineMax - 1) + padMargin))
                 {
-                    mJudge = new Judge(Chess.pcsFlg);
-                    mJudge.UpInfoEvt += this.UpdatStateBar;
+                    
 
                     if (!isWin)
                     {
@@ -264,11 +266,6 @@ namespace FiveChess
             else
                 ptLstWight.Add(pt);
 
-            //tArry = mJudge.JudgeWin(pt, flg, Chess.pcsFlg, padLineMax);
-            //tArry = mJudge.JudgeWin(pt, flg);
-
-            
-
             if (ptLstBlack.Count >= 4 || ptLstWight.Count >= 4)
             {
                 tArry = mJudge.JudgeWin(pt, flg);
@@ -285,28 +282,39 @@ namespace FiveChess
         /// <returns></returns>
         public int[] PerVsAI(Point pt, int flg)
         {
-            int[] tArry = { };
-            if (ptLstBlack.Count < 2)     //第一个黑子和白子随意落子，不用判断评分
+            int[] tArry = {0,0,0 };
+            if (ptLstBlack.Count == 0)     //第一个黑子和白子随意落子，不用判断评分
             {
                 myDraw.DrawPieces(picGrp, pt, 1);
-                myDraw.DrawPieces(picGrp, GetRandPt(pt, padLineMax), 2);
-
                 ptLstBlack.Add(pt);
-                ptLstWight.Add(GetRandPt(pt, padLineMax));
+
+                Point tPt = GetRandPt(pt, padLineMax);
+                myDraw.DrawPieces(picGrp, tPt, 2);                
+                ptLstWight.Add(tPt);
             }
             else
             {
                 myDraw.DrawPieces(picGrp, pt, 1);
-                mJudge.GetResult(pt, flg);
+                ptLstBlack.Add(pt);
+                int[] arr1 = mJudge.JudgeWin(pt, 1);
+                
+                if (arr1[1] >= 5)
+                {
+                    tArry = arr1;
+                    return tArry;
+                }
 
-                myDraw.DrawPieces(picGrp, backPos, 2);
-                tArry = mJudge.GetResult(backPos, 2);
+                ReBackPos = ReBackPos.X == -1 && ReBackPos.Y == -1 ? GetRandPt(pt, padLineMax) : ReBackPos;
 
-                //保存己方和他方的棋子
-                if (flg == 1)
-                    ptLstBlack.Add(pt);
-                else
-                    ptLstWight.Add(pt);
+                myDraw.DrawPieces(picGrp, ReBackPos, 2);
+                ptLstWight.Add(ReBackPos);                
+                int[] arr2= mJudge.JudgeWin(ReBackPos, 2);
+                
+                if (arr2[1] >= 5)
+                {
+                    tArry = arr1;
+                    return tArry;
+                }
             }
                 return tArry;
         }
@@ -361,7 +369,7 @@ namespace FiveChess
 
         private void UpdatStateBar(Point pt, string str)
         {
-            backPos = pt;
+            ReBackPos = pt;
             StatusLabel1.Text =pt.X.ToString()+"_"+pt.Y.ToString()+"_"+ str;
         }
         

@@ -442,7 +442,7 @@ namespace FiveChess
                             for (int i = -vMin; i <= vMax; i++)
                             {
                                 str += lstPad[pt.Y + i][pt.X + i].ToString();
-                                pts.Add(new Point(pt.X - i, pt.Y + i));
+                                pts.Add(new Point(pt.X + i, pt.Y + i));
                             }
                             pcsLSt.Add(str);
                             posLst.Add(pts);
@@ -464,7 +464,7 @@ namespace FiveChess
         /// <returns>返回int[]，[0]棋子标志，[1]连子数量，[2]四个方向之一</returns>
         public int[] JudgeWin(Point pt, int flg)
         {
-            int[] result={ };
+            int[] result={ 0,0,0};
 
             /// 存储4个方向的棋子信息
             List<string> lstPcsInfo = new List<string>();            
@@ -487,7 +487,7 @@ namespace FiveChess
             {
                 List<Point> pts = mDict.Values.FirstOrDefault();
 
-
+                UpInfoEvt(GetPcsPos(chessPadInfo,lineMax,pts,result[2]), flg.ToString());
             }
 
 
@@ -495,21 +495,75 @@ namespace FiveChess
         }
 
 
-        private Point GetPcsPos(List<List<Point>> chessPad, List<Point> lstPts, int direct)
+        private Point GetPcsPos(List<List<int>> chessPad, int lineMax, List<Point> lstPts, int direct)
         {
-            Point fistPt = new Point(lstPts[0].X-1,lstPts[0].Y-1);
-            Point endPt = new Point(lstPts[lstPts.Count - 1].X+ 1,lstPts[lstPts.Count - 1].Y + 1);
             Point backPt = new Point();
             switch (direct)
             {
-                case 0:
-                    if (fistPt.X>0)
+                case 0: //在水平方向相连的两端落子，如果两端都不能落子返回(-1,-1)点
                     {
-                        chessPad[fistPt.Y][fistPt.X];
+                        Point fistPt = new Point(lstPts[0].X - 1, lstPts[0].Y);
+                        Point endPt = new Point(lstPts[lstPts.Count - 1].X + 1, lstPts[0].Y);
+                        if (fistPt.X >= 0 && chessPad[fistPt.Y][fistPt.X] == 0)
+                            backPt = fistPt;
+                        else
+                        {
+                            if (endPt.X < lineMax && chessPad[endPt.Y][endPt.X] == 0)
+                                backPt = endPt;
+                            else
+                                backPt = new Point(-1, -1);
+                        }
+                        break;
+                    }
+                case 1:     //在垂直方向相连的两端落子，如果两端都不能落子返回(-1,-1)点
+                    {
+                        Point fistPt = new Point(lstPts[0].X , lstPts[0].Y-1);
+                        Point endPt = new Point(lstPts[0].X , lstPts[lstPts.Count - 1].Y+1);
+                        if (fistPt.Y >= 0 && chessPad[fistPt.Y][fistPt.X] == 0)
+                            backPt = fistPt;
+                        else
+                        {
+                            if (endPt.Y< lineMax && chessPad[endPt.Y][endPt.X] == 0)
+                                backPt = endPt;
+                            else
+                                backPt = new Point(-1, -1);
+                        }
+                        break;
+                    }
+                case 2:     //在撇[/]方向相连的两端落子，如果两端都不能落子返回(-1,-1)点
+                    {
+                        Point fistPt = new Point(lstPts[0].X+1, lstPts[0].Y - 1);
+                        Point endPt = new Point(lstPts[lstPts.Count - 1].X-1, lstPts[lstPts.Count - 1].Y + 1);
+                        if (fistPt.Y >= 0 && fistPt.X < lineMax && chessPad[fistPt.Y][fistPt.X] == 0)
+                            backPt = fistPt;
+                        else
+                        {
+                            if (endPt.Y < lineMax && fistPt.X>=0 && chessPad[endPt.Y][endPt.X] == 0)
+                                backPt = endPt;
+                            else
+                                backPt = new Point(-1, -1);
+                        }
+                        break;
+                    }
+                case 3:     //在捺[\]方向相连的两端落子，如果两端都不能落子返回(-1,-1)点
+                    {
+                        Point fistPt = new Point(lstPts[0].X - 1, lstPts[0].Y - 1);
+                        Point endPt = new Point(lstPts[lstPts.Count - 1].X + 1, lstPts[lstPts.Count - 1].Y + 1);
+                        if (fistPt.Y >= 0 && fistPt.X >= 0 && chessPad[fistPt.Y][fistPt.X] == 0)
+                            backPt = fistPt;
+                        else
+                        {
+                            if (endPt.Y < lineMax && endPt.X < lineMax && chessPad[endPt.Y][endPt.X] == 0)
+                                backPt = endPt;
+                            else
+                                backPt = new Point(-1, -1);
+                        }
+                        break;
                     }
                 default:
                     break;
             }
+            return backPt;
         }
 
         /// <summary>
