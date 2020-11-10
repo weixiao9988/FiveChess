@@ -14,20 +14,20 @@ namespace FiveChess
         private List<List<int>> chessPadInfo;
         private int lineMax;
 
-        /// <summary>
-        /// 存储4个方向的棋子信息
-        /// </summary>
-        private List<string> lstPcsInfo = new List<string>();
+        ///// <summary>
+        ///// 存储4个方向的棋子信息
+        ///// </summary>
+        //private List<string> lstPcsInfo = new List<string>();
 
-        /// <summary>
-        /// 存储4个方向的坐标信息
-        /// </summary>
-        private List<List<Point>> lstPosInfo = new List<List<Point>>();
-
-        /// <summary>
-        /// 存储最长相连棋子坐标
-        /// </summary>
-        private List<Point> lstCnnPcsPos = new List<Point>();
+        ///// <summary>
+        ///// 存储4个方向的坐标信息
+        ///// </summary>
+        //private List<List<Point>> lstPosInfo = new List<List<Point>>();
+        
+        ///// <summary>
+        ///// 存储最长相连棋子坐标
+        ///// </summary>
+        //private List<Point> lstCnnPcsPos = new List<Point>();
 
         public delegate void UpStatInfo(Point pt, string s);
         public event UpStatInfo UpInfoEvt;
@@ -237,8 +237,8 @@ namespace FiveChess
                 
                 foreach (var item in TypeScore.Keys)
                 {
-                    str = GetNewStr(item, flag);                    
-                    int n = lstPcsInfo[i].IndexOf(str);
+                    str = GetNewStr(item, flag);
+                    int n = 0;// lstPcsInfo[i].IndexOf(str);
                     if (n != -1)
                     {
                         if (str == "11111" || str == "22222")
@@ -269,7 +269,7 @@ namespace FiveChess
         {
             char[] ch;
             string str1;
-            int n = lstPcsInfo[m].IndexOf(scStr);
+            int n = 0;// lstPcsInfo[m].IndexOf(scStr);
 
             for (int k = 0; k < scStr.Length; k++)
             {
@@ -289,14 +289,14 @@ namespace FiveChess
                         if (lstScore.Count == 0)
                         {
                             lstScore.Add(TypeScore[str1]);
-                            lstPts.Add(lstPosInfo[m][n + k]);
+                            //lstPts.Add(lstPosInfo[m][n + k]);
                         }
                         else
                         {
                             if (TypeScore[str1] > lstScore.Max())
                             {
                                 lstScore.Add(TypeScore[str1]);
-                                lstPts.Add(lstPosInfo[m][n + k]);
+                                //lstPts.Add(lstPosInfo[m][n + k]);
                             }
                         }
                     }
@@ -457,142 +457,93 @@ namespace FiveChess
         }
 
         /// <summary>
-        /// 落子后分析棋子相连情况
+        /// 落子后判断胜负
         /// </summary>
         /// <param name="pt">输入点</param>
         /// <param name="flg">棋子标志</param>        
         /// <returns>返回int[]，[0]棋子标志，[1]连子数量，[2]四个方向之一</returns>
-        public int[] AnlyPcsCnnInfo(Point pt, int flg)
+        public int[] JudgeWin(Point pt, int flg)
         {
-            int[] result = { flg, 0 ,0};            
-            string part = @flg.ToString() + "+";        //正则表达式
-            List<int> count = new List<int>() { };
-            List<List<Point>> lstPts = new List<List<Point>>() { };
-            List<List<Point>> tmpLstPts = new List<List<Point>>() { };
-            List<int> lstInt = new List<int>() { };
+            int[] result={ };
+
+            /// 存储4个方向的棋子信息
+            List<string> lstPcsInfo = new List<string>();            
+            /// 存储4个方向的坐标信息           
+            List<List<Point>> lstPosInfo = new List<List<Point>>();
 
             GetPointRoundInfo(chessPadInfo, pt, 4, lineMax, out lstPcsInfo, out lstPosInfo);
+            Dictionary<string,List<Point>> mDict= GetMaxCnnInfo(flg, lstPcsInfo, lstPosInfo);
+            string[] tmpStr = mDict.Keys.ToArray();
 
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < tmpStr.Length; i++)
+                result[i] = int.Parse(tmpStr[i]);
+
+            if (result[1]>=5)
             {
-                //搜索字符串中标志相同的连在一起的
-                MatchCollection match = Regex.Matches(lstPcsInfo[i], part);     
-                
-                foreach (Match item in match)
-                {
-                    List<Point> pts = new List<Point>();
-                    if (item.Length>result[1])
-                    {
-                        result[1] = item.Length;
-                        for (int k=0; k < item.Length; k++)
-                            pts.Add(lstPosInfo[i][k+item.Index]);
-                        tmpLstPts.Add(pts);
-                        lstInt.Add(item.Length);
-                        
-                    }
-                }
-
-                lstPts.Add(tmpLstPts[lstInt.IndexOf(lstInt.Max())]);
-                count.Add(result[1]);
-                result[2] = count.IndexOf(count.Max());
-
-                if ((result[1] = count.Max()) >= 5)
-                {
-                    foreach (var vpt in lstPts[result[2]])
-                        lstCnnPcsPos.Add(vpt);
-                    return result; 
-                }
-                tmpLstPts.Clear();
-                lstInt.Clear();
+                return result;
             }
-            foreach (var ipt in lstPts[result[2]])
-                lstCnnPcsPos.Add(ipt);
+            else
+            {
+                
+            }
+
+
+
+
             return result;
         }
 
         /// <summary>
-        /// 落子后判断输赢
+        /// 得到最大连接时棋子的连接和坐标信息
         /// </summary>
-        /// <param name="pt">输入点</param>
         /// <param name="flg">棋子标志</param>
-        /// <param name="lstPad">棋盘状态</param>
-        /// <param name="lineCount">棋盘线最大值</param>
-        /// <returns>返回int[]，[0]棋子标志，[1]</returns>
-        public int[] AnlyPcsCnnInfo(Point pt, int flg,List<List<int>> lstPad, int lineCount)
-        {            
-            int[] result = { flg, 0 };
-            int[] xArr = GetMinMax(pt.X, lineCount,4);
-            int[] yArr = GetMinMax(pt.Y, lineCount,4);
-            int vMin, vMax;
-            string part = @flg.ToString() + "+";
-            
-            List<int> count = new List<int>();
+        /// <param name="pcsInfo">输入的棋子信息</param>
+        /// <param name="posInfo">输入的坐标信息</param>
+        /// <returns>返回字典类型</returns>
+        public Dictionary<string, List<Point>> GetMaxCnnInfo(int flg,List<string> pcsInfo,List<List<Point>> posInfo)
+        {
+            Dictionary<string, List<Point>> mDict = new Dictionary<string, List<Point>>();
+            int[] result = { flg, 0, 0 };
+            string part = @flg.ToString() + "+";        //正则表达式
+            List<int> count = new List<int>() { };
+            List<List<Point>> tmpLstPts = new List<List<Point>>() { };
 
-            for (int t = 1; t <= 4; t++)
+            //GetPointRoundInfo(chessPadInfo, pt, 4, lineMax, out lstPcsInfo, out lstPosInfo);
+
+            for (int i = 0; i < 4; i++)
             {
-                string str = null;
-                switch (t)
+                List<Point> tmpPts = new List<Point>();
+                //搜索字符串中标志相同的连在一起的
+                MatchCollection match = Regex.Matches(pcsInfo[i], part);
+                Match mt;
+                if (match.Count > 0)
                 {
-                    case 1:  /// 根据输入点和范围返回水平方向结果
-                        {
-                            for (int i = xArr[0]; i <= xArr[1]; i++)
-                                str += lstPad[pt.Y][i].ToString();
+                    mt = match[0];
+                    foreach (Match item in match)
+                    {
+                        if (item.Length > mt.Length)
+                            mt = item;
+                    }
+                    for (int k = mt.Index; k < mt.Length + mt.Index; k++)
+                    {
+                        tmpPts.Add(posInfo[i][k]);
+                    }
+                    tmpLstPts.Add(tmpPts);
+                    count.Add(mt.Length);
+                }
 
-                            MatchCollection match = Regex.Matches(str, part);
-                            foreach (Match item in match)
-                                count.Add(item.Length);
+                result[2] = count.IndexOf(count.Max());
 
-                            if ((result[1] = count.Max()) == 5)
-                                return result;
-                            break;
-                        }
-                    case 2:     // 根据输入点和范围返回垂直方向结果
-                        {
-                            for (int i = yArr[0]; i <= yArr[1]; i++)
-                                str += lstPad[i][pt.X].ToString();
-
-                            MatchCollection match = Regex.Matches(str, part);
-                            foreach (Match item in match)
-                                count.Add(item.Length);
-
-                            if ((result[1] = count.Max()) == 5)
-                                return result;
-                            break;
-                        }                        
-                    case 3:     // 根据输入点和范围返回撇[/]方向结果
-                        {
-                            vMin = pt.Y - yArr[0] < xArr[1] - pt.X ? pt.Y - yArr[0] : xArr[1] - pt.X;
-                            vMax = pt.X - xArr[0] < yArr[1] - pt.Y ? pt.X - xArr[0] : yArr[1] - pt.Y;
-                            for (int i = -vMin; i <= vMax; i++)
-                                str += lstPad[pt.Y + i][pt.X - i].ToString();
-                            MatchCollection match = Regex.Matches(str, part);
-                            foreach (Match item in match)
-                                count.Add(item.Length);
-
-                            if ((result[1] = count.Max()) == 5)
-                                return result;
-                            break;
-                        }
-                    case 4:    // 根据输入点和范围返回捺[\]方向结果
-                        {
-                            vMin = pt.Y - yArr[0] < pt.X - xArr[0] ? pt.Y - yArr[0] : pt.X - xArr[0];
-                            vMax = xArr[1] - pt.X < yArr[1] - pt.Y ? xArr[1] - pt.X : yArr[1] - pt.Y;
-                            for (int i = -vMin; i <= vMax; i++)
-                                str += lstPad[pt.Y + i][pt.X + i].ToString();
-                            MatchCollection match = Regex.Matches(str, part);
-                            foreach (Match item in match)
-                                count.Add(item.Length);
-
-                            if ((result[1] = count.Max()) >= 5)
-                                return result;
-                            break;
-                        }
-                    default:
-                        break;
-                }               
+                if ((result[1] = count.Max()) >= 5)
+                {
+                    mDict.Add(flg.ToString() + result[1].ToString() + result[2].ToString(), tmpLstPts[result[2]]);                    
+                    return mDict;
+                }
             }
-            return result;
-        }
+            mDict.Add(flg.ToString() + result[1].ToString() + result[2].ToString(), tmpLstPts[result[2]]);
+            return mDict;
+        } 
+       
 
         /// <summary>
         /// 根据输入点和查找范围返回水平方向结果

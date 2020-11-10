@@ -264,14 +264,14 @@ namespace FiveChess
             else
                 ptLstWight.Add(pt);
 
-            //tArry = mJudge.AnlyPcsCnnInfo(pt, flg, Chess.pcsFlg, padLineMax);
-            //tArry = mJudge.AnlyPcsCnnInfo(pt, flg);
+            //tArry = mJudge.JudgeWin(pt, flg, Chess.pcsFlg, padLineMax);
+            //tArry = mJudge.JudgeWin(pt, flg);
 
             
 
             if (ptLstBlack.Count >= 4 || ptLstWight.Count >= 4)
             {
-                tArry = mJudge.AnlyPcsCnnInfo(pt, flg);
+                tArry = mJudge.JudgeWin(pt, flg);
             }
             StatusLabel2.Text = tArry[0].ToString() + " " + tArry[1].ToString() + " " + tArry[2].ToString();
             return tArry;
@@ -370,14 +370,21 @@ namespace FiveChess
         {
             int flg = 1;
             string s = "001011110011";
+            List<string> lstS = new List<string>() { "00101110011", "01101011110011" };
             string part = @"1+";
             part=flg.ToString() + "+";
-
-            MatchCollection match = Regex.Matches(s, part);
-            foreach (var item in match)
+            for (int i = 0; i < lstS.Count; i++)
             {
-                listBox1.Items.Add(item);
+                MatchCollection match = Regex.Matches(lstS[i], part);
+                Match mt = match[0];
+                foreach (Match item in match)
+                {
+                    if (item.Length > mt.Length)
+                        mt = item;
+                }
+                listBox1.Items.Add(mt.Value);
             }
+            
         }
 
         private void Cancel_Btn_Click(object sender, EventArgs e)
