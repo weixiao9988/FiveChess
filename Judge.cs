@@ -473,24 +473,43 @@ namespace FiveChess
 
             GetPointRoundInfo(chessPadInfo, pt, 4, lineMax, out lstPcsInfo, out lstPosInfo);
             Dictionary<string,List<Point>> mDict= GetMaxCnnInfo(flg, lstPcsInfo, lstPosInfo);
-            string[] tmpStr = mDict.Keys.ToArray();
+            char[] tmpStr = mDict.Keys.FirstOrDefault().ToArray();
+            
+            for(int i = 0; i < tmpStr.Length; i++)
+                result[i] = int.Parse(tmpStr[i].ToString());
 
-            for (int i = 0; i < tmpStr.Length; i++)
-                result[i] = int.Parse(tmpStr[i]);
-
+            
             if (result[1]>=5)
             {
                 return result;
             }
             else
             {
-                
+                List<Point> pts = mDict.Values.FirstOrDefault();
+
+
             }
 
 
-
-
             return result;
+        }
+
+
+        private Point GetPcsPos(List<List<Point>> chessPad, List<Point> lstPts, int direct)
+        {
+            Point fistPt = new Point(lstPts[0].X-1,lstPts[0].Y-1);
+            Point endPt = new Point(lstPts[lstPts.Count - 1].X+ 1,lstPts[lstPts.Count - 1].Y + 1);
+            Point backPt = new Point();
+            switch (direct)
+            {
+                case 0:
+                    if (fistPt.X>0)
+                    {
+                        chessPad[fistPt.Y][fistPt.X];
+                    }
+                default:
+                    break;
+            }
         }
 
         /// <summary>
