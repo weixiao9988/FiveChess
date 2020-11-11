@@ -218,7 +218,7 @@ namespace FiveChess
         {
             float x1 = drawRect.Width / padLineMax - 1;
             float y1 = drawRect.Width / padLineMax - 1;
-            int flg = Chess.isMyPcs ? 1 : 2;
+            //int flg = Chess.isMyPcs ? 1 : 2;
             
 
             if (e.Button==MouseButtons.Left)
@@ -234,12 +234,12 @@ namespace FiveChess
                         if (Chess.pcsFlg[pt.Y][pt.X] == 0)      //棋盘有空位
                         {
 
-                            int[] n = gameMode == 0 ? PerVsPer(pt,flg) : PerVsAI(pt,flg);
+                            int[] n = gameMode == 0 ? PerVsPer(pt) : PerVsAI(pt);
 
                             if (n.Length > 0 && n[1] >= 5)
                             {
                                 isWin = true;
-                                ShowInfoDlg(flg);
+                                ShowInfoDlg(n[0]);
                                 return;
                             }
                         }                        
@@ -256,8 +256,9 @@ namespace FiveChess
         /// <param name="pt">输入点</param>
         /// <param name="flg">输入点的标志</param>
         /// <returns></returns>
-        public int[] PerVsPer(Point pt, int flg)
+        public int[] PerVsPer(Point pt)
         {
+            int flg = Chess.isMyPcs ? 1 : 2;
             int[] tArry= {0,0,0 } ;
             myDraw.DrawPieces(picGrp, pt, flg);
             //保存己方和他方的棋子
@@ -280,23 +281,27 @@ namespace FiveChess
         /// <param name="pt">输入点</param>
         /// <param name="flg">输入点标志</param>
         /// <returns></returns>
-        public int[] PerVsAI(Point pt, int flg)
+        public int[] PerVsAI(Point pt)
         {
+            int flg;
             int[] tArry = {0,0,0 };
             if (ptLstBlack.Count == 0)     //第一个黑子和白子随意落子，不用判断评分
             {
-                myDraw.DrawPieces(picGrp, pt, 1);
+                flg = Chess.isMyPcs ? 1 : 2;
+                myDraw.DrawPieces(picGrp, pt, flg);
                 ptLstBlack.Add(pt);
 
-                Point tPt = GetRandPt(pt, padLineMax);
-                myDraw.DrawPieces(picGrp, tPt, 2);                
+                flg = Chess.isMyPcs ? 1 : 2;
+                Point tPt = GetRandPt(pt, padLineMax,Chess.pcsFlg);
+                myDraw.DrawPieces(picGrp, tPt, flg);                
                 ptLstWight.Add(tPt);
             }
             else
             {
-                myDraw.DrawPieces(picGrp, pt, 1);
+                flg = Chess.isMyPcs ? 1 : 2;
+                myDraw.DrawPieces(picGrp, pt, flg);
                 ptLstBlack.Add(pt);
-                int[] arr1 = mJudge.JudgeWin(pt, 1);
+                int[] arr1 = mJudge.JudgeWin(pt, flg);
                 
                 if (arr1[1] >= 5)
                 {
@@ -304,11 +309,12 @@ namespace FiveChess
                     return tArry;
                 }
 
-                ReBackPos = ReBackPos.X == -1 && ReBackPos.Y == -1 ? GetRandPt(pt, padLineMax) : ReBackPos;
+                ReBackPos = ReBackPos.X == -1 && ReBackPos.Y == -1 ? GetRandPt(pt, padLineMax, Chess.pcsFlg) : ReBackPos;
 
-                myDraw.DrawPieces(picGrp, ReBackPos, 2);
+                flg = Chess.isMyPcs ? 1 : 2;
+                myDraw.DrawPieces(picGrp, ReBackPos, flg);
                 ptLstWight.Add(ReBackPos);                
-                int[] arr2= mJudge.JudgeWin(ReBackPos, 2);
+                int[] arr2= mJudge.JudgeWin(ReBackPos, flg);
                 
                 if (arr2[1] >= 5)
                 {
@@ -325,7 +331,7 @@ namespace FiveChess
         /// <param name="pt">输入点</param>
         /// <param name="max">棋盘界限</param>
         /// <returns></returns>
-        public Point GetRandPt(Point pt, int max)
+        public Point GetRandPt(Point pt, int max,List<List<int>> padInfo)
         {
             Point tmp = new Point();
             for (int x = -1; x <=1; x++)
@@ -334,7 +340,8 @@ namespace FiveChess
                 {
                     tmp.X = pt.X + x;
                     tmp.Y = pt.Y + y;
-                    if (tmp.X >= 0 && tmp.X < max && tmp.Y >= 0 && tmp.Y < max)
+                    //找到的位置不能越界，且不能有其他棋子
+                    if (tmp.X >= 0 && tmp.X < max && tmp.Y >= 0 && tmp.Y < max && padInfo[tmp.Y][tmp.X] == 0)
                         return tmp;
                 }
             }
