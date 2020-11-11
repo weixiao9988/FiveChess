@@ -80,17 +80,9 @@ namespace FiveChess
 
                 Chess.pcsFlg[xySeir.Y][ xySeir.X] = nflag;
                 Chess.isMyPcs = !Chess.isMyPcs;
-
-               
             }
-            //else
-            //    MessageBox.Show("此点已有棋子！");
-           
-            
-
+            else
+                MessageBox.Show("此点已有棋子！");
         }
-            
-       
-
     }
 }

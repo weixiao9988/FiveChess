@@ -333,17 +333,26 @@ namespace FiveChess
         /// <returns></returns>
         public Point GetRandPt(Point pt, int max,List<List<int>> padInfo)
         {
-            Point tmp = new Point();
+            Point tmp = new Point(-1,-1);
             for (int x = -1; x <=1; x++)
             {
                 for (int y = -1; y <= 1; y++)
                 {
-                    tmp.X = pt.X + x;
-                    tmp.Y = pt.Y + y;
+                    int m = pt.X + x;
+                    int n = pt.Y + y;
                     //找到的位置不能越界，且不能有其他棋子
-                    if (tmp.X >= 0 && tmp.X < max && tmp.Y >= 0 && tmp.Y < max && padInfo[tmp.Y][tmp.X] == 0)
-                        return tmp;
+                    if (m >= 0 && m < max && n >= 0 && n < max && padInfo[n][m] == 0)
+                    {
+                        tmp.X = m;
+                        tmp.Y = n;
+                        return tmp; 
+                    }
                 }
+            }
+            if (tmp.X==-1)
+            {
+                Random rnd = new Random();               
+                GetRandPt(new Point(rnd.Next(0, max-1), rnd.Next(0, max-1)), max, padInfo);
             }
             return tmp;
         }

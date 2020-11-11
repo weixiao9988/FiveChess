@@ -359,28 +359,13 @@ namespace FiveChess
         }
        
        
-
-        /// <summary>
-        /// 判断输入点是否在棋盘内
-        /// </summary>
-        /// <param name="x">x坐标</param>
-        /// <param name="y">y坐标</param>
-        /// <param name="max">棋盘线最大值</param>
-        /// <returns>在棋盘内返回true，否则返回false</returns>
-        public bool bInPad(int x,int y,int max)
-        {
-            if (x >= 0 && x < max && y >= 0 && y < max)
-                return true;
-            return false;
-        }
-
         /// <summary>
         /// 获取落子后在四个方向一定范围内各自的棋子信息和坐标
         /// </summary>
         /// <param name="lstPad">棋盘信息</param>
         /// <param name="pt">输入点</param>
         /// <param name="incr">距离落子的范围</param>
-        /// <param name="lineCount">棋盘线最大值</param>
+        /// <param name="lineCount">棋盘线总数</param>
         /// <param name="pcsInfo">输出棋子信息</param>
         /// <param name="posInfo">输出坐标信息</param>
         public void GetPointRoundInfo(List<List<int>> lstPad, Point pt, int incr, int lineCount, out List<string> pcsInfo, out List<List<Point>> posInfo)
@@ -494,36 +479,43 @@ namespace FiveChess
             return result;
         }
 
-
-        private Point GetPcsPos(List<List<int>> chessPad, int lineMax, List<Point> lstPts, int direct)
+        /// <summary>
+        /// 得到相连棋子旁边的一个点
+        /// </summary>
+        /// <param name="chessPad">棋盘中棋子的信息</param>
+        /// <param name="lineCount">棋盘线总数</param>
+        /// <param name="lstPts">相连棋子的坐标</param>
+        /// <param name="direct">相连棋子的方向[- | / \]</param>
+        /// <returns></returns>
+        private Point GetPcsPos(List<List<int>> chessPad, int lineCount, List<Point> lstPts, int direct)
         {
-            Point backPt = new Point();
+            Point backPt = new Point(-1,-1);
             switch (direct)
             {
                 case 0: //在水平方向相连的两端落子，如果两端都不能落子返回(-1,-1)点
                     {
                         Point fistPt = new Point(lstPts[0].X - 1, lstPts[0].Y);
                         Point endPt = new Point(lstPts[lstPts.Count - 1].X + 1, lstPts[0].Y);
-                        if (fistPt.X >= 0 && chessPad[fistPt.Y][fistPt.X] == 0)
-                            backPt = fistPt;
-                        else
+                        if (bInPad(fistPt, lineCount) && bInPad(endPt, lineCount))
                         {
-                            if (endPt.X < lineMax && chessPad[endPt.Y][endPt.X] == 0)
+                            if (chessPad[fistPt.Y][fistPt.X] == 0)
+                                backPt = fistPt;
+                            else if (chessPad[endPt.Y][endPt.X] == 0)
                                 backPt = endPt;
                             else
                                 backPt = new Point(-1, -1);
-                        }
+                        }                           
                         break;
                     }
                 case 1:     //在垂直方向相连的两端落子，如果两端都不能落子返回(-1,-1)点
                     {
                         Point fistPt = new Point(lstPts[0].X , lstPts[0].Y-1);
                         Point endPt = new Point(lstPts[0].X , lstPts[lstPts.Count - 1].Y+1);
-                        if (fistPt.Y >= 0 && chessPad[fistPt.Y][fistPt.X] == 0)
-                            backPt = fistPt;
-                        else
+                        if (bInPad(fistPt, lineCount) && bInPad(endPt, lineCount))
                         {
-                            if (endPt.Y< lineMax && chessPad[endPt.Y][endPt.X] == 0)
+                            if (chessPad[fistPt.Y][fistPt.X] == 0)
+                                backPt = fistPt;
+                            else if (chessPad[endPt.Y][endPt.X] == 0)
                                 backPt = endPt;
                             else
                                 backPt = new Point(-1, -1);
@@ -534,11 +526,11 @@ namespace FiveChess
                     {
                         Point fistPt = new Point(lstPts[0].X+1, lstPts[0].Y - 1);
                         Point endPt = new Point(lstPts[lstPts.Count - 1].X-1, lstPts[lstPts.Count - 1].Y + 1);
-                        if (fistPt.Y >= 0 && fistPt.X < lineMax && chessPad[fistPt.Y][fistPt.X] == 0)
-                            backPt = fistPt;
-                        else
+                        if (bInPad(fistPt, lineCount) && bInPad(endPt, lineCount))
                         {
-                            if (endPt.Y < lineMax && fistPt.X>=0 && chessPad[endPt.Y][endPt.X] == 0)
+                            if (chessPad[fistPt.Y][fistPt.X] == 0)
+                                backPt = fistPt;
+                            else if (chessPad[endPt.Y][endPt.X] == 0)
                                 backPt = endPt;
                             else
                                 backPt = new Point(-1, -1);
@@ -549,15 +541,15 @@ namespace FiveChess
                     {
                         Point fistPt = new Point(lstPts[0].X - 1, lstPts[0].Y - 1);
                         Point endPt = new Point(lstPts[lstPts.Count - 1].X + 1, lstPts[lstPts.Count - 1].Y + 1);
-                        if (fistPt.Y >= 0 && fistPt.X >= 0 && chessPad[fistPt.Y][fistPt.X] == 0)
-                            backPt = fistPt;
-                        else
+                        if (bInPad(fistPt, lineCount) && bInPad(endPt, lineCount))
                         {
-                            if (endPt.Y < lineMax && endPt.X < lineMax && chessPad[endPt.Y][endPt.X] == 0)
+                            if (chessPad[fistPt.Y][fistPt.X] == 0)
+                                backPt = fistPt;
+                            else if (chessPad[endPt.Y][endPt.X] == 0)
                                 backPt = endPt;
                             else
                                 backPt = new Point(-1, -1);
-                        }
+                        }                       
                         break;
                     }
                 default:
@@ -567,22 +559,21 @@ namespace FiveChess
         }
 
         /// <summary>
-        /// 得到最大连接时棋子的连接和坐标信息
+        /// 得到最大连接时棋子的连接信息和坐标信息
         /// </summary>
         /// <param name="flg">棋子标志</param>
         /// <param name="pcsInfo">输入的棋子信息</param>
         /// <param name="posInfo">输入的坐标信息</param>
         /// <returns>返回字典类型</returns>
-        public Dictionary<string, List<Point>> GetMaxCnnInfo(int flg,List<string> pcsInfo,List<List<Point>> posInfo)
+        public Dictionary<string, List<Point>> GetMaxCnnInfo(int flg, List<string> pcsInfo, List<List<Point>> posInfo)
         {
             Dictionary<string, List<Point>> mDict = new Dictionary<string, List<Point>>();
-            int[] result = { flg, 0, 0 };
+            int[] result = { flg, 0, 0 };   //索引0：棋子标志，1：最大相连数量，2：最大相连的方向【- | / \横竖撇捺】
             string part = @flg.ToString() + "+";        //正则表达式
             List<int> count = new List<int>() { };
             List<List<Point>> tmpLstPts = new List<List<Point>>() { };
 
-            //GetPointRoundInfo(chessPadInfo, pt, 4, lineMax, out lstPcsInfo, out lstPosInfo);
-
+            //查找4个方向
             for (int i = 0; i < 4; i++)
             {
                 List<Point> tmpPts = new List<Point>();
@@ -604,7 +595,8 @@ namespace FiveChess
                     tmpLstPts.Add(tmpPts);
                     count.Add(mt.Length);
                 }
-
+                if (count.Count == 0)
+                    continue;
                 result[2] = count.IndexOf(count.Max());
 
                 if ((result[1] = count.Max()) >= 5)
@@ -615,128 +607,45 @@ namespace FiveChess
             }
             mDict.Add(flg.ToString() + result[1].ToString() + result[2].ToString(), tmpLstPts[result[2]]);
             return mDict;
-        } 
-       
-
-        /// <summary>
-        /// 根据输入点和查找范围返回水平方向结果
-        /// </summary>
-        /// <param name="arr">查找范围，[0]：最小，[1]：最大</param>
-        /// <param name="pt">输入点</param>
-        /// <param name="flag">棋子标志，1:己方，2:他方</param>
-        /// <returns>结果数组，[0]：棋子数量，[1]：棋子标志</returns>
-        public int GetHResult(Point pt, int flag)
-        {
-            int[] arry = GetMinMax(pt.X, lineMax,4);
-
-            int result = 0;
-            for (int i = arry[0]; i <= arry[1]; i++)
-            {
-                result = chessPadInfo[pt.Y][i] == flag ? ++result : 0;
-
-                if (result == 5)
-                    break;
-            }
-            return result;
-        }
-
-        /// <summary>
-        /// 根据输入点和查找范围返回垂直方向结果
-        /// </summary>
-        /// <param name="arr">查找范围，[0]：最小，[1]：最大</param>
-        /// <param name="pt">输入点</param>
-        /// <param name="flag">棋子标志，1:己方，2:他方</param>
-        /// <returns>返回结果</returns>
-        public int GetVResult(Point pt, int flag)
-        {
-            int[] arry = GetMinMax(pt.Y, lineMax,4);
-            int result = 0;
-            for (int i = arry[0]; i <= arry[1]; i++)
-            {
-                result = chessPadInfo[i][pt.X] == flag ? ++result : 0;
-
-                if (result == 5)
-                    break;
-            }
-            return result;
-        }
-
-        /// <summary>
-        /// 根据输入点和查找范围返回撇(/)方向结果
-        /// </summary>
-        /// <param name="arr">查找范围，[0]：最小，[1]：最大</param>
-        /// <param name="pt">输入点</param>
-        /// <param name="flag">棋子标志，1:己方，2:他方</param>
-        /// <returns>返回结果</returns>
-        public int GetPResult(Point pt, int flag)
-        {
-            int[] xArr = GetMinMax(pt.X, lineMax,4);
-            int[] yArr = GetMinMax(pt.Y, lineMax,4);
-
-            int vMin = pt.Y - yArr[0] < xArr[1] - pt.X ? pt.Y - yArr[0] : xArr[1] - pt.X ;
-            int vMax = pt.X - xArr[0] < yArr[1] - pt.Y ? pt.X - xArr[0] : yArr[1] - pt.Y;
-
-
-            int result = 0;
-            for (int i = -vMin; i <= vMax; i++)
-            {
-                result = chessPadInfo[pt.Y+i][pt.X-i] == flag ? ++result : 0;
-
-                if (result == 5)
-                    break;
-            }
-            return result;
-        }
-
-        /// <summary>
-        /// 根据输入点和查找范围返回拉(\)方向结果
-        /// </summary>
-        /// <param name="arr">查找范围，[0]：最小，[1]：最大</param>
-        /// <param name="pt">输入点</param>
-        /// <param name="flag">棋子标志，1:己方，2:他方</param>
-        /// <returns>返回结果</returns>
-        public int GetLResult(Point pt, int flag)
-        {
-            int[] xArr = GetMinMax(pt.X, lineMax,4);
-            int[] yArr = GetMinMax(pt.Y, lineMax,4);
-
-            int vMin = pt.Y - yArr[0] < pt.X - xArr[0] ? pt.Y - yArr[0] : pt.X - xArr[0];
-            int vMax = xArr[1] - pt.X < yArr[1] - pt.Y ? xArr[1] - pt.X : yArr[1] - pt.Y;
-
-
-            int result = 0;
-            for (int i = -vMin; i <= vMax; i++)
-            {
-                result = chessPadInfo[pt.Y + i][pt.X + i] == flag ? ++result : 0;
-
-                if (result == 5)
-                    break;
-            }
-            return result;
         }
 
         /// <summary>
         /// 根据输入的值计算可能的最小、最大编号;
         /// </summary>
-        /// <param name="val">输入值</param>
-        /// <param name="count">棋盘最大格子数量</param>
+        /// <param name="inVal">输入值</param>
+        /// <param name="lineCount">棋盘线总数</param>
+        /// <param name="incr">距离落子的范围</param>
         /// <returns>最小、最大编号数组，[0]：最小，[1]：最大</returns>
-        public int[] GetMinMax(int val, int count,int wid)
+        public int[] GetMinMax(int inVal, int lineCount, int incr)
         {
             int[] arr = new int[2];
             //根据输入点计算可能的最小、最大编号;
-            if (val > wid && val < count - wid)
+            if (inVal > incr && inVal < lineCount - incr)
             {
-                arr[0]= val - wid;
-                arr[1] = val + wid;
+                arr[0]= inVal - incr;
+                arr[1] = inVal + incr;
             }
             else
             {
-                arr[0] = val <= wid ? 0 : val - wid;
-                arr[1] = val <= wid ? val + wid : count - 1;
+                arr[0] = inVal <= incr ? 0 : inVal - incr;
+                arr[1] = inVal <= incr ? inVal + incr : lineCount - 1;
             }
             return arr;
         }
+
+        /// <summary>
+        /// 判断输入点是否在棋盘内
+        /// </summary>
+        /// <param name="pt">输入点</param>    
+        /// <param name="lineCount">棋盘线总数</param>
+        /// <returns>在棋盘内返回true，否则返回false</returns>
+        public bool bInPad(Point pt, int lineCount)
+        {
+            if (pt.X >= 0 && pt.X < lineCount && pt.Y >= 0 && pt.Y < lineCount)
+                return true;
+            return false;
+        }
+
 
     }
 }

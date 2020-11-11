@@ -28,7 +28,7 @@ namespace FiveChess
         /// <summary>
         /// 棋子大小
         /// </summary>
-        public static int pcsSize { get { return 16; } set { value = 16; } }
+        public static int pcsSize { get { return 16; } set { } }
         
         /// <summary>
         /// 标志是不是我方棋子
@@ -41,11 +41,10 @@ namespace FiveChess
         public static List<List<Point>> crossArry;
                 
         /// <summary>
-        /// 棋盘中棋子的颜色标志，0:空，1:己方棋子，2:电脑棋子，5:己方最边缘棋子，6:电脑最边缘棋子
+        /// 棋盘中棋子的颜色标志，0:空，1:黑色，2:白色，5:黑色最边缘棋子，6:白色最边缘棋子
         /// </summary>
         public static List<List<int>> pcsFlg;
 
-        
 
         /// <summary>
         /// 棋子在棋盘中的行列编号，x：列编号，y：行编号
@@ -55,9 +54,9 @@ namespace FiveChess
 
         /// <summary>
         /// 初始化棋盘信息
-        /// <param name="count">棋盘线总数</param>
-        /// <param name="space">棋盘线间隔</param>
         /// </summary>
+        /// <param name="count">棋盘线总数</param>
+        /// <param name="space">棋盘线间距</param>
         public static void InitPadInfo(int count, int space)
         {
             lineCount = count;
@@ -85,9 +84,10 @@ namespace FiveChess
         }
 
         /// <summary>
-        /// 把输入点的坐标转换成棋盘中的列和行的编号的点
+        /// 找到离输入点最近的棋盘交叉点并返回列、行编号点
         /// </summary>
-        /// <param name="point">输入坐标点</param>
+        /// <param name="x">输入点x坐标</param>
+        /// <param name="y">输入点y坐标</param>
         /// <returns>返回贴近点在棋盘上的行、列编号</returns>
         public static Point GetRCSeir(int x, int y)
         {
