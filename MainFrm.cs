@@ -125,8 +125,20 @@ namespace FiveChess
             gameMode_cbBox.SelectedIndex = 1;
             gameMode = 1;
             pcsMax = padLineMax * padLineMax;
-            aiRank_cbBox.SelectedIndex = 1;
-            AIRank = 1;
+            aiRank_cbBox.SelectedIndex = 0;
+            AIRank = 0;
+
+            lstView.Columns.Add("序号", 40, HorizontalAlignment.Center);
+            lstView.Columns.Add("步数", 60, HorizontalAlignment.Center);
+            lstView.Columns.Add("颜色", 60, HorizontalAlignment.Center);
+            
+            ListViewItem ivi = new ListViewItem();
+
+            ivi.Text = "1";
+            ivi.SubItems.Add("23");
+            ivi.SubItems.Add("黑子");
+            
+            lstView.Items.Add(ivi);
 
             //myDraw.DrawChessPad(picGrp);
 
@@ -173,6 +185,11 @@ namespace FiveChess
             return b1;
         }
 
+        /// <summary>
+        /// 游戏开始，初始化各种状态数据
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void StartPlaye_Btn_Click(object sender, EventArgs e)
         {
             Chess.InitPadInfo(padLineMax, drawRect.Width / padLineMax - 1);
@@ -233,8 +250,7 @@ namespace FiveChess
                         Point pt = Chess.GetRCSeir(e.X - padMargin, e.Y - padMargin);
                         if (Chess.pcsFlg[pt.Y][pt.X] == 0)      //棋盘有空位
                         {
-
-                            int[] n = gameMode == 0 ? PerVsPer(pt) : PerVsAI(pt);
+                            int[] n = gameMode == 0 ? PerVsPer(pt) : PerVsAI(pt,AIRank);
 
                             if (n.Length > 0 && n[1] >= 5)
                             {
@@ -269,7 +285,7 @@ namespace FiveChess
 
             if (ptLstBlack.Count >= 4 || ptLstWhite.Count >= 4)
             {
-                tArry = mJudge.JudgeWin(pt, flg);
+                tArry = mJudge.JudgeWin(pt, flg,AIRank);
             }
             StatusLabel2.Text = tArry[0].ToString() + " " + tArry[1].ToString() + " " + tArry[2].ToString();
             return tArry;
@@ -280,8 +296,9 @@ namespace FiveChess
         /// </summary>
         /// <param name="pt">输入点</param>
         /// <param name="flg">输入点标志</param>
+        /// <param name="rank">智力等级</param>
         /// <returns></returns>
-        public int[] PerVsAI(Point pt)
+        public int[] PerVsAI(Point pt, int rank)
         {
             int flg;
             int[] tArry = {0,0,0 };
@@ -301,8 +318,8 @@ namespace FiveChess
                 flg = Chess.isMyPcs ? 1 : 2;
                 myDraw.DrawPieces(picGrp, pt, flg);
                 ptLstBlack.Add(pt);
-                int[] arr1 = mJudge.JudgeWin(pt, flg);
-                
+                int[] arr1 = mJudge.JudgeWin(pt, flg, rank);
+
                 if (arr1[1] >= 5)
                 {
                     tArry = arr1;
@@ -314,7 +331,7 @@ namespace FiveChess
                 flg = Chess.isMyPcs ? 1 : 2;
                 myDraw.DrawPieces(picGrp, ReBackPos, flg);
                 ptLstWhite.Add(ReBackPos);                
-                int[] arr2= mJudge.JudgeWin(ReBackPos, flg);
+                int[] arr2= mJudge.JudgeWin(ReBackPos, flg, rank);
                 
                 if (arr2[1] >= 5)
                 {

@@ -50,6 +50,7 @@
             this.ownColor_Btn = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
+            this.lstView = new System.Windows.Forms.ListView();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picBox)).BeginInit();
             this.statusStrip1.SuspendLayout();
@@ -65,7 +66,7 @@
             this.panel1.Controls.Add(this.label1);
             this.panel1.Controls.Add(this.StartPlaye_Btn);
             this.panel1.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.panel1.Location = new System.Drawing.Point(636, 195);
+            this.panel1.Location = new System.Drawing.Point(796, 195);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(123, 408);
             this.panel1.TabIndex = 0;
@@ -123,15 +124,12 @@
             // 
             // picBox
             // 
-            this.picBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.picBox.BackColor = System.Drawing.SystemColors.Control;
             this.picBox.Cursor = System.Windows.Forms.Cursors.Default;
-            this.picBox.Location = new System.Drawing.Point(0, 0);
+            this.picBox.Location = new System.Drawing.Point(164, 0);
             this.picBox.Margin = new System.Windows.Forms.Padding(0);
             this.picBox.Name = "picBox";
-            this.picBox.Size = new System.Drawing.Size(610, 620);
+            this.picBox.Size = new System.Drawing.Size(610, 610);
             this.picBox.TabIndex = 1;
             this.picBox.TabStop = false;
             this.picBox.Paint += new System.Windows.Forms.PaintEventHandler(this.picBox_Paint);
@@ -147,10 +145,10 @@
             this.StatusLabel1,
             this.StatusLabel2,
             this.StatusLabel3});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 602);
+            this.statusStrip1.Location = new System.Drawing.Point(3, 608);
             this.statusStrip1.Margin = new System.Windows.Forms.Padding(0, 0, 0, 3);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(784, 29);
+            this.statusStrip1.Size = new System.Drawing.Size(941, 29);
             this.statusStrip1.SizingGrip = false;
             this.statusStrip1.TabIndex = 2;
             this.statusStrip1.Text = "statusStrip1";
@@ -176,7 +174,7 @@
             this.StatusLabel3.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left;
             this.StatusLabel3.BorderStyle = System.Windows.Forms.Border3DStyle.Sunken;
             this.StatusLabel3.Name = "StatusLabel3";
-            this.StatusLabel3.Size = new System.Drawing.Size(169, 24);
+            this.StatusLabel3.Size = new System.Drawing.Size(329, 24);
             this.StatusLabel3.Spring = true;
             this.StatusLabel3.Text = "toolStripStatusLabel1";
             // 
@@ -194,7 +192,7 @@
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.groupBox1.Location = new System.Drawing.Point(614, 12);
+            this.groupBox1.Location = new System.Drawing.Point(774, 12);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(170, 168);
             this.groupBox1.TabIndex = 3;
@@ -203,7 +201,7 @@
             // 
             // ChsPadColor_Btn
             // 
-            this.ChsPadColor_Btn.BackColor = System.Drawing.Color.OldLace;
+            this.ChsPadColor_Btn.BackColor = System.Drawing.Color.Khaki;
             this.ChsPadColor_Btn.Cursor = System.Windows.Forms.Cursors.Hand;
             this.ChsPadColor_Btn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.ChsPadColor_Btn.Location = new System.Drawing.Point(75, 26);
@@ -261,7 +259,6 @@
             this.aiRank_cbBox.TabIndex = 5;
             this.aiRank_cbBox.Tag = "1";
             this.aiRank_cbBox.Text = "初级";
-            this.aiRank_cbBox.Visible = false;
             this.aiRank_cbBox.SelectedIndexChanged += new System.EventHandler(this.aiRank_cbBox_SelectedIndexChanged);
             // 
             // aiRank_Lab
@@ -272,7 +269,6 @@
             this.aiRank_Lab.Size = new System.Drawing.Size(63, 14);
             this.aiRank_Lab.TabIndex = 4;
             this.aiRank_Lab.Text = "机器智力";
-            this.aiRank_Lab.Visible = false;
             // 
             // cpuColor_Btn
             // 
@@ -319,16 +315,34 @@
             this.label2.TabIndex = 0;
             this.label2.Text = "己方颜色";
             // 
+            // lstView
+            // 
+            this.lstView.BackColor = System.Drawing.SystemColors.Control;
+            this.lstView.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.lstView.Dock = System.Windows.Forms.DockStyle.Left;
+            this.lstView.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.lstView.GridLines = true;
+            this.lstView.HideSelection = false;
+            this.lstView.Location = new System.Drawing.Point(3, 0);
+            this.lstView.Margin = new System.Windows.Forms.Padding(0);
+            this.lstView.Name = "lstView";
+            this.lstView.Size = new System.Drawing.Size(160, 608);
+            this.lstView.TabIndex = 4;
+            this.lstView.UseCompatibleStateImageBehavior = false;
+            this.lstView.View = System.Windows.Forms.View.Details;
+            // 
             // MainFrm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(784, 631);
+            this.ClientSize = new System.Drawing.Size(944, 637);
+            this.Controls.Add(this.lstView);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.picBox);
             this.Controls.Add(this.panel1);
             this.Name = "MainFrm";
+            this.Padding = new System.Windows.Forms.Padding(3, 0, 0, 0);
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "五子棋";
             this.Load += new System.EventHandler(this.MainFrm_Load);
@@ -368,6 +382,7 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.ToolStripStatusLabel StatusLabel3;
         private System.Windows.Forms.ListBox listBox1;
+        private System.Windows.Forms.ListView lstView;
     }
 }
 

@@ -447,24 +447,60 @@ namespace FiveChess
         /// <param name="pt">输入点</param>
         /// <param name="flg">棋子标志</param>        
         /// <returns>返回int[]，[0]棋子标志，[1]连子数量，[2]四个方向之一</returns>
-        public int[] JudgeWin(Point pt, int flg)
+        public int[] JudgeWin(Point pt, int flg ,int rank)
         {
             int[] result={ 0,0,0};
+            switch (rank)
+            {
+                case 0:
+                    {
+                        result = LowLevelAI(pt, flg);
+                        break;
+                    }
+                default:
+                    break;
+            }
 
+            return result;
+        }
+
+        public int[] PrimaryAI(Point pt,int fla)
+        {
+            int[] result = { 0, 0, 0 };
             /// 存储4个方向的棋子信息
-            List<string> lstPcsInfo = new List<string>();            
+            List<string> lstPcsInfo = new List<string>();
             /// 存储4个方向的坐标信息           
             List<List<Point>> lstPosInfo = new List<List<Point>>();
 
             GetPointRoundInfo(chessPadInfo, pt, 4, lineMax, out lstPcsInfo, out lstPosInfo);
-            Dictionary<string,List<Point>> mDict= GetMaxCnnInfo(flg, lstPcsInfo, lstPosInfo);
+
+            return result;
+        }
+
+        /// <summary>
+        /// 低级机器智力
+        /// </summary>
+        /// <param name="pt">输入点</param>
+        /// <param name="flg">输入点标志</param>
+        /// <returns>返回结果</returns>
+        public int[] LowLevelAI(Point pt, int flg)
+        {
+            int[] result = { 0, 0, 0 };
+
+            /// 存储4个方向的棋子信息
+            List<string> lstPcsInfo = new List<string>();
+            /// 存储4个方向的坐标信息           
+            List<List<Point>> lstPosInfo = new List<List<Point>>();
+
+            GetPointRoundInfo(chessPadInfo, pt, 4, lineMax, out lstPcsInfo, out lstPosInfo);
+            Dictionary<string, List<Point>> mDict = GetMaxCnnInfo(flg, lstPcsInfo, lstPosInfo);
             char[] tmpStr = mDict.Keys.FirstOrDefault().ToArray();
-            
-            for(int i = 0; i < tmpStr.Length; i++)
+
+            for (int i = 0; i < tmpStr.Length; i++)
                 result[i] = int.Parse(tmpStr[i].ToString());
 
-            
-            if (result[1]>=5)
+
+            if (result[1] >= 5)
             {
                 return result;
             }
@@ -472,13 +508,12 @@ namespace FiveChess
             {
                 List<Point> pts = mDict.Values.FirstOrDefault();
 
-                UpInfoEvt(GetPcsPos(chessPadInfo,lineMax,pts,result[2]), flg.ToString());
+                UpInfoEvt(GetPcsPos(chessPadInfo, lineMax, pts, result[2]), flg.ToString());
             }
 
 
             return result;
         }
-
         /// <summary>
         /// 得到相连棋子旁边的一个点
         /// </summary>
@@ -569,7 +604,7 @@ namespace FiveChess
         {
             Dictionary<string, List<Point>> mDict = new Dictionary<string, List<Point>>();
             int[] result = { flg, 0, 0 };   //索引0：棋子标志，1：最大相连数量，2：最大相连的方向【- | / \横竖撇捺】
-            string part = @"0+"+flg.ToString() + "+"+"0+";        //正则表达式
+            string part = @flg.ToString() + "+";        //正则表达式
             List<int> count = new List<int>() { };
             List<List<Point>> tmpLstPts = new List<List<Point>>() { };
 
