@@ -85,7 +85,7 @@ namespace FiveChess
 
         private bool isWin = false;
         public List<Point> ptLstBlack = new List<Point>();
-        public List<Point> ptLstWight = new List<Point>();
+        public List<Point> ptLstWhite = new List<Point>();
 
         /// <summary>
         /// 评分后返回的点
@@ -178,7 +178,7 @@ namespace FiveChess
             Chess.InitPadInfo(padLineMax, drawRect.Width / padLineMax - 1);
             isWin = false;
             ptLstBlack.Clear();
-            ptLstWight.Clear();
+            ptLstWhite.Clear();
 
             //pcsColors.Clear();
             pcsColors.Add(Color.Khaki);
@@ -265,9 +265,9 @@ namespace FiveChess
             if (flg == 1)
                 ptLstBlack.Add(pt);
             else
-                ptLstWight.Add(pt);
+                ptLstWhite.Add(pt);
 
-            if (ptLstBlack.Count >= 4 || ptLstWight.Count >= 4)
+            if (ptLstBlack.Count >= 4 || ptLstWhite.Count >= 4)
             {
                 tArry = mJudge.JudgeWin(pt, flg);
             }
@@ -292,9 +292,9 @@ namespace FiveChess
                 ptLstBlack.Add(pt);
 
                 flg = Chess.isMyPcs ? 1 : 2;
-                Point tPt = GetRandPt(pt, padLineMax,Chess.pcsFlg);
+                Point tPt = GetRandPt(pt,padLineMax,Chess.pcsFlg);
                 myDraw.DrawPieces(picGrp, tPt, flg);                
-                ptLstWight.Add(tPt);
+                ptLstWhite.Add(tPt);
             }
             else
             {
@@ -313,7 +313,7 @@ namespace FiveChess
 
                 flg = Chess.isMyPcs ? 1 : 2;
                 myDraw.DrawPieces(picGrp, ReBackPos, flg);
-                ptLstWight.Add(ReBackPos);                
+                ptLstWhite.Add(ReBackPos);                
                 int[] arr2= mJudge.JudgeWin(ReBackPos, flg);
                 
                 if (arr2[1] >= 5)
@@ -330,29 +330,30 @@ namespace FiveChess
         /// </summary>
         /// <param name="pt">输入点</param>
         /// <param name="max">棋盘界限</param>
+        /// <param name="padInfo">棋盘信息</param>
         /// <returns></returns>
-        public Point GetRandPt(Point pt, int max,List<List<int>> padInfo)
+        public Point GetRandPt(Point pt,int max,List<List<int>> padInfo)
         {
             Point tmp = new Point(-1,-1);
-            for (int x = -1; x <=1; x++)
+            for (int incr = 1; incr < max; incr++)
             {
-                for (int y = -1; y <= 1; y++)
+                for (int j = -incr; j <= incr; j++)
                 {
-                    int m = pt.X + x;
-                    int n = pt.Y + y;
-                    //找到的位置不能越界，且不能有其他棋子
-                    if (m >= 0 && m < max && n >= 0 && n < max && padInfo[n][m] == 0)
+                    for (int i = -incr; i <= incr; i++)
                     {
-                        tmp.X = m;
-                        tmp.Y = n;
-                        return tmp; 
+                        int x = pt.X + j;
+                        int y = pt.Y + i;
+                        //找到的位置不能越界，且不能有其他棋子
+                        if (x >= 0 && x < max && y >= 0 && y < max && padInfo[y][x] == 0)
+                        {
+                            tmp.X = x;
+                            tmp.Y = y;
+                            return tmp;
+                        }
                     }
                 }
-            }
-            if (tmp.X==-1)
-            {
-                Random rnd = new Random();               
-                GetRandPt(new Point(rnd.Next(0, max-1), rnd.Next(0, max-1)), max, padInfo);
+                if (tmp.X!=-1)
+                    return tmp;
             }
             return tmp;
         }
@@ -392,23 +393,36 @@ namespace FiveChess
 
         private void Back_Btn_Click(object sender, EventArgs e)
         {
-            int flg = 1;
-            string s = "001011110011";
-            List<string> lstS = new List<string>() { "00101110011", "01101011110011" };
-            string part = @"1+";
-            part=flg.ToString() + "+";
-            for (int i = 0; i < lstS.Count; i++)
-            {
-                MatchCollection match = Regex.Matches(lstS[i], part);
-                Match mt = match[0];
-                foreach (Match item in match)
-                {
-                    if (item.Length > mt.Length)
-                        mt = item;
-                }
-                listBox1.Items.Add(mt.Value);
-            }
-            
+            //int flg = 1;
+            //string s = "001011110011";
+            //List<string> lstS = new List<string>() { "00101110011", "01101011110011" };
+            //string part = @"1+";
+            //part=flg.ToString() + "+";
+            //for (int i = 0; i < lstS.Count; i++)
+            //{
+            //    MatchCollection match = Regex.Matches(lstS[i], part);
+            //    Match mt = match[0];
+            //    foreach (Match item in match)
+            //    {
+            //        if (item.Length > mt.Length)
+            //            mt = item;
+            //    }
+            //    listBox1.Items.Add(mt.Value);
+            //}
+
+            List<int> lst0 = new List<int>() { 1, 1, 1, 1, 1 };
+            List<int> lst1 = new List<int>() { 1, 1, 1, 1, 1 };
+            List<int> lst2 = new List<int>() { 1, 1, 2, 1, 1 };
+            List<int> lst3 = new List<int>() { 1, 1, 1, 1, 0 };
+            List<int> lst4 = new List<int>() { 1, 1, 1, 1, 0 };
+
+            List<List<int>> lstTmp = new List<List<int>>() { lst0, lst1, lst2, lst3, lst4 };
+            Point pt = new Point(2, 2);
+            Point backPt = GetRandPt(pt, 5, lstTmp);
+
+            int m = Chess.Black;
+
+            listBox1.Items.Add(backPt.X.ToString()+"_"+ backPt.Y.ToString()+ Chess.Black.ToString());
         }
 
         private void Cancel_Btn_Click(object sender, EventArgs e)

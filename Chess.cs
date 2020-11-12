@@ -29,7 +29,13 @@ namespace FiveChess
         /// 棋子大小
         /// </summary>
         public static int pcsSize { get { return 16; } set { } }
-        
+
+        public static int None { get { return 0; } }
+
+        public static int Black { get { return 1; } }
+
+        public static int White { get { return 2; } }
+
         /// <summary>
         /// 标志是不是我方棋子
         /// </summary>
@@ -131,7 +137,115 @@ namespace FiveChess
 
             return pt;
         }
+
+        /// <summary>
+        /// 获取落子后在四个方向一定范围内各自的棋子信息和坐标
+        /// </summary>
+        /// <param name="lstPad">棋盘信息</param>
+        /// <param name="pt">输入点</param>
+        /// <param name="incr">距离落子的范围</param>
+        /// <param name="lineCount">棋盘线总数</param>
+        /// <param name="pcsInfo">输出棋子信息</param>
+        /// <param name="posInfo">输出坐标信息</param>
+        public static void GetPointRoundInfo(List<List<int>> lstPad, Point pt, int incr, int lineCount, out List<string> pcsInfo, out List<List<Point>> posInfo)
+        {
+            int[] xArr = GetMinMax(pt.X, lineCount, incr);
+            int[] yArr = GetMinMax(pt.Y, lineCount, incr);
+            int vMin, vMax;
+            List<string> pcsLSt = new List<string>();
+            List<List<Point>> posLst = new List<List<Point>>();
+            for (int t = 1; t <= 4; t++)
+            {
+                string str = null;
+                List<Point> pts = new List<Point>();
+                switch (t)
+                {
+                    case 1:  /// 根据输入点和范围返回水平方向结果
+                        {
+                            vMin = xArr[0];
+                            vMax = xArr[1];
+                            for (int i = vMin; i <= vMax; i++)
+                            {
+                                str += lstPad[pt.Y][i].ToString();
+                                pts.Add(new Point(i, pt.Y));
+                            }
+                            pcsLSt.Add(str);
+                            posLst.Add(pts);
+                            break;
+                        }
+                    case 2:     // 根据输入点和范围返回垂直方向结果
+                        {
+                            vMin = yArr[0];
+                            vMax = yArr[1];
+                            for (int i = vMin; i <= vMax; i++)
+                            {
+                                str += lstPad[i][pt.X].ToString();
+                                pts.Add(new Point(pt.X, i));
+                            }
+                            pcsLSt.Add(str);
+                            posLst.Add(pts);
+                            break;
+                        }
+                    case 3:     // 根据输入点和范围返回撇[/]方向结果
+                        {
+                            vMin = pt.Y - yArr[0] < xArr[1] - pt.X ? pt.Y - yArr[0] : xArr[1] - pt.X;
+                            vMax = pt.X - xArr[0] < yArr[1] - pt.Y ? pt.X - xArr[0] : yArr[1] - pt.Y;
+                            for (int i = -vMin; i <= vMax; i++)
+                            {
+                                str += lstPad[pt.Y + i][pt.X - i].ToString();
+                                pts.Add(new Point(pt.X - i, pt.Y + i));
+                            }
+                            pcsLSt.Add(str);
+                            posLst.Add(pts);
+                            break;
+                        }
+                    case 4:    // 根据输入点和范围返回捺[\]方向结果
+                        {
+                            vMin = pt.Y - yArr[0] < pt.X - xArr[0] ? pt.Y - yArr[0] : pt.X - xArr[0];
+                            vMax = xArr[1] - pt.X < yArr[1] - pt.Y ? xArr[1] - pt.X : yArr[1] - pt.Y;
+                            for (int i = -vMin; i <= vMax; i++)
+                            {
+                                str += lstPad[pt.Y + i][pt.X + i].ToString();
+                                pts.Add(new Point(pt.X + i, pt.Y + i));
+                            }
+                            pcsLSt.Add(str);
+                            posLst.Add(pts);
+                            break;
+                        }
+                    default:
+                        break;
+                }
+            }
+            pcsInfo = pcsLSt;
+            posInfo = posLst;
+        }
+
+        /// <summary>
+        /// 根据输入的值计算可能的最小、最大编号;
+        /// </summary>
+        /// <param name="inVal">输入值</param>
+        /// <param name="lineCount">棋盘线总数</param>
+        /// <param name="incr">距离落子的范围</param>
+        /// <returns>最小、最大编号数组，[0]：最小，[1]：最大</returns>
+        public static int[] GetMinMax(int inVal, int lineCount, int incr)
+        {
+            int[] arr = new int[2];
+            //根据输入点计算可能的最小、最大编号;
+            if (inVal > incr && inVal < lineCount - incr)
+            {
+                arr[0] = inVal - incr;
+                arr[1] = inVal + incr;
+            }
+            else
+            {
+                arr[0] = inVal <= incr ? 0 : inVal - incr;
+                arr[1] = inVal <= incr ? inVal + incr : lineCount - 1;
+            }
+            return arr;
+        }
+
         
+
         public static void SavePcsFlg(Point pt, int flg)
         {
             if (pt.X==0||pt.X==14||pt.Y==0||pt.Y==14 ||

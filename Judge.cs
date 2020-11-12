@@ -569,7 +569,7 @@ namespace FiveChess
         {
             Dictionary<string, List<Point>> mDict = new Dictionary<string, List<Point>>();
             int[] result = { flg, 0, 0 };   //索引0：棋子标志，1：最大相连数量，2：最大相连的方向【- | / \横竖撇捺】
-            string part = @flg.ToString() + "+";        //正则表达式
+            string part = @"0+"+flg.ToString() + "+"+"0+";        //正则表达式
             List<int> count = new List<int>() { };
             List<List<Point>> tmpLstPts = new List<List<Point>>() { };
 
