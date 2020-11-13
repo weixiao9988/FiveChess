@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Linq;
 using System.Security;
@@ -38,91 +39,43 @@ namespace FiveChess
         /// </summary>
         public Dictionary<string, int> TypeScore = new Dictionary<string, int>()
         {
-            ["AAAAA"] = 100,  /*连5型*/
-            ["0AAAA0"] = 90,  /*活4型*/
-            ["0AAAAB"] = 70,  /*冲4型*/
-            ["BAAAA0"] = 70,  /*冲4型*/
-            ["0AAAC"] = 70,  /*冲4型*/
-            ["CAAA0"] = 70,  /*冲4型*/
+            ["AAAAA"] = 100, /*连5型*/
+            ["0AAAA0"] = 90, /*活4型*/
+            ["0AAAA"] = 70, /*冲4型*/
+            ["AAAA0"] = 70, /*冲4型*/
             ["A0AAA"] = 70, /*冲4型*/
             ["AA0AA"] = 70, /*冲4型*/
             ["AAA0A"] = 70, /*冲4型*/
-            ["C0AAA"] = 70, /*冲4型*/
-            ["CA0AA"] = 70, /*冲4型*/
-            ["CAA0A"] = 70, /*冲4型*/
-            ["A0AAC"] = 70, /*冲4型*/
-            ["AA0AC"] = 70, /*冲4型*/
-            ["AAA0C"] = 70, /*冲4型*/
             ["00AAA0"] = 65, /*活3型*/
-            ["0A0AA0"] = 60, /*活3型*/
-            ["0AA0A0"] = 60, /*活3型*/
             ["0AAA00"] = 65, /*活3型*/
-            ["00AAAB"] = 40,  /*眠3型*/
-            ["0A0AAB"] = 40,  /*眠3型*/
-            ["0AA0AB"] = 40,  /*眠3型*/
-            ["0AAA0B"] = 45,  /*眠3型*/
-            ["BAAA00"] = 45,  /*眠3型*/
-            ["BAA0A0"] = 40,  /*眠3型*/
-            ["BA0AA0"] = 40,  /*眠3型*/
-            ["B0AAA0"] = 45,  /*眠3型*/
-            ["00AAC"] = 40,   /*眠3型*/
-            ["0A0AC"] = 40,   /*眠3型*/
-            ["0AA0C"] = 40,   /*眠3型*/
-            ["CAA00"] = 40,   /*眠3型*/
-            ["CA0A0"] = 40,   /*眠3型*/
-            ["C0AA0"] = 40,   /*眠3型*/
-            ["00AAA"] = 42,    /*眠3型*/
-            ["0A0AA"] = 40,    /*眠3型*/
-            ["0AA0A"] = 40,    /*眠3型*/
-            ["0AAA0"] = 42,    /*眠3型*/
-            ["A00AA"] = 40,    /*眠3型*/
-            ["A0A0A"] = 40,    /*眠3型*/
-            ["A0AA0"] = 40,    /*眠3型*/
-            ["AA00A"] = 40,    /*眠3型*/
-            ["AA0A0"] = 40,    /*眠3型*/
-            ["AAA00"] = 42,    /*眠3型*/
-            ["C00AA"] = 40,    /*眠3型*/
-            ["C0A0A"] = 40,    /*眠3型*/            
-            ["CA00A"] = 40,    /*眠3型*/
-            ["AA00C"] = 40,    /*眠3型*/
-            ["A0A0C"] = 40,    /*眠3型*/
-            ["A00AC"] = 40,    /*眠3型*/
+            ["0A0AA0"] = 60, /*活3型*/
+            ["0AA0A0"] = 60, /*活3型*/            
+            ["00AAA"] = 45, /*眠3型*/
+            ["0AAA0"] = 45, /*眠3型*/
+            ["0A0AA"] = 40, /*眠3型*/
+            ["0AA0A"] = 40, /*眠3型*/            
+            ["A0AA0"] = 40, /*眠3型*/
+            ["AA0A0"] = 40, /*眠3型*/
+            ["AAA00"] = 45, /*眠3型*/
+            ["AA00A"] = 40, /*眠3型*/
+            ["A0A0A"] = 40, /*眠3型*/
+            ["A00AA"] = 40, /*眠3型*/
             ["000AA0"] = 35, /*活2型*/
-            ["00A0A0"] = 30, /*活2型*/
-            ["00AA00"] = 35, /*活2型*/
-            ["0A00A0"] = 30, /*活2型*/
-            ["0A0A00"] = 30, /*活2型*/
             ["0AA000"] = 35, /*活2型*/
-            ["000AAB"] = 15,  /*眠2型*/
-            ["00A0AB"] = 10,  /*眠2型*/
-            ["00AA0B"] = 15,  /*眠2型*/
-            ["0A00AB"] = 10,  /*眠2型*/
-            ["0A0A0B"] = 10,  /*眠2型*/
-            ["0AA00B"] = 15,  /*眠2型*/
-            ["B0AA00"] = 15,  /*眠2型*/
-            ["BA0A00"] = 10,  /*眠2型*/
-            ["BAA000"] = 15,  /*眠2型*/
-            ["B0A0A0"] = 10,  /*眠2型*/
-            ["BA00A0"] = 10,  /*眠2型*/
-            ["B00AA0"] = 15,  /*眠2型*/
-            ["000AC"] = 10,   /*眠2型*/
-            ["00A0C"] = 10,   /*眠2型*/
-            ["0A00C"] = 10,   /*眠2型*/
-            ["C0C00"] = 10,   /*眠2型*/
-            ["CA000"] = 10,   /*眠2型*/
-            ["C00A0"] = 10,   /*眠2型*/
-            ["000AA"] = 15,    /*眠2型*/
-            ["00A0A"] = 10,    /*眠2型*/
-            ["00AA0"] = 15,    /*眠2型*/
-            ["0A00A"] = 10,    /*眠2型*/
-            ["0A0A0"] = 10,    /*眠2型*/
-            ["0AA00"] = 15,    /*眠2型*/
-            ["A000A"] = 10,    /*眠2型*/
-            ["A00A0"] = 10,    /*眠2型*/
-            ["A0A00"] = 10,    /*眠2型*/
-            ["AA000"] = 15,    /*眠2型*/
-            ["C000A"] = 10,    /*眠2型*/
-            ["A000C"] = 10    /*眠2型*/
+            ["00AA00"] = 35, /*活2型*/
+            ["00A0A0"] = 30, /*活2型*/            
+            ["0A00A0"] = 30, /*活2型*/
+            ["0A0A00"] = 30, /*活2型*/            
+            ["000AA"] = 15, /*眠2型*/
+            ["00AA0"] = 15, /*眠2型*/
+            ["0AA00"] = 15, /*眠2型*/
+            ["AA000"] = 15, /*眠2型*/
+            ["00A0A"] = 10, /*眠2型*/            
+            ["0A00A"] = 10, /*眠2型*/
+            ["0A0A0"] = 10, /*眠2型*/            
+            ["A00A0"] = 10, /*眠2型*/
+            ["A0A00"] = 10, /*眠2型*/           
+            ["A000A"] = 10 /*眠2型*/
         };
         #endregion
 
@@ -445,7 +398,8 @@ namespace FiveChess
         /// 落子后判断胜负
         /// </summary>
         /// <param name="pt">输入点</param>
-        /// <param name="flg">棋子标志</param>        
+        /// <param name="flg">棋子标志</param>      
+        /// <param name="rank">智力等级</param>      
         /// <returns>返回int[]，[0]棋子标志，[1]连子数量，[2]四个方向之一</returns>
         public int[] JudgeWin(Point pt, int flg ,int rank)
         {
@@ -453,10 +407,11 @@ namespace FiveChess
             switch (rank)
             {
                 case 0:
-                    {
-                        result = LowLevelAI(pt, flg);
-                        break;
-                    }
+                    result = LowLevelAI(pt, flg);
+                    break;
+                case 1:
+                    result = PrimaryAI(pt, flg);
+                    break;
                 default:
                     break;
             }
@@ -464,7 +419,7 @@ namespace FiveChess
             return result;
         }
 
-        public int[] PrimaryAI(Point pt,int fla)
+        public int[] PrimaryAI(Point pt,int flg)
         {
             int[] result = { 0, 0, 0 };
             /// 存储4个方向的棋子信息
@@ -473,6 +428,30 @@ namespace FiveChess
             List<List<Point>> lstPosInfo = new List<List<Point>>();
 
             GetPointRoundInfo(chessPadInfo, pt, 4, lineMax, out lstPcsInfo, out lstPosInfo);
+
+            List<int> score = new List<int>();
+            List<List<Point>> scorePos = new List<List<Point>>();
+
+            //从四个方向的棋子信息中找出符合的棋型，和对应的坐标
+            for (int T = 0; T < lstPcsInfo.Count; T++)
+            {
+                MatchCollection match;
+                string tmpS = null;                
+                List<Point> pts = new List<Point>();
+                foreach (string item in TypeScore.Keys)
+                {                    
+                    tmpS = GetNewStr(item, flg);                    
+                    match = Regex.Matches(lstPcsInfo[T], tmpS);
+                    if (match.Count > 0)
+                    {
+                        score.Add(TypeScore[tmpS]);
+                        for (int i = match[0].Index; i < match[0].Index + match[0].Length; i++)
+                            pts.Add(lstPosInfo[T][i]);
+                        break;
+                    }
+                }
+                scorePos.Add(pts);
+            }
 
             return result;
         }
