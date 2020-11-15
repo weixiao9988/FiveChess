@@ -73,8 +73,8 @@ namespace FiveChess
         private ColorDialog colorDlg = new ColorDialog();
         private List<Color> pcsColors = new List<Color>();
 
-        private List<Point> ptLstBlack = new List<Point>();
-        private List<Point> ptLstWhite = new List<Point>();
+        //private List<Point> blackPtsLst = new List<Point>();
+        //private List<Point> whitePtsLst = new List<Point>();
 
         /// <summary>
         /// 评分后返回的点
@@ -213,8 +213,8 @@ namespace FiveChess
         {
             Chess.InitPadInfo(PadLineMax, drawRect.Width / PadLineMax - 1);
             IsWin = false;
-            ptLstBlack.Clear();
-            ptLstWhite.Clear();
+            Chess.blackPtsLst.Clear();
+            Chess.whitePtsLst.Clear();
 
             //pcsColors.Clear();
             pcsColors.Add(Color.Khaki);
@@ -296,11 +296,11 @@ namespace FiveChess
             myDraw.DrawPieces(picGrp, pt, flg);
             //保存己方和他方的棋子
             if (flg == 1)
-                ptLstBlack.Add(pt);
+                Chess.blackPtsLst.Add(pt);
             else
-                ptLstWhite.Add(pt);
+                Chess.whitePtsLst.Add(pt);
 
-            if (ptLstBlack.Count >= 4 || ptLstWhite.Count >= 4)
+            if (Chess.blackPtsLst.Count >= 4 || Chess.whitePtsLst.Count >= 4)
             {
                 tArry = mJudge.JudgeWin(pt, flg,AIRank);
             }
@@ -319,22 +319,22 @@ namespace FiveChess
         {
             int flg;
             int[] tArry = {0,0,0 };
-            if (ptLstBlack.Count == 0)     //第一个黑子和白子随意落子，不用判断评分
+            if (Chess.blackPtsLst.Count == 0)     //第一个黑子和白子随意落子，不用判断评分
             {
                 flg = Chess.isMyPcs ? 1 : 2;
                 myDraw.DrawPieces(picGrp, pt, flg);
-                ptLstBlack.Add(pt);
+                Chess.blackPtsLst.Add(pt);
 
                 flg = Chess.isMyPcs ? 1 : 2;
                 Point tPt = GetRandPt(pt,PadLineMax,Chess.pcsFlg);
-                myDraw.DrawPieces(picGrp, tPt, flg);                
-                ptLstWhite.Add(tPt);
+                myDraw.DrawPieces(picGrp, tPt, flg);
+                Chess.whitePtsLst.Add(tPt);
             }
             else
             {
                 flg = Chess.isMyPcs ? 1 : 2;
                 myDraw.DrawPieces(picGrp, pt, flg);
-                ptLstBlack.Add(pt);
+                Chess.blackPtsLst.Add(pt);
                 int[] arr1 = mJudge.JudgeWin(pt, flg, rank);
 
                 if (arr1[1] >= 5)
@@ -347,7 +347,7 @@ namespace FiveChess
 
                 flg = Chess.isMyPcs ? 1 : 2;
                 myDraw.DrawPieces(picGrp, ReBackPos, flg);
-                ptLstWhite.Add(ReBackPos);                
+                Chess.whitePtsLst.Add(ReBackPos);                
                 int[] arr2= mJudge.JudgeWin(ReBackPos, flg, rank);
                 
                 if (arr2[1] >= 5)

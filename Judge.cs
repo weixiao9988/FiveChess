@@ -75,7 +75,12 @@ namespace FiveChess
             ["0A0A0"] = 10, /*眠2型*/            
             ["A00A0"] = 10, /*眠2型*/
             ["A0A00"] = 10, /*眠2型*/           
-            ["A000A"] = 10 /*眠2型*/
+            ["A000A"] = 10, /*眠2型*/
+            ["0A000"] = 5, /*活1型*/
+            ["00A00"] = 5, /*活1型*/
+            ["000A0"] = 5, /*活1型*/            
+            ["A0000"] = 0, /*眠2型*/
+            ["0000A"] = 0, /*眠2型*/            
         };
         #endregion
 
@@ -185,7 +190,7 @@ namespace FiveChess
 
             for (int i = 0; i < 4 ; i++)
             {
-                string str = null, str1 = null, tmpS = null;
+                string str = null;
                 List<int> score = new List<int>();
                 
                 foreach (var item in TypeScore.Keys)
@@ -222,7 +227,7 @@ namespace FiveChess
         {
             char[] ch;
             string str1;
-            int n = 0;// lstPcsInfo[m].IndexOf(scStr);
+            
 
             for (int k = 0; k < scStr.Length; k++)
             {
@@ -421,32 +426,38 @@ namespace FiveChess
         public int[] PrimaryAI(Point pt,int flg)
         {
             int[] result = { flg, -1, -1 };
-            /// 存储4个方向的棋子信息
-            List<string> lstPcsInfo;// = new List<string>();
-            /// 存储4个方向的坐标信息           
-            List<List<Point>> lstPosInfo;// = new List<List<Point>>();
-            //得到四个方向一定范围内的棋子信息
-            GetPointRoundInfo(chessPadInfo, pt, 4, lineMax, out lstPcsInfo, out lstPosInfo);
 
-            List<string> pType;// = new List<string>();     //四个方向的棋型
-            List<int> pScore;// = new List<int>();     //四个方向的棋型的得分
-            List<List<Point>> pScorePos;// = new List<List<Point>>();     //四个方向的棋型的坐标
+            List<string> blackPcsType;// = new List<string>();     //四个方向的棋型
+            List<int> blackPcsScore;// = new List<int>();     //四个方向的棋型的得分
+            List<List<Point>> blackPcsScorePos;// = new List<List<Point>>();     //四个方向的棋型的坐标
 
-            GetPcsTypeScorePos(lstPcsInfo, lstPosInfo, flg, TypeScore, out pType, out pScore, out pScorePos);
+            GetPcsTypeScorePos(pt, flg, TypeScore, out blackPcsType, out blackPcsScore, out blackPcsScorePos);
 
+            List<string> whitePcsType;// = new List<string>();     //四个方向的棋型
+            List<int> whitePcsScore;// = new List<int>();     //四个方向的棋型的得分
+            List<List<Point>> whitePcsScorePos;// = new List<List<Point>>();     //四个方向的棋型的坐标
 
-
-            List<int> score = new List<int>();
-            List<List<Point>> scorePos = new List<List<Point>>();
-
-
+            GetPcsTypeScorePos(Chess.whitePtsLst.Last(), 2, TypeScore, out whitePcsType, out whitePcsScore, out whitePcsScorePos);
             
-            if(pScore.Count>0)
-            {
-                List<Point> tmpPts = pScorePos[pScore.IndexOf(pScore.Max())];
-                result[2] = JudgePtsDirect(tmpPts);
-                UpInfoEvt(GetPcsPos(chessPadInfo, lineMax, tmpPts, result[2]), flg.ToString());
-            }
+            string part = @"2+";        //正则表达式
+            string tmpWhiteType = whitePcsType[whitePcsScore.IndexOf(whitePcsScore.Max())];
+            List<Point> tmpWhitePts = whitePcsScorePos[whitePcsScore.IndexOf(whitePcsScore.Max())];
+
+            MatchCollection mc = Regex.Matches(tmpWhiteType, part);
+            List<Point> tWPts = new List<Point>();
+
+            for (int i = mc[0].Index; i < mc[0].Index + mc[0].Length; i++)
+                tWPts.Add(tmpWhitePts[i]);
+
+            Point tpt = GetPcsPos(chessPadInfo, lineMax, tWPts, JudgePtsDirect(tWPts));
+
+            //if (blackPcsScore.Count>0)
+            //{
+            //    List<Point> tmpPts = blackPcsScorePos[blackPcsScore.IndexOf(blackPcsScore.Max())];
+            //    result[2] = JudgePtsDirect(tmpPts);
+            //    UpInfoEvt(tpt, flg.ToString());
+            //}
+            UpInfoEvt(tpt, flg.ToString());
             return result;
         }
 
@@ -498,15 +509,22 @@ namespace FiveChess
         /// <param name="pcsType">返回棋型</param>
         /// <param name="pcsScore">返回棋型得分</param>
         /// <param name="pcsScorePos">返回棋型坐标</param>
-        public void GetPcsTypeScorePos(List<string> pcsInfo,List<List<Point>>pcsPos, int flg, Dictionary<string,int> pcsTypeScore, 
+        public void GetPcsTypeScorePos(Point pt, int flg, Dictionary<string,int> pcsTypeScore, 
             out List<string> pcsType, out List<int> pcsScore, out List<List<Point>> pcsScorePos)
         {
+            /// 存储4个方向的棋子信息
+            List<string> lstPcsInfo;// = new List<string>();
+            /// 存储4个方向的坐标信息           
+            List<List<Point>> lstPosInfo;// = new List<List<Point>>();
+             //得到四个方向一定范围内的棋子信息                                        
+            GetPointRoundInfo(chessPadInfo, pt, 4, lineMax, out lstPcsInfo, out lstPosInfo);
+
             List<string> pType = new List<string>();
             List<int> pScore = new List<int>();
             List<List<Point>> pScorePos = new List<List<Point>>();
             
             //从四个方向的棋子信息中找出符合的棋型，评分和对应的坐标
-            for (int t = 0; t < pcsInfo.Count; t++)
+            for (int t = 0; t < lstPcsInfo.Count; t++)
             {
                 MatchCollection match;
                 string tmpS = null;
@@ -514,11 +532,11 @@ namespace FiveChess
                 foreach (string type in pcsTypeScore.Keys)
                 {
                     tmpS = GetNewStr(type, flg);
-                    match = Regex.Matches(pcsInfo[t], tmpS);
+                    match = Regex.Matches(lstPcsInfo[t], tmpS);
                     if (match.Count>0)
                     {
                         for (int i = match[0].Index; i < match[0].Index + match[0].Length; i++)
-                            pts.Add(pcsPos[t][i]);
+                            pts.Add(lstPosInfo[t][i]);
                         break;
                     }
                 }
@@ -708,18 +726,23 @@ namespace FiveChess
         /// <returns>返回横竖撇捺【-|/\】中的一个</returns>
         public int JudgePtsDirect(List<Point> pts)
         {
-            int direct = 0;
-            int x = pts[1].X - pts[0].X;
-            int y = pts[1].Y - pts[0].Y;
+            int direct;
+            if (pts.Count > 1)
+            {
+                int x = pts[1].X - pts[0].X;
+                int y = pts[1].Y - pts[0].Y;
 
-            if (x > 0 && y == 0)
-                direct = 0;
-            else if (x == 0 & y > 0)
-                direct = 1;
-            else if (x < 0 && y > 0)
-                direct = 2;
+                if (x > 0 && y == 0)
+                    direct = 0;
+                else if (x == 0 & y > 0)
+                    direct = 1;
+                else if (x < 0 && y > 0)
+                    direct = 2;
+                else
+                    direct = 3;
+            }
             else
-                direct = 3;
+                direct = 0;            
 
             return direct;
         }

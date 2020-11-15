@@ -58,6 +58,8 @@ namespace FiveChess
         /// </summary>
         public static Point XYSeir = new Point();
 
+        public static List<Point> blackPtsLst = new List<Point>();
+        public static List<Point> whitePtsLst = new List<Point>();
 
         /// <summary>
         /// 初始化棋盘信息
@@ -72,6 +74,8 @@ namespace FiveChess
             PadWid = (int)((count - 1) * space);
             LineSpace = space;
             isMyPcs = true;
+            blackPtsLst.Clear();
+            whitePtsLst.Clear();
 
             for (int h = 0; h < LineCount; h++)
             {
