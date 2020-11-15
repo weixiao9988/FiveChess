@@ -13,33 +13,33 @@ namespace FiveChess
         /// <summary>
         /// 棋盘线总数
         /// </summary>
-        public static int lineCount { get; set; }
+        public static int LineCount { get; set; }
         
         /// <summary>
         /// 棋盘宽度
         /// </summary>
-        public static int padWid { get; set; }
+        public static int PadWid { get; set; }
         
         /// <summary>
         /// 棋盘线间距
         /// </summary>
-        public static int lineSpace { get; set; }
+        public static int LineSpace { get; set; }
 
         /// <summary>
         /// 棋子大小
         /// </summary>
-        public static int pcsSize { get { return 16; } set { } }
+        public static int PcsSize { get; set; } = 16;
 
-        public static int None { get { return 0; } }
+        public static int None { get; } = 0;
 
-        public static int Black { get { return 1; } }
+        public static int Black { get; } = 1;
 
-        public static int White { get { return 2; } }
+        public static int White { get; } = 2;
 
         /// <summary>
         /// 标志是不是我方棋子
         /// </summary>
-        public static bool isMyPcs = true;
+        public static bool isMyPcs { get; set; } = true;
 
         /// <summary>
         /// 棋盘交叉点坐标数组
@@ -51,6 +51,7 @@ namespace FiveChess
         /// </summary>
         public static List<List<int>> pcsFlg;
 
+        public static List<Color> pcsColors = new List<Color>();
 
         /// <summary>
         /// 棋子在棋盘中的行列编号，x：列编号，y：行编号
@@ -65,22 +66,22 @@ namespace FiveChess
         /// <param name="space">棋盘线间距</param>
         public static void InitPadInfo(int count, int space)
         {
-            lineCount = count;
+            LineCount = count;
             crossArry = new List<List<Point>>();
             pcsFlg = new List<List<int>>();
-            padWid = (int)((count - 1) * space);
-            lineSpace = space;
+            PadWid = (int)((count - 1) * space);
+            LineSpace = space;
             isMyPcs = true;
 
-            for (int h = 0; h < lineCount; h++)
+            for (int h = 0; h < LineCount; h++)
             {
                 List<Point> listPt = new List<Point>();
                 List<int> listInt = new List<int>();
                 Point pt = new Point();
-                for (int i = 0; i < lineCount; i++)
+                for (int i = 0; i < LineCount; i++)
                 {
-                    pt.X = i * lineSpace;
-                    pt.Y = h * lineSpace;
+                    pt.X = i * LineSpace;
+                    pt.Y = h * LineSpace;
                     listPt.Add(pt);
                     listInt.Add(0);
                 }
@@ -99,7 +100,7 @@ namespace FiveChess
         {
             Point pt = new Point();
 
-            for (int i = 0; i < lineCount; i++)
+            for (int i = 0; i < LineCount; i++)
             {
                 //当输入点的x坐标值小于棋盘的某一列的值
                 if (x - (int)crossArry[0][i].X <= 0)
@@ -118,7 +119,7 @@ namespace FiveChess
                 }   
             }
 
-            for (int i = 0; i < lineCount; i++)
+            for (int i = 0; i < LineCount; i++)
             {
                 if (y - (int)crossArry[i][0].Y <= 0)
                 {
@@ -258,8 +259,6 @@ namespace FiveChess
             {
                 pcsFlg[pt.Y][pt.X] = flg;
             }
-
-            
         }
         
     }

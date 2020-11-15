@@ -50,9 +50,9 @@ namespace FiveChess
             for (int i = 0; i < lineCount; i++)
             {
                 //绘制棋盘垂直线                
-                grp.DrawLine(mPen, p0.X + Chess.lineSpace * i, p0.Y, p0.X + Chess.lineSpace * i, p0.Y + Chess.padWid);
+                grp.DrawLine(mPen, p0.X + Chess.LineSpace * i, p0.Y, p0.X + Chess.LineSpace * i, p0.Y + Chess.PadWid);
                 //绘制棋盘水平线                
-                grp.DrawLine(mPen, p0.X , p0.Y + Chess.lineSpace * i, p0.X + Chess.padWid , p0.Y + Chess.lineSpace * i);
+                grp.DrawLine(mPen, p0.X , p0.Y + Chess.LineSpace * i, p0.X + Chess.PadWid , p0.Y + Chess.LineSpace * i);
 
                 grp.FillRectangle(new SolidBrush(Color.BlueViolet), new RectangleF(pp0.X - 7, pp0.Y - 7, 14, 14));
             }
@@ -75,8 +75,8 @@ namespace FiveChess
             if (Chess.pcsFlg[xySeir.Y][ xySeir.X] == 0)
             {
                 grp.FillEllipse(new SolidBrush(pcsColor[nflag]), 
-                    new Rectangle(p0.X + pt.X - Chess.pcsSize, p0.Y + pt.Y - Chess.pcsSize,
-                    Chess.pcsSize * 2, Chess.pcsSize * 2));
+                    new Rectangle(p0.X + pt.X - Chess.PcsSize, p0.Y + pt.Y - Chess.PcsSize,
+                    Chess.PcsSize * 2, Chess.PcsSize * 2));
 
                 Chess.pcsFlg[xySeir.Y][ xySeir.X] = nflag;
                 Chess.isMyPcs = !Chess.isMyPcs;
@@ -84,5 +84,26 @@ namespace FiveChess
             else
                 MessageBox.Show("此点已有棋子！");
         }
+
+        public void DrawAllPieces(Graphics grp, List<Color> colors)
+        {
+            Point pt = new Point();
+            for (int col = 0; col < Chess.pcsFlg.Count; col++)
+            {
+                for (int row = 0; row < Chess.pcsFlg.Count; row++)
+                {
+                    pt.X = Chess.crossArry[col][row].X;
+                    pt.Y = Chess.crossArry[col][row].Y;
+
+                    if (Chess.pcsFlg[col][row]!=0)
+                    {
+                        grp.FillEllipse(new SolidBrush(colors[Chess.pcsFlg[col][row]]),
+                    new Rectangle(p0.X + pt.X - Chess.PcsSize, p0.Y + pt.Y - Chess.PcsSize, Chess.PcsSize * 2, Chess.PcsSize * 2));
+                    } 
+                }
+            } 
+        }
+    
+    
     }
 }

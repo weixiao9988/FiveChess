@@ -310,8 +310,7 @@ namespace FiveChess
             }
             return s;
         }
-       
-       
+              
         /// <summary>
         /// 获取落子后在四个方向一定范围内各自的棋子信息和坐标
         /// </summary>
@@ -421,38 +420,33 @@ namespace FiveChess
 
         public int[] PrimaryAI(Point pt,int flg)
         {
-            int[] result = { 0, 0, 0 };
+            int[] result = { flg, -1, -1 };
             /// 存储4个方向的棋子信息
-            List<string> lstPcsInfo = new List<string>();
+            List<string> lstPcsInfo;// = new List<string>();
             /// 存储4个方向的坐标信息           
-            List<List<Point>> lstPosInfo = new List<List<Point>>();
-
+            List<List<Point>> lstPosInfo;// = new List<List<Point>>();
+            //得到四个方向一定范围内的棋子信息
             GetPointRoundInfo(chessPadInfo, pt, 4, lineMax, out lstPcsInfo, out lstPosInfo);
+
+            List<string> pType;// = new List<string>();     //四个方向的棋型
+            List<int> pScore;// = new List<int>();     //四个方向的棋型的得分
+            List<List<Point>> pScorePos;// = new List<List<Point>>();     //四个方向的棋型的坐标
+
+            GetPcsTypeScorePos(lstPcsInfo, lstPosInfo, flg, TypeScore, out pType, out pScore, out pScorePos);
+
+
 
             List<int> score = new List<int>();
             List<List<Point>> scorePos = new List<List<Point>>();
 
-            //从四个方向的棋子信息中找出符合的棋型，和对应的坐标
-            for (int T = 0; T < lstPcsInfo.Count; T++)
-            {
-                MatchCollection match;
-                string tmpS = null;                
-                List<Point> pts = new List<Point>();
-                foreach (string item in TypeScore.Keys)
-                {                    
-                    tmpS = GetNewStr(item, flg);                    
-                    match = Regex.Matches(lstPcsInfo[T], tmpS);
-                    if (match.Count > 0)
-                    {
-                        score.Add(TypeScore[tmpS]);
-                        for (int i = match[0].Index; i < match[0].Index + match[0].Length; i++)
-                            pts.Add(lstPosInfo[T][i]);
-                        break;
-                    }
-                }
-                scorePos.Add(pts);
-            }
 
+            
+            if(pScore.Count>0)
+            {
+                List<Point> tmpPts = pScorePos[pScore.IndexOf(pScore.Max())];
+                result[2] = JudgePtsDirect(tmpPts);
+                UpInfoEvt(GetPcsPos(chessPadInfo, lineMax, tmpPts, result[2]), flg.ToString());
+            }
             return result;
         }
 
@@ -493,6 +487,53 @@ namespace FiveChess
 
             return result;
         }
+        
+        /// <summary>
+        /// 根据输入的棋子信息获得棋型、棋型评分、棋型坐标
+        /// </summary>
+        /// <param name="pcsInfo">输入的棋子信息</param>
+        /// <param name="pcsPos">输入的棋子信息的坐标</param>
+        /// <param name="flg">棋子标志</param>
+        /// <param name="pcsTypeScore">棋子的评分标准，字典格式</param>
+        /// <param name="pcsType">返回棋型</param>
+        /// <param name="pcsScore">返回棋型得分</param>
+        /// <param name="pcsScorePos">返回棋型坐标</param>
+        public void GetPcsTypeScorePos(List<string> pcsInfo,List<List<Point>>pcsPos, int flg, Dictionary<string,int> pcsTypeScore, 
+            out List<string> pcsType, out List<int> pcsScore, out List<List<Point>> pcsScorePos)
+        {
+            List<string> pType = new List<string>();
+            List<int> pScore = new List<int>();
+            List<List<Point>> pScorePos = new List<List<Point>>();
+            
+            //从四个方向的棋子信息中找出符合的棋型，评分和对应的坐标
+            for (int t = 0; t < pcsInfo.Count; t++)
+            {
+                MatchCollection match;
+                string tmpS = null;
+                List<Point> pts = new List<Point>();
+                foreach (string type in pcsTypeScore.Keys)
+                {
+                    tmpS = GetNewStr(type, flg);
+                    match = Regex.Matches(pcsInfo[t], tmpS);
+                    if (match.Count>0)
+                    {
+                        for (int i = match[0].Index; i < match[0].Index + match[0].Length; i++)
+                            pts.Add(pcsPos[t][i]);
+                        break;
+                    }
+                }
+                if (pts.Count > 0)
+                {
+                    pType.Add(tmpS);
+                    pScore.Add(pcsTypeScore[RestOldStr(tmpS, flg)]);
+                    pScorePos.Add(pts); 
+                }
+            }
+            pcsType = pType;
+            pcsScore = pScore;
+            pcsScorePos = pScorePos;
+        }
+
         /// <summary>
         /// 得到相连棋子旁边的一个点
         /// </summary>
@@ -660,6 +701,28 @@ namespace FiveChess
             return false;
         }
 
+        /// <summary>
+        /// 根据输入的坐标点判断方向
+        /// </summary>
+        /// <param name="pts">坐标点数组</param>
+        /// <returns>返回横竖撇捺【-|/\】中的一个</returns>
+        public int JudgePtsDirect(List<Point> pts)
+        {
+            int direct = 0;
+            int x = pts[1].X - pts[0].X;
+            int y = pts[1].Y - pts[0].Y;
+
+            if (x > 0 && y == 0)
+                direct = 0;
+            else if (x == 0 & y > 0)
+                direct = 1;
+            else if (x < 0 && y > 0)
+                direct = 2;
+            else
+                direct = 3;
+
+            return direct;
+        }
 
     }
 }

@@ -62,35 +62,58 @@ namespace FiveChess
             WHITENESS = 0x00FF0062
         };
         #endregion
-
-        private int padLineMax = 15;
-        private int padMargin = 30;
+                
         private Rectangle drawRect = new Rectangle();
         private Graphics bufGrp, picGrp;
         private MyDraw myDraw;
         private Judge mJudge;
         
         private static Bitmap backBmp ;
-        //自己棋子的坐标点
-        private List<PointF> ownChessArry;
-        //电脑棋子的坐标点
-        private List<PointF> cpuChessArry;
+        
         private ColorDialog colorDlg = new ColorDialog();
         private List<Color> pcsColors = new List<Color>();
-        private int gameMode=0;
-        private int AIRank;
-        
-        private int pcsMax;
-        
 
-        private bool isWin = false;
-        public List<Point> ptLstBlack = new List<Point>();
-        public List<Point> ptLstWhite = new List<Point>();
+        private List<Point> ptLstBlack = new List<Point>();
+        private List<Point> ptLstWhite = new List<Point>();
 
         /// <summary>
         /// 评分后返回的点
         /// </summary>
         private Point ReBackPos = new Point();
+
+        /// <summary>
+        /// 棋盘线的最大值
+        /// </summary>
+        public int PadLineMax { get; set; } = 15;
+
+        /// <summary>
+        /// 棋盘外框周围的空白间隙
+        /// </summary>
+        public int PadMargin { get; set; } = 30;
+
+        /// <summary>
+        /// 游戏模式
+        /// </summary>
+        public int GameMode { get; set; } = 0;
+
+        /// <summary>
+        /// 电脑AI等级
+        /// </summary>
+        public int AIRank { get; set; }
+        
+        /// <summary>
+        /// 棋盘中棋子的最大值
+        /// </summary>
+        public int PcsMax { get; set ; }
+
+        /// <summary>
+        /// 是否胜利
+        /// </summary>
+        public bool IsWin { get; set; } = false;
+
+       
+
+       
 
         public MainFrm()
         {
@@ -105,8 +128,6 @@ namespace FiveChess
             drawRect = picBox.ClientRectangle;
         }
 
-        
-
         private void MainFrm_Load(object sender, EventArgs e)
         {
             //pcsColors.Add(Color.Khaki);
@@ -115,16 +136,14 @@ namespace FiveChess
             pcsColors.Add(cpuColor_Btn.BackColor);
 
             picGrp = picBox.CreateGraphics();
-            myDraw = new MyDraw(drawRect, padLineMax, padMargin, pcsColors);
+            myDraw = new MyDraw(drawRect, PadLineMax, PadMargin, pcsColors);
 
             DrawBackImg();
-
-            ownChessArry = new List<PointF>();
-            cpuChessArry = new List<PointF>();
+            
 
             gameMode_cbBox.SelectedIndex = 1;
-            gameMode = 1;
-            pcsMax = padLineMax * padLineMax;
+            GameMode = 1;
+            PcsMax = PadLineMax * PadLineMax;
             aiRank_cbBox.SelectedIndex = 0;
             AIRank = 0;
 
@@ -192,8 +211,8 @@ namespace FiveChess
         /// <param name="e"></param>
         private void StartPlaye_Btn_Click(object sender, EventArgs e)
         {
-            Chess.InitPadInfo(padLineMax, drawRect.Width / padLineMax - 1);
-            isWin = false;
+            Chess.InitPadInfo(PadLineMax, drawRect.Width / PadLineMax - 1);
+            IsWin = false;
             ptLstBlack.Clear();
             ptLstWhite.Clear();
 
@@ -204,7 +223,7 @@ namespace FiveChess
             pcsColors.Add(cpuColor_Btn.BackColor);
 
             
-            gameMode = gameMode_cbBox.SelectedIndex;  
+            GameMode = gameMode_cbBox.SelectedIndex;  
             AIRank = aiRank_cbBox.SelectedIndex;
 
             DrawBackImg();
@@ -214,10 +233,10 @@ namespace FiveChess
 
         private void picBox_MouseMove(object sender, MouseEventArgs e)
         {
-            float x1 = drawRect.Width / padLineMax - 1;
-            float y1 = drawRect.Width / padLineMax - 1;
-            if ((e.X >= padMargin && e.X <= (int)(x1 * (padLineMax - 1) + padMargin)) &&
-                e.Y >= padMargin && e.Y <= (int)((y1) * (padLineMax - 1) + padMargin))
+            float x1 = drawRect.Width / PadLineMax - 1;
+            float y1 = drawRect.Width / PadLineMax - 1;
+            if ((e.X >= PadMargin && e.X <= (int)(x1 * (PadLineMax - 1) + PadMargin)) &&
+                e.Y >= PadMargin && e.Y <= (int)((y1) * (PadLineMax - 1) + PadMargin))
             {
                 this.Cursor = Cursors.Cross;                
             }
@@ -233,28 +252,26 @@ namespace FiveChess
 
         private void picBox_MouseClick(object sender, MouseEventArgs e)
         {
-            float x1 = drawRect.Width / padLineMax - 1;
-            float y1 = drawRect.Width / padLineMax - 1;
+            float x1 = drawRect.Width / PadLineMax - 1;
+            float y1 = drawRect.Width / PadLineMax - 1;
             //int flg = Chess.isMyPcs ? 1 : 2;
             
 
             if (e.Button==MouseButtons.Left)
             {
-                if ((e.X >= padMargin && e.X <= (int)(x1 * (padLineMax - 1) + padMargin)) &&
-                e.Y >= padMargin && e.Y <= (int)((y1) * (padLineMax - 1) + padMargin))
+                if ((e.X >= PadMargin && e.X <= (int)(x1 * (PadLineMax - 1) + PadMargin)) &&
+                e.Y >= PadMargin && e.Y <= (int)((y1) * (PadLineMax - 1) + PadMargin))
                 {
-                    
-
-                    if (!isWin)
+                    if (!IsWin)
                     {
-                        Point pt = Chess.GetRCSeir(e.X - padMargin, e.Y - padMargin);
+                        Point pt = Chess.GetRCSeir(e.X - PadMargin, e.Y - PadMargin);
                         if (Chess.pcsFlg[pt.Y][pt.X] == 0)      //棋盘有空位
                         {
-                            int[] n = gameMode == 0 ? PerVsPer(pt) : PerVsAI(pt,AIRank);
+                            int[] n = GameMode == 0 ? PerVsPer(pt) : PerVsAI(pt,AIRank);
 
                             if (n.Length > 0 && n[1] >= 5)
                             {
-                                isWin = true;
+                                IsWin = true;
                                 ShowInfoDlg(n[0]);
                                 return;
                             }
@@ -309,7 +326,7 @@ namespace FiveChess
                 ptLstBlack.Add(pt);
 
                 flg = Chess.isMyPcs ? 1 : 2;
-                Point tPt = GetRandPt(pt,padLineMax,Chess.pcsFlg);
+                Point tPt = GetRandPt(pt,PadLineMax,Chess.pcsFlg);
                 myDraw.DrawPieces(picGrp, tPt, flg);                
                 ptLstWhite.Add(tPt);
             }
@@ -326,7 +343,7 @@ namespace FiveChess
                     return tArry;
                 }
 
-                ReBackPos = ReBackPos.X == -1 && ReBackPos.Y == -1 ? GetRandPt(pt, padLineMax, Chess.pcsFlg) : ReBackPos;
+                ReBackPos = ReBackPos.X == -1 && ReBackPos.Y == -1 ? GetRandPt(pt, PadLineMax, Chess.pcsFlg) : ReBackPos;
 
                 flg = Chess.isMyPcs ? 1 : 2;
                 myDraw.DrawPieces(picGrp, ReBackPos, flg);
@@ -398,7 +415,7 @@ namespace FiveChess
 
         private void picBox_Paint(object sender, PaintEventArgs e)
         {
-            //myDraw.DrawChessPad(e.Graphics);
+            myDraw.DrawAllPieces(e.Graphics, pcsColors);
         }
 
         private void UpdatStateBar(Point pt, string str)
@@ -486,20 +503,20 @@ namespace FiveChess
                     {
                         aiRank_Lab.Visible = false;
                         aiRank_cbBox.Visible = false;
-                        pcsMax = padLineMax * padLineMax;
+                        PcsMax = PadLineMax * PadLineMax;
                         break;
                     }
                 case 1:
                     {
                         aiRank_Lab.Visible = true;
                         aiRank_cbBox.Visible = true;
-                        pcsMax = padLineMax * padLineMax / 2;
+                        PcsMax = PadLineMax * PadLineMax / 2;
                         break;
                     }
                 default:
                     break;
             }
-            gameMode = gameMode_cbBox.SelectedIndex;
+            GameMode = gameMode_cbBox.SelectedIndex;
         }
 
         private void aiRank_cbBox_SelectedIndexChanged(object sender, EventArgs e)
