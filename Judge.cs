@@ -76,11 +76,16 @@ namespace FiveChess
             ["A00A0"] = 10, /*眠2型*/
             ["A0A00"] = 10, /*眠2型*/           
             ["A000A"] = 10, /*眠2型*/
-            ["0A000"] = 5, /*活1型*/
-            ["00A00"] = 5, /*活1型*/
-            ["000A0"] = 5, /*活1型*/            
+            ["0000A0"] = 5, /*活2型*/
+            ["000A00"] = 5, /*活2型*/
+            ["00A000"] = 5, /*活2型*/
+            ["0A0000"] = 5, /*活2型*/
+            ["0000A"] = 0, /*眠2型*/
+            ["000A0"] = 0, /*眠2型*/
+            ["00A00"] = 0, /*眠2型*/
+            ["0A000"] = 0, /*眠2型*/
             ["A0000"] = 0, /*眠2型*/
-            ["0000A"] = 0, /*眠2型*/            
+            
         };
         #endregion
 
@@ -179,49 +184,27 @@ namespace FiveChess
             lineMax = arry[0].Count;
         }
 
-        public int[] GetResult(Point pt, int flag)
+        /// <summary>
+        /// 分析棋盘信息
+        /// </summary>
+        /// <param name="pt">输入点</param>
+        /// <param name="flg">棋子标志</param>
+        /// <param name="rank">智力等级</param>
+        public void AnalysePadInfo(Point pt, int flg, int rank)
         {
-            int[] result = new int[2];
-
-            //GetPcsStat(chessPadInfo, pt, 4, lineMax, lstPcsInfo, lstPosInfo);
-            List<int> lstScore = new List<int>();
-            List<Point> lstPts = new List<Point>();
-            SortedDictionary<int, Point> sortDict = new SortedDictionary<int, Point>();
-
-            for (int i = 0; i < 4 ; i++)
+            switch (rank)
             {
-                string str = null;
-                List<int> score = new List<int>();
-                
-                foreach (var item in TypeScore.Keys)
-                {
-                    str = GetNewStr(item, flag);
-                    int n = 0;// lstPcsInfo[i].IndexOf(str);
-                    if (n != -1)
-                    {
-                        if (str == "11111" || str == "22222")
-                        {
-                            result[0] = 5;
-                            result[1] = flag;
-                            return result;
-                        }
-                        else
-                        {
-                            score.Add(TypeScore[item]);
-                            GetPcsScorePos(str, i, flag, lstScore, lstPts);
-                        }                        
-                    }
-                }
+                case 0:
+                    LowLevelAI(pt, flg);
+                    break;
+                case 1:
+                    PrimaryAI(pt, flg);
+                    break;
+                default:
+                    break;
             }
-
-            Point pp=new Point();
-            if (lstPts.Count > 0 && lstScore.Count > 0)
-            {
-                pp = lstPts[lstScore.IndexOf(lstScore.Max())];
-                UpInfoEvt(pp, lstScore.Max().ToString());
-            }
-            return result;
         }
+
 
         public void GetPcsScorePos(string scStr, int m, int flag, List<int> lstScore,List<Point> lstPts)
         {
@@ -266,12 +249,12 @@ namespace FiveChess
         /// 返回对应标志的棋型字符串
         /// </summary>
         /// <param name="str">通用的棋型字符串</param>
-        /// <param name="m">棋子标志</param>
+        /// <param name="flag">棋子标志</param>
         /// <returns>对应棋子的棋型字符串</returns>
-        public string GetNewStr(string str, int m)
+        public string GetNewStr(string str, int flag)
         {
             string s = null;
-            switch (m)
+            switch (flag)
             {
                 case 1:
                     s = str.Replace('A', '1');
@@ -293,12 +276,12 @@ namespace FiveChess
         /// /还原字符串为棋型通用格式
         /// </summary>
         /// <param name="str">标志型的棋型字符串</param>
-        /// <param name="m">棋子标志</param>
+        /// <param name="flag">棋子标志</param>
         /// <returns></returns>
-        public string RestOldStr(string str, int m)
+        public string RestOldStr(string str, int flag)
         {
             string s = null;
-            switch (m)
+            switch (flag)
             {
                 case 1:
                     s = str.Replace('1', 'A');
@@ -402,24 +385,67 @@ namespace FiveChess
         /// 落子后判断胜负
         /// </summary>
         /// <param name="pt">输入点</param>
-        /// <param name="flg">棋子标志</param>      
-        /// <param name="rank">智力等级</param>      
+        /// <param name="flg">棋子标志</param>        
         /// <returns>返回int[]，[0]棋子标志，[1]连子数量，[2]四个方向之一</returns>
-        public int[] JudgeWin(Point pt, int flg ,int rank)
+        public int[] JudgeWin(Point pt, int flg, int incr)
         {
-            int[] result={ 0,0,0};
-            switch (rank)
+            int[] result={ flg,0,0};
+            string part = @flg.ToString() + "+";        //正则表达式
+            int[] xArr = GetMinMax(pt.X, lineMax, incr);
+            int[] yArr = GetMinMax(pt.Y, lineMax, incr);
+            int vMin, vMax;            
+            
+            for (int t = 0; t < 4; t++)
             {
-                case 0:
-                    result = LowLevelAI(pt, flg);
-                    break;
-                case 1:
-                    result = PrimaryAI(pt, flg);
-                    break;
-                default:
-                    break;
+                string str = null;
+                switch (t)
+                {
+                    case 0:  /// 根据输入点和范围返回水平方向结果
+                        {
+                            vMin = xArr[0];
+                            vMax = xArr[1];
+                            for (int i = vMin; i <= vMax; i++)
+                                str += chessPadInfo[pt.Y][i].ToString();
+                            break;
+                        }
+                    case 1:     // 根据输入点和范围返回垂直方向结果
+                        {
+                            vMin = yArr[0];
+                            vMax = yArr[1];
+                            for (int i = vMin; i <= vMax; i++)
+                                str += chessPadInfo[i][pt.X].ToString();
+                            break;
+                        }
+                    case 2:     // 根据输入点和范围返回撇[/]方向结果
+                        {
+                            vMin = pt.Y - yArr[0] < xArr[1] - pt.X ? pt.Y - yArr[0] : xArr[1] - pt.X;
+                            vMax = pt.X - xArr[0] < yArr[1] - pt.Y ? pt.X - xArr[0] : yArr[1] - pt.Y;
+                            for (int i = -vMin; i <= vMax; i++)
+                                str += chessPadInfo[pt.Y + i][pt.X - i].ToString();
+                            break;
+                        }
+                    case 3:    // 根据输入点和范围返回捺[\]方向结果
+                        {
+                            vMin = pt.Y - yArr[0] < pt.X - xArr[0] ? pt.Y - yArr[0] : pt.X - xArr[0];
+                            vMax = xArr[1] - pt.X < yArr[1] - pt.Y ? xArr[1] - pt.X : yArr[1] - pt.Y;
+                            for (int i = -vMin; i <= vMax; i++)
+                                str += chessPadInfo[pt.Y + i][pt.X + i].ToString();
+                            break;
+                        }
+                    default:
+                        break;
+                }
+                MatchCollection match = Regex.Matches(str, part);
+                foreach (Match item in match)
+                {
+                    if (item.Length>=5)
+                    {
+                        result[1] = 5;
+                        result[2] = t;
+                        return result;
+                    }
+                }
             }
-
             return result;
         }
 
@@ -431,9 +457,14 @@ namespace FiveChess
             List<string> blackPcsType;// = new List<string>();     //四个方向的棋型
             List<int> blackPcsScore;// = new List<int>();     //四个方向的棋型的得分
             List<List<Point>> blackPcsScorePos;// = new List<List<Point>>();     //四个方向的棋型的坐标
-
+                        
             GetPcsTypeScorePos(pt, flg, TypeScore, out blackPcsType, out blackPcsScore, out blackPcsScorePos);
-            
+            if (blackPcsScore.Max() >= 100)
+            {
+                result[0] = 1;
+                result[1] = 5;
+                return result;
+            }
             //-----------------------------------------------------------------------------------------------//
             //白色棋子的判断、评分
             List<string> whitePcsType;// = new List<string>();     //四个方向的棋型
@@ -441,51 +472,22 @@ namespace FiveChess
             List<List<Point>> whitePcsScorePos;// = new List<List<Point>>();     //四个方向的棋型的坐标
 
             GetPcsTypeScorePos(Chess.whitePtsLst.Last(), 2, TypeScore, out whitePcsType, out whitePcsScore, out whitePcsScorePos);
+            
             //获得评分最高的棋型及相对应的坐标数组            
             string tmpWhiteType = whitePcsType[whitePcsScore.IndexOf(whitePcsScore.Max())];
             List<Point> tmpWhitePts = whitePcsScorePos[whitePcsScore.IndexOf(whitePcsScore.Max())];
 
-            //在确定的棋型中增加一个棋子，使新棋型得分最高
-            int idx = 0, smax = TypeScore[tmpWhiteType];            
-            for (int i = 0; i < tmpWhiteType.Length; i++)
-            {
-                if (tmpWhiteType[i]=='0')
-                {
-                    StringBuilder tStr = new StringBuilder(tmpWhiteType);
-                    tStr.Replace('0', '2', i, 1);
-                    if (TypeScore[tStr.ToString()] > smax)
-                        idx = i;
-                }
-            }
-            Point tpt = tmpWhitePts[idx];
+            Dictionary<int, Point> dict = GetScoreAndPos(tmpWhiteType, tmpWhitePts, TypeScore, 2);
 
-            ////获得棋型中相连棋子的坐标数组
-            //string part = @"2+";        //正则表达式
-            //MatchCollection mc = Regex.Matches(tmpWhiteType, part);
-            //List<Point> tWPts = new List<Point>();
-            //int idx=0, lmax=0;
-            //for (int i = 0; i < mc.Count; i++)
+            //if (dict.Keys.FirstOrDefault()>=100)
             //{
-            //    if (mc[i].Length > lmax)
-            //    {
-            //        lmax = mc[i].Length;
-            //        idx = i;
-            //    }
+            //    result[0] = 1;
+            //    result[1] = 5;
+            //    return result;
             //}
-            //for (int i = mc[idx].Index; i < mc[idx].Index + mc[idx].Length; i++)
-            //    tWPts.Add(tmpWhitePts[i]);
+            
 
-            //Point tpt = GetPcsPos(chessPadInfo, lineMax, tWPts, JudgePtsDirect(tWPts));
-
-            //if (blackPcsScore.Count>0)
-            //{
-            //    List<Point> tmpPts = blackPcsScorePos[blackPcsScore.IndexOf(blackPcsScore.Max())];
-            //    result[2] = JudgePtsDirect(tmpPts);
-            //    UpInfoEvt(tpt, flg.ToString());
-            //}
-
-
-            UpInfoEvt(tpt, flg.ToString());
+            UpInfoEvt(dict.Values.FirstOrDefault(), flg.ToString());
             return result;
         }
 
@@ -500,9 +502,9 @@ namespace FiveChess
             int[] result = { 0, 0, 0 };
 
             /// 存储4个方向的棋子信息
-            List<string> lstPcsInfo = new List<string>();
+            List<string> lstPcsInfo;// = new List<string>();
             /// 存储4个方向的坐标信息           
-            List<List<Point>> lstPosInfo = new List<List<Point>>();
+            List<List<Point>> lstPosInfo;// = new List<List<Point>>();
 
             GetPointRoundInfo(chessPadInfo, pt, 4, lineMax, out lstPcsInfo, out lstPosInfo);
             Dictionary<string, List<Point>> mDict = GetMaxCnnInfo(flg, lstPcsInfo, lstPosInfo);
@@ -510,8 +512,7 @@ namespace FiveChess
 
             for (int i = 0; i < tmpStr.Length; i++)
                 result[i] = int.Parse(tmpStr[i].ToString());
-
-
+            
             if (result[1] >= 5)
             {
                 return result;
@@ -522,7 +523,6 @@ namespace FiveChess
 
                 UpInfoEvt(GetPcsPos(chessPadInfo, lineMax, pts, result[2]), flg.ToString());
             }
-
 
             return result;
         }
@@ -578,6 +578,31 @@ namespace FiveChess
             pcsType = pType;
             pcsScore = pScore;
             pcsScorePos = pScorePos;
+        }
+
+        public Dictionary<int,Point> GetScoreAndPos(string type, List<Point> pts, Dictionary<string,int> typeScore, int flag)
+        {
+            Dictionary<int, Point> dict = new Dictionary<int, Point>();
+
+            //在确定的棋型中增加一个棋子，使新棋型得分最高
+            int idx = 0, smax = typeScore[RestOldStr(type, 2)];
+            for (int i = 0; i < type.Length; i++)
+            {
+                if (type[i] == '0')
+                {
+                    StringBuilder tStr = new StringBuilder(type);
+                    tStr.Replace('0', '2', i, 1);
+                    string s = RestOldStr(tStr.ToString(), 2);
+                    if (typeScore.ContainsKey(s) && typeScore[s] > smax)
+                    {
+                        smax = typeScore[s];
+                        idx = i;
+                    }
+                }
+            }
+            
+            dict.Add(smax, pts[idx]);
+            return dict;
         }
 
         /// <summary>
