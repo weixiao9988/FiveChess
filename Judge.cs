@@ -427,29 +427,55 @@ namespace FiveChess
         {
             int[] result = { flg, -1, -1 };
 
+            //黑色棋子的判断、评分
             List<string> blackPcsType;// = new List<string>();     //四个方向的棋型
             List<int> blackPcsScore;// = new List<int>();     //四个方向的棋型的得分
             List<List<Point>> blackPcsScorePos;// = new List<List<Point>>();     //四个方向的棋型的坐标
 
             GetPcsTypeScorePos(pt, flg, TypeScore, out blackPcsType, out blackPcsScore, out blackPcsScorePos);
-
+            
+            //-----------------------------------------------------------------------------------------------//
+            //白色棋子的判断、评分
             List<string> whitePcsType;// = new List<string>();     //四个方向的棋型
             List<int> whitePcsScore;// = new List<int>();     //四个方向的棋型的得分
             List<List<Point>> whitePcsScorePos;// = new List<List<Point>>();     //四个方向的棋型的坐标
 
             GetPcsTypeScorePos(Chess.whitePtsLst.Last(), 2, TypeScore, out whitePcsType, out whitePcsScore, out whitePcsScorePos);
-            
-            string part = @"2+";        //正则表达式
+            //获得评分最高的棋型及相对应的坐标数组            
             string tmpWhiteType = whitePcsType[whitePcsScore.IndexOf(whitePcsScore.Max())];
             List<Point> tmpWhitePts = whitePcsScorePos[whitePcsScore.IndexOf(whitePcsScore.Max())];
 
-            MatchCollection mc = Regex.Matches(tmpWhiteType, part);
-            List<Point> tWPts = new List<Point>();
+            //在确定的棋型中增加一个棋子，使新棋型得分最高
+            int idx = 0, smax = TypeScore[tmpWhiteType];            
+            for (int i = 0; i < tmpWhiteType.Length; i++)
+            {
+                if (tmpWhiteType[i]=='0')
+                {
+                    StringBuilder tStr = new StringBuilder(tmpWhiteType);
+                    tStr.Replace('0', '2', i, 1);
+                    if (TypeScore[tStr.ToString()] > smax)
+                        idx = i;
+                }
+            }
+            Point tpt = tmpWhitePts[idx];
 
-            for (int i = mc[0].Index; i < mc[0].Index + mc[0].Length; i++)
-                tWPts.Add(tmpWhitePts[i]);
+            ////获得棋型中相连棋子的坐标数组
+            //string part = @"2+";        //正则表达式
+            //MatchCollection mc = Regex.Matches(tmpWhiteType, part);
+            //List<Point> tWPts = new List<Point>();
+            //int idx=0, lmax=0;
+            //for (int i = 0; i < mc.Count; i++)
+            //{
+            //    if (mc[i].Length > lmax)
+            //    {
+            //        lmax = mc[i].Length;
+            //        idx = i;
+            //    }
+            //}
+            //for (int i = mc[idx].Index; i < mc[idx].Index + mc[idx].Length; i++)
+            //    tWPts.Add(tmpWhitePts[i]);
 
-            Point tpt = GetPcsPos(chessPadInfo, lineMax, tWPts, JudgePtsDirect(tWPts));
+            //Point tpt = GetPcsPos(chessPadInfo, lineMax, tWPts, JudgePtsDirect(tWPts));
 
             //if (blackPcsScore.Count>0)
             //{
@@ -457,6 +483,8 @@ namespace FiveChess
             //    result[2] = JudgePtsDirect(tmpPts);
             //    UpInfoEvt(tpt, flg.ToString());
             //}
+
+
             UpInfoEvt(tpt, flg.ToString());
             return result;
         }
