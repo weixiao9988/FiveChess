@@ -210,7 +210,6 @@ namespace FiveChess
         {
             char[] ch;
             string str1;
-            
 
             for (int k = 0; k < scStr.Length; k++)
             {
@@ -228,17 +227,11 @@ namespace FiveChess
                     if (TypeScore.ContainsKey(str1))
                     {
                         if (lstScore.Count == 0)
-                        {
                             lstScore.Add(TypeScore[str1]);
-                            //lstPts.Add(lstPosInfo[m][n + k]);
-                        }
                         else
                         {
                             if (TypeScore[str1] > lstScore.Max())
-                            {
                                 lstScore.Add(TypeScore[str1]);
-                                //lstPts.Add(lstPosInfo[m][n + k]);
-                            }
                         }
                     }
                 }
@@ -478,15 +471,7 @@ namespace FiveChess
             List<Point> tmpWhitePts = whitePcsScorePos[whitePcsScore.IndexOf(whitePcsScore.Max())];
 
             Dictionary<int, Point> dict = GetScoreAndPos(tmpWhiteType, tmpWhitePts, TypeScore, 2);
-
-            //if (dict.Keys.FirstOrDefault()>=100)
-            //{
-            //    result[0] = 1;
-            //    result[1] = 5;
-            //    return result;
-            //}
             
-
             UpInfoEvt(dict.Values.FirstOrDefault(), flg.ToString());
             return result;
         }
@@ -580,6 +565,14 @@ namespace FiveChess
             pcsScorePos = pScorePos;
         }
 
+        /// <summary>
+        /// 从棋型中找一个能够获得最大评分的坐标点
+        /// </summary>
+        /// <param name="type">棋型</param>
+        /// <param name="pts">棋型对应的坐标点</param>
+        /// <param name="typeScore">棋型评分字典</param>
+        /// <param name="flag">棋子标志</param>
+        /// <returns>返回一个点和此点的评分</returns>
         public Dictionary<int,Point> GetScoreAndPos(string type, List<Point> pts, Dictionary<string,int> typeScore, int flag)
         {
             Dictionary<int, Point> dict = new Dictionary<int, Point>();
