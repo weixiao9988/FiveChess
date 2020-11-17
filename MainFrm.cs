@@ -72,6 +72,7 @@ namespace FiveChess
         
         private ColorDialog colorDlg = new ColorDialog();
         private List<Color> pcsColors = new List<Color>();
+        private int[] result=new int[3];
 
         //private List<Point> blackPtsLst = new List<Point>();
         //private List<Point> whitePtsLst = new List<Point>();
@@ -163,6 +164,8 @@ namespace FiveChess
 
             mJudge = new Judge(Chess.pcsFlg);
             mJudge.UpInfoEvt += this.UpdatStateBar;
+            mJudge.transParAct = (resultArry) => this.result = resultArry;
+
         }
 
         /// <summary>
@@ -226,6 +229,15 @@ namespace FiveChess
             GameMode = gameMode_cbBox.SelectedIndex;  
             AIRank = aiRank_cbBox.SelectedIndex;
 
+            for (int i = 0; i < 3; i++)
+                result[i] = 0;
+
+
+            mJudge = null;
+            
+            mJudge = new Judge(Chess.pcsFlg);
+            mJudge.UpInfoEvt += this.UpdatStateBar;
+
             DrawBackImg();
             picBox.Refresh();
         }
@@ -267,12 +279,15 @@ namespace FiveChess
                         Point pt = Chess.GetRCSeir(e.X - PadMargin, e.Y - PadMargin);
                         if (Chess.pcsFlg[pt.Y][pt.X] == 0)      //棋盘有空位
                         {
-                            int[] n = GameMode == 0 ? PerVsPer(pt) : PerVsAI(pt,AIRank);
+                            if (GameMode == 0)
+                                PerVsPer(pt);
+                            else
+                                PerVsAI(pt, AIRank);
 
-                            if (n.Length > 0 && n[1] >= 5)
+                            if (result.Length > 0 && result[1] >= 5)
                             {
                                 IsWin = true;
-                                ShowInfoDlg(n[0]);
+                                ShowInfoDlg(result[0]);
                                 return;
                             }
                         }                        
@@ -289,10 +304,10 @@ namespace FiveChess
         /// <param name="pt">输入点</param>
         /// <param name="flg">输入点的标志</param>
         /// <returns></returns>
-        public int[] PerVsPer(Point pt)
+        public void PerVsPer(Point pt)
         {
             int flg = Chess.isMyPcs ? 1 : 2;
-            int[] tArry= {0,0,0 } ;
+            
             myDraw.DrawPieces(picGrp, pt, flg);
             //保存己方和他方的棋子
             if (flg == 1)
@@ -302,10 +317,10 @@ namespace FiveChess
 
             if (Chess.blackPtsLst.Count >= 4 || Chess.whitePtsLst.Count >= 4)
             {
-                tArry = mJudge.JudgeWin(pt, flg,AIRank);
+                result = mJudge.JudgeWin(pt, flg, 4);
             }
-            StatusLabel2.Text = tArry[0].ToString() + " " + tArry[1].ToString() + " " + tArry[2].ToString();
-            return tArry;
+            StatusLabel2.Text = result[0].ToString() + " " + result[1].ToString() + " " + result[2].ToString();
+            
         }
 
         /// <summary>
@@ -315,10 +330,10 @@ namespace FiveChess
         /// <param name="flg">输入点标志</param>
         /// <param name="rank">智力等级</param>
         /// <returns></returns>
-        public int[] PerVsAI(Point pt, int rank)
+        public void PerVsAI(Point pt, int rank)
         {
             int flg;
-            int[] tArry = {0,0,0 };
+            
             if (Chess.blackPtsLst.Count == 0)     //第一个黑子和白子随意落子，不用判断评分
             {
                 flg = Chess.isMyPcs ? 1 : 2;
@@ -335,28 +350,24 @@ namespace FiveChess
                 flg = Chess.isMyPcs ? 1 : 2;
                 myDraw.DrawPieces(picGrp, pt, flg);
                 Chess.blackPtsLst.Add(pt);
-                int[] arr1 = mJudge.JudgeWin(pt, flg, rank);
+                result = mJudge.JudgeWin(pt, flg, 4);
 
-                if (arr1[1] >= 5)
-                {
-                    tArry = arr1;
-                    return tArry;
-                }
+                if (result[1] >= 5)
+                    return;
+                                
+                ReBackPos = mJudge.AnalysePadInfo(pt, flg, rank);
 
-                ReBackPos = ReBackPos.X == -1 && ReBackPos.Y == -1 ? GetRandPt(pt, PadLineMax, Chess.pcsFlg) : ReBackPos;
+                if (ReBackPos.X == -1 && ReBackPos.Y == -1)
+                    ReBackPos = GetRandPt(pt, PadLineMax, Chess.pcsFlg);
 
                 flg = Chess.isMyPcs ? 1 : 2;
                 myDraw.DrawPieces(picGrp, ReBackPos, flg);
-                Chess.whitePtsLst.Add(ReBackPos);                
-                int[] arr2= mJudge.JudgeWin(ReBackPos, flg, rank);
-                
-                if (arr2[1] >= 5)
-                {
-                    tArry = arr1;
-                    return tArry;
-                }
-            }
-                return tArry;
+                Chess.whitePtsLst.Add(ReBackPos);
+                result = mJudge.JudgeWin(ReBackPos, flg, 4);
+
+                if (result[1] >= 5)
+                    return;
+            }                
         }
 
         /// <summary>
