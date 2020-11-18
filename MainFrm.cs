@@ -112,6 +112,7 @@ namespace FiveChess
         /// </summary>
         public bool IsWin { get; set; } = false;
 
+        public int PcsCount { get; set; }
        
 
        
@@ -149,16 +150,16 @@ namespace FiveChess
             AIRank = 0;
 
             lstView.Columns.Add("序号", 40, HorizontalAlignment.Center);
-            lstView.Columns.Add("步数", 60, HorizontalAlignment.Center);
+            lstView.Columns.Add("位置", 60, HorizontalAlignment.Center);
             lstView.Columns.Add("颜色", 60, HorizontalAlignment.Center);
             
-            ListViewItem ivi = new ListViewItem();
+            //ListViewItem ivi = new ListViewItem();
 
-            ivi.Text = "1";
-            ivi.SubItems.Add("23");
-            ivi.SubItems.Add("黑子");
+            //ivi.Text = "1";
+            //ivi.SubItems.Add("23");
+            //ivi.SubItems.Add("黑子");
             
-            lstView.Items.Add(ivi);
+            //lstView.Items.Add(ivi);
 
             //myDraw.DrawChessPad(picGrp);
 
@@ -309,6 +310,7 @@ namespace FiveChess
             int flg = Chess.isMyPcs ? 1 : 2;
             
             myDraw.DrawPieces(picGrp, pt, flg);
+            UpdatListView(pt,flg, ++PcsCount);
             //保存己方和他方的棋子
             if (flg == 1)
                 Chess.blackPtsLst.Add(pt);
@@ -333,23 +335,27 @@ namespace FiveChess
         public void PerVsAI(Point pt, int rank)
         {
             int flg;
-            
+           
+
             if (Chess.blackPtsLst.Count == 0)     //第一个黑子和白子随意落子，不用判断评分
             {
                 flg = Chess.isMyPcs ? 1 : 2;
                 myDraw.DrawPieces(picGrp, pt, flg);
                 Chess.blackPtsLst.Add(pt);
+                UpdatListView(pt,flg, ++PcsCount);
 
                 flg = Chess.isMyPcs ? 1 : 2;
                 Point tPt = GetRandPt(pt,PadLineMax,Chess.pcsFlg);
                 myDraw.DrawPieces(picGrp, tPt, flg);
                 Chess.whitePtsLst.Add(tPt);
+                UpdatListView(tPt,flg, ++PcsCount);
             }
             else
             {
                 flg = Chess.isMyPcs ? 1 : 2;
                 myDraw.DrawPieces(picGrp, pt, flg);
                 Chess.blackPtsLst.Add(pt);
+                UpdatListView(pt,flg,++PcsCount);
                 result = mJudge.JudgeWin(pt, flg, 4);
 
                 if (result[1] >= 5)
@@ -363,6 +369,7 @@ namespace FiveChess
                 flg = Chess.isMyPcs ? 1 : 2;
                 myDraw.DrawPieces(picGrp, ReBackPos, flg);
                 Chess.whitePtsLst.Add(ReBackPos);
+                UpdatListView(ReBackPos,flg, ++PcsCount);
                 result = mJudge.JudgeWin(ReBackPos, flg, 4);
 
                 if (result[1] >= 5)
@@ -434,7 +441,17 @@ namespace FiveChess
             ReBackPos = pt;
             StatusLabel1.Text =pt.X.ToString()+"_"+pt.Y.ToString()+"_"+ str;
         }
-        
+
+        private void UpdatListView(Point pt, int flg, int count)
+        {
+            ListViewItem ivi = new ListViewItem();
+            string sColor = flg == 1 ? "黑子" : "白子";
+            ivi.Text = count.ToString();
+            ivi.SubItems.Add(pt.X.ToString()+","+pt.Y.ToString());
+            ivi.SubItems.Add(sColor);
+
+            lstView.Items.Add(ivi);
+        }
 
         private void Back_Btn_Click(object sender, EventArgs e)
         {

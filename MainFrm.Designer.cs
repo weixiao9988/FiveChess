@@ -174,7 +174,7 @@
             this.StatusLabel3.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left;
             this.StatusLabel3.BorderStyle = System.Windows.Forms.Border3DStyle.Sunken;
             this.StatusLabel3.Name = "StatusLabel3";
-            this.StatusLabel3.Size = new System.Drawing.Size(329, 24);
+            this.StatusLabel3.Size = new System.Drawing.Size(326, 24);
             this.StatusLabel3.Spring = true;
             this.StatusLabel3.Text = "toolStripStatusLabel1";
             // 
@@ -201,7 +201,7 @@
             // 
             // ChsPadColor_Btn
             // 
-            this.ChsPadColor_Btn.BackColor = System.Drawing.Color.Khaki;
+            this.ChsPadColor_Btn.BackColor = System.Drawing.Color.OldLace;
             this.ChsPadColor_Btn.Cursor = System.Windows.Forms.Cursors.Hand;
             this.ChsPadColor_Btn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.ChsPadColor_Btn.Location = new System.Drawing.Point(75, 26);
@@ -286,7 +286,7 @@
             // 
             // ownColor_Btn
             // 
-            this.ownColor_Btn.BackColor = System.Drawing.Color.Black;
+            this.ownColor_Btn.BackColor = System.Drawing.Color.DarkGray;
             this.ownColor_Btn.Cursor = System.Windows.Forms.Cursors.Hand;
             this.ownColor_Btn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.ownColor_Btn.Location = new System.Drawing.Point(75, 52);
