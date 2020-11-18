@@ -146,13 +146,13 @@ namespace FiveChess
             gameMode_cbBox.SelectedIndex = 1;
             GameMode = 1;
             PcsMax = PadLineMax * PadLineMax;
-            aiRank_cbBox.SelectedIndex = 0;
-            AIRank = 0;
+            aiRank_cbBox.SelectedIndex = 1;
+            AIRank = 1;
 
             lstView.Columns.Add("序号", 40, HorizontalAlignment.Center);
             lstView.Columns.Add("位置", 60, HorizontalAlignment.Center);
             lstView.Columns.Add("颜色", 60, HorizontalAlignment.Center);
-            
+                        
             //ListViewItem ivi = new ListViewItem();
 
             //ivi.Text = "1";
@@ -229,6 +229,9 @@ namespace FiveChess
             
             GameMode = gameMode_cbBox.SelectedIndex;  
             AIRank = aiRank_cbBox.SelectedIndex;
+
+            lstView.Items.Clear();
+            PcsCount = 0;
 
             for (int i = 0; i < 3; i++)
                 result[i] = 0;
@@ -309,8 +312,8 @@ namespace FiveChess
         {
             int flg = Chess.isMyPcs ? 1 : 2;
             
-            myDraw.DrawPieces(picGrp, pt, flg);
-            UpdatListView(pt,flg, ++PcsCount);
+            myDraw.DrawPieces(picGrp, pt, flg, ++PcsCount);
+            UpdatListView(pt,flg, PcsCount);
             //保存己方和他方的棋子
             if (flg == 1)
                 Chess.blackPtsLst.Add(pt);
@@ -335,27 +338,25 @@ namespace FiveChess
         public void PerVsAI(Point pt, int rank)
         {
             int flg;
-           
-
             if (Chess.blackPtsLst.Count == 0)     //第一个黑子和白子随意落子，不用判断评分
             {
                 flg = Chess.isMyPcs ? 1 : 2;
-                myDraw.DrawPieces(picGrp, pt, flg);
+                myDraw.DrawPieces(picGrp, pt, flg, ++PcsCount);
                 Chess.blackPtsLst.Add(pt);
-                UpdatListView(pt,flg, ++PcsCount);
+                UpdatListView(pt,flg, PcsCount);
 
                 flg = Chess.isMyPcs ? 1 : 2;
                 Point tPt = GetRandPt(pt,PadLineMax,Chess.pcsFlg);
-                myDraw.DrawPieces(picGrp, tPt, flg);
+                myDraw.DrawPieces(picGrp, tPt, flg, ++PcsCount);
                 Chess.whitePtsLst.Add(tPt);
-                UpdatListView(tPt,flg, ++PcsCount);
+                UpdatListView(tPt,flg, PcsCount);
             }
             else
             {
                 flg = Chess.isMyPcs ? 1 : 2;
-                myDraw.DrawPieces(picGrp, pt, flg);
+                myDraw.DrawPieces(picGrp, pt, flg, ++PcsCount);
                 Chess.blackPtsLst.Add(pt);
-                UpdatListView(pt,flg,++PcsCount);
+                UpdatListView(pt, flg, PcsCount);
                 result = mJudge.JudgeWin(pt, flg, 4);
 
                 if (result[1] >= 5)
@@ -367,9 +368,9 @@ namespace FiveChess
                     ReBackPos = GetRandPt(pt, PadLineMax, Chess.pcsFlg);
 
                 flg = Chess.isMyPcs ? 1 : 2;
-                myDraw.DrawPieces(picGrp, ReBackPos, flg);
+                myDraw.DrawPieces(picGrp, ReBackPos, flg, ++PcsCount);
                 Chess.whitePtsLst.Add(ReBackPos);
-                UpdatListView(ReBackPos,flg, ++PcsCount);
+                UpdatListView(ReBackPos,flg, PcsCount);
                 result = mJudge.JudgeWin(ReBackPos, flg, 4);
 
                 if (result[1] >= 5)

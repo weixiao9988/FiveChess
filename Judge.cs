@@ -52,11 +52,11 @@ namespace FiveChess
             ["0AA0A0"] = 60, /*活3型*/            
             ["00AAA"] = 45, /*眠3型*/
             ["0AAA0"] = 45, /*眠3型*/
+            ["AAA00"] = 45, /*眠3型*/
             ["0A0AA"] = 40, /*眠3型*/
             ["0AA0A"] = 40, /*眠3型*/            
             ["A0AA0"] = 40, /*眠3型*/
-            ["AA0A0"] = 40, /*眠3型*/
-            ["AAA00"] = 45, /*眠3型*/
+            ["AA0A0"] = 40, /*眠3型*/            
             ["AA00A"] = 40, /*眠3型*/
             ["A0A0A"] = 40, /*眠3型*/
             ["A00AA"] = 40, /*眠3型*/
@@ -358,21 +358,26 @@ namespace FiveChess
             List<List<Point>> whitePcsScorePos;// = new List<List<Point>>();     //四个方向的棋型的坐标
 
             GetPcsTypeScorePos(Chess.whitePtsLst.Last(), 2, TypeScore, out whitePcsType, out whitePcsScore, out whitePcsScorePos);
-            
-            //获得评分最高的棋型及相对应的坐标数组            
-            string tmpWhiteType = whitePcsType[whitePcsScore.IndexOf(whitePcsScore.Max())];
-            List<Point> tmpWhitePts = whitePcsScorePos[whitePcsScore.IndexOf(whitePcsScore.Max())];
-            //获得最高评分和点
-            Dictionary<int, Point> wDict = GetScoreAndPos(tmpWhiteType, tmpWhitePts, TypeScore, 2);
 
-            GetPcsTypeScorePos(wDict.Values.FirstOrDefault(), 2, TypeScore, out whitePcsType, out whitePcsScore, out whitePcsScorePos);
+            int whiteScore=0;
+            string tmpWhiteType;
+            List<Point> tmpWhitePts = null ;
+            Dictionary<int, Point> wDict=null;
+            if (whitePcsType.Count > 0)
+            {//获得评分最高的棋型及相对应的坐标数组            
+                tmpWhiteType = whitePcsType[whitePcsScore.IndexOf(whitePcsScore.Max())];
+                tmpWhitePts = whitePcsScorePos[whitePcsScore.IndexOf(whitePcsScore.Max())];
+                //获得最高评分和点
+                wDict = GetScoreAndPos(tmpWhiteType, tmpWhitePts, TypeScore, 2);
 
-            //获得最大评分的棋型            
-            tmpWhiteType = whitePcsType[whitePcsScore.IndexOf(whitePcsScore.Max())];
-            //得到棋型的评分
-            int whiteScore = TypeScore[RestOldStr(tmpWhiteType,2)];
+                GetPcsTypeScorePos(wDict.Values.FirstOrDefault(), 2, TypeScore, out whitePcsType, out whitePcsScore, out whitePcsScorePos);
 
-            returnPt = blackScore >= whiteScore ? bDict.Values.FirstOrDefault() : wDict.Values.FirstOrDefault();
+                //获得最大评分的棋型            
+                tmpWhiteType = whitePcsType[whitePcsScore.IndexOf(whitePcsScore.Max())];
+                //得到棋型的评分
+                whiteScore = TypeScore[RestOldStr(tmpWhiteType, 2)];
+            }
+            returnPt = blackScore >= whiteScore|| blackScore>=45|| whitePcsType.Count ==0? bDict.Values.FirstOrDefault() : wDict.Values.FirstOrDefault();
 
             //UpInfoEvt(dict.Values.FirstOrDefault(), flg.ToString());
             

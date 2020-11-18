@@ -201,7 +201,7 @@
             // 
             // ChsPadColor_Btn
             // 
-            this.ChsPadColor_Btn.BackColor = System.Drawing.Color.OldLace;
+            this.ChsPadColor_Btn.BackColor = System.Drawing.Color.Khaki;
             this.ChsPadColor_Btn.Cursor = System.Windows.Forms.Cursors.Hand;
             this.ChsPadColor_Btn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.ChsPadColor_Btn.Location = new System.Drawing.Point(75, 26);
@@ -286,7 +286,7 @@
             // 
             // ownColor_Btn
             // 
-            this.ownColor_Btn.BackColor = System.Drawing.Color.DarkGray;
+            this.ownColor_Btn.BackColor = System.Drawing.Color.Black;
             this.ownColor_Btn.Cursor = System.Windows.Forms.Cursors.Hand;
             this.ownColor_Btn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.ownColor_Btn.Location = new System.Drawing.Point(75, 52);
@@ -317,7 +317,7 @@
             // 
             // lstView
             // 
-            this.lstView.BackColor = System.Drawing.SystemColors.Control;
+            this.lstView.BackColor = System.Drawing.Color.Khaki;
             this.lstView.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.lstView.Dock = System.Windows.Forms.DockStyle.Left;
             this.lstView.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));

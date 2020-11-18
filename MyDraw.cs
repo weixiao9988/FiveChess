@@ -64,9 +64,9 @@ namespace FiveChess
         /// <param name="grp">绘图设备</param>
         /// <param name="xySeir">输入点的行列编号</param>
         /// <param name="nflag">输入点标志，1:为己方颜色标志，2：他方颜色标志</param>
-        public void DrawPieces(Graphics grp,Point xySeir, int nflag)
+        public void DrawPieces(Graphics grp,Point xySeir, int nflag, int count)
         {
-            
+            int index = nflag == 1 ? 2 : 1;
             Point pt = new Point();
             pt.X = Chess.crossArry[xySeir.Y][xySeir.X].X;
             pt.Y = Chess.crossArry[xySeir.Y][xySeir.X].Y;
@@ -78,8 +78,14 @@ namespace FiveChess
                     new Rectangle(p0.X + pt.X - Chess.PcsSize, p0.Y + pt.Y - Chess.PcsSize,
                     Chess.PcsSize * 2, Chess.PcsSize * 2));
 
+                StringFormat strFmt1 = new StringFormat(StringFormatFlags.NoWrap);
+                strFmt1.Alignment = StringAlignment.Center;
+                grp.DrawString(count.ToString(), new Font("微软雅黑", 10,FontStyle.Bold), new SolidBrush(pcsColor[index]), p0.X + pt.X - Chess.PcsSize+16, p0.Y + pt.Y - Chess.PcsSize+7, strFmt1);
+
                 Chess.pcsFlg[xySeir.Y][ xySeir.X] = nflag;
                 Chess.isMyPcs = !Chess.isMyPcs;
+
+
             }
             else
                 MessageBox.Show("此点已有棋子！");
