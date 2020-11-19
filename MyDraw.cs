@@ -84,32 +84,36 @@ namespace FiveChess
 
                 Chess.pcsFlg[xySeir.Y][ xySeir.X] = nflag;
                 Chess.isMyPcs = !Chess.isMyPcs;
-
-
             }
             else
                 MessageBox.Show("此点已有棋子！");
         }
-
-        public void DrawAllPieces(Graphics grp, List<Color> colors)
-        {
-            Point pt = new Point();
-            for (int col = 0; col < Chess.pcsFlg.Count; col++)
-            {
-                for (int row = 0; row < Chess.pcsFlg.Count; row++)
-                {
-                    pt.X = Chess.crossArry[col][row].X;
-                    pt.Y = Chess.crossArry[col][row].Y;
-
-                    if (Chess.pcsFlg[col][row]!=0)
-                    {
-                        grp.FillEllipse(new SolidBrush(colors[Chess.pcsFlg[col][row]]),
-                    new Rectangle(p0.X + pt.X - Chess.PcsSize, p0.Y + pt.Y - Chess.PcsSize, Chess.PcsSize * 2, Chess.PcsSize * 2));
-                    } 
-                }
-            } 
-        }
     
+        /// <summary>
+        /// 绘制棋子和序号标志
+        /// </summary>
+        /// <param name="grp">绘图设备</param>
+        /// <param name="Pcs">棋子坐标数组</param>
+        /// <param name="colors">颜色数组</param>
+        /// <param name="flag">棋子标志</param>
+        public void DrawPcsAndMark(Graphics grp, List<Point> Pcs, List<Color> colors, int flag)
+        {
+            int index = flag == 1 ? 2 : 1;
+            int m = flag - 1 ;
+            int xx, yy;
+            StringFormat strFmt1 = new StringFormat(StringFormatFlags.NoWrap);
+            strFmt1.Alignment = StringAlignment.Center;
+            for (int i = 0; i < Pcs.Count; i++)
+            {
+                xx = Chess.crossArry[Pcs[i].Y][Pcs[i].X].X;
+                yy = Chess.crossArry[Pcs[i].Y][Pcs[i].X].Y;
+
+                grp.FillEllipse(new SolidBrush(colors[flag]),
+                            new Rectangle(p0.X + xx - Chess.PcsSize, p0.Y + yy - Chess.PcsSize, Chess.PcsSize * 2, Chess.PcsSize * 2));
+                
+                grp.DrawString((++m+i).ToString(), new Font("微软雅黑", 10, FontStyle.Bold), new SolidBrush(pcsColor[index]), p0.X + xx - Chess.PcsSize + 16, p0.Y + yy - Chess.PcsSize + 7, strFmt1);
+            }
+        }
     
     }
 }

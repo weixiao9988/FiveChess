@@ -433,8 +433,9 @@ namespace FiveChess
         }
 
         private void picBox_Paint(object sender, PaintEventArgs e)
-        {
-            myDraw.DrawAllPieces(e.Graphics, pcsColors);
+        {            
+            myDraw.DrawPcsAndMark(e.Graphics, Chess.blackPtsLst, pcsColors, 1);
+            myDraw.DrawPcsAndMark(e.Graphics, Chess.whitePtsLst, pcsColors, 2);
         }
 
         private void UpdatStateBar(Point pt, string str)
