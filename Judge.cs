@@ -191,13 +191,13 @@ namespace FiveChess
             int vMin, vMax;
             List<string> pcsLSt = new List<string>();
             List<List<Point>> posLst = new List<List<Point>>();
-            for (int t = 1; t <= 4; t++)
+            for (int t = 0; t < 4; t++)
             {
                 string str = null;
                 List<Point> pts = new List<Point>();
                 switch (t)
                 {
-                    case 1:  /// 根据输入点和范围返回水平方向结果
+                    case 0:  /// 根据输入点和范围返回水平方向结果
                         {
                             vMin = xArr[0];
                             vMax = xArr[1];
@@ -210,7 +210,7 @@ namespace FiveChess
                             posLst.Add(pts);
                             break;
                         }
-                    case 2:     // 根据输入点和范围返回垂直方向结果
+                    case 1:     // 根据输入点和范围返回垂直方向结果
                         {
                             vMin = yArr[0];
                             vMax = yArr[1];
@@ -223,7 +223,7 @@ namespace FiveChess
                             posLst.Add(pts);
                             break;
                         }
-                    case 3:     // 根据输入点和范围返回撇[/]方向结果
+                    case 2:     // 根据输入点和范围返回撇[/]方向结果
                         {
                             vMin = pt.Y - yArr[0] < xArr[1] - pt.X ? pt.Y - yArr[0] : xArr[1] - pt.X;
                             vMax = pt.X - xArr[0] < yArr[1] - pt.Y ? pt.X - xArr[0] : yArr[1] - pt.Y;
@@ -236,7 +236,7 @@ namespace FiveChess
                             posLst.Add(pts);
                             break;
                         }
-                    case 4:    // 根据输入点和范围返回捺[\]方向结果
+                    case 3:    // 根据输入点和范围返回捺[\]方向结果
                         {
                             vMin = pt.Y - yArr[0] < pt.X - xArr[0] ? pt.Y - yArr[0] : pt.X - xArr[0];
                             vMax = xArr[1] - pt.X < yArr[1] - pt.Y ? xArr[1] - pt.X : yArr[1] - pt.Y;
@@ -258,7 +258,7 @@ namespace FiveChess
         }
 
         /// <summary>
-        /// 落子后判断胜负
+        /// 在落子周围四个方向判断胜负
         /// </summary>
         /// <param name="pt">输入点</param>
         /// <param name="flg">棋子标志</param>    
@@ -347,10 +347,11 @@ namespace FiveChess
             //获得评分最高的棋型及相对应的坐标数组            
             string tmpblackType = blackPcsType[blackPcsScore.IndexOf(blackPcsScore.Max())];
             List<Point> tmpblackPts = blackPcsScorePos[blackPcsScore.IndexOf(blackPcsScore.Max())];
-            //获得最高评分和点
+            //获得棋型的评分
+            int blackScore = TypeScore[RestOldStr(tmpblackType, 1)];
+            //在棋型中找一个空位，在此位置落子后新棋型得分最高，返回位置和评分
             Dictionary<int, Point> bDict = GetScoreAndPos(tmpblackType, tmpblackPts, TypeScore, 1);
-            int blackScore = TypeScore[RestOldStr(tmpblackType,1)];
-
+            
             //-----------------------------------------------------------------------------------------------//
             //白色棋子的判断、评分
             List<string> whitePcsType;// = new List<string>();     //四个方向的棋型
@@ -363,21 +364,27 @@ namespace FiveChess
             string tmpWhiteType;
             List<Point> tmpWhitePts = null ;
             Dictionary<int, Point> wDict=null;
-            if (whitePcsType.Count > 0)
-            {//获得评分最高的棋型及相对应的坐标数组            
+
+            if (whitePcsType.Count == 0)
+            {
+                //上回合中白子落点在本回合中不能形成有效棋型，则直接采用黑子的最大评分位置                
+                return bDict.Values.FirstOrDefault();
+            }
+            else
+            {
+                //获得评分最高的棋型及相对应的坐标数组            
                 tmpWhiteType = whitePcsType[whitePcsScore.IndexOf(whitePcsScore.Max())];
                 tmpWhitePts = whitePcsScorePos[whitePcsScore.IndexOf(whitePcsScore.Max())];
-                //获得最高评分和点
+                //在棋型中找一个空位，在此位置落子后新棋型得分最高，返回位置和评分
                 wDict = GetScoreAndPos(tmpWhiteType, tmpWhitePts, TypeScore, 2);
-
                 GetPcsTypeScorePos(wDict.Values.FirstOrDefault(), 2, TypeScore, out whitePcsType, out whitePcsScore, out whitePcsScorePos);
-
                 //获得最大评分的棋型            
                 tmpWhiteType = whitePcsType[whitePcsScore.IndexOf(whitePcsScore.Max())];
                 //得到棋型的评分
                 whiteScore = TypeScore[RestOldStr(tmpWhiteType, 2)];
-            }
-            returnPt = blackScore >= whiteScore|| blackScore>=45|| whitePcsType.Count ==0? bDict.Values.FirstOrDefault() : wDict.Values.FirstOrDefault();
+
+                returnPt = blackScore >= whiteScore || blackScore >= 45 ? bDict.Values.FirstOrDefault() : wDict.Values.FirstOrDefault();
+            }   
 
             //UpInfoEvt(dict.Values.FirstOrDefault(), flg.ToString());
             
@@ -426,7 +433,7 @@ namespace FiveChess
             List<List<Point>> lstPosInfo;// = new List<List<Point>>();
              //得到四个方向一定范围内的棋子信息                                        
             GetPointRoundInfo(chessPadInfo, pt, 4, flg, out lstPcsInfo, out lstPosInfo);
-            ////如果输入的点还未在绘制，则在统计信息时添加
+            ////如果输入的点还未绘制，则在统计信息时添加
             //if (chessPadInfo[pt.Y][pt.X] == 0)
             //{
             //    for (int j = 0; j < lstPosInfo.Count; j++)
@@ -476,7 +483,7 @@ namespace FiveChess
         }
 
         /// <summary>
-        /// 从棋型中找一个能够获得最大评分的坐标点
+        /// 从棋型中找一个空位落子，使得新棋型得分最高
         /// </summary>
         /// <param name="type">棋型</param>
         /// <param name="pts">棋型对应的坐标点</param>
