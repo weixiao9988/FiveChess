@@ -151,7 +151,7 @@ namespace FiveChess
 
             lstView.Columns.Add("序号", 40, HorizontalAlignment.Center);
             lstView.Columns.Add("位置", 60, HorizontalAlignment.Center);
-            lstView.Columns.Add("颜色", 60, HorizontalAlignment.Center);
+            lstView.Columns.Add("颜色", 65, HorizontalAlignment.Center);
                         
             //ListViewItem ivi = new ListViewItem();
 
@@ -503,6 +503,7 @@ namespace FiveChess
                 ChsPadColor_Btn.Text = colorDlg.Color.Name;
             }
             pcsColors[0] = ChsPadColor_Btn.BackColor;
+            lstView.BackColor = ChsPadColor_Btn.BackColor;
         }
 
         private void ownColor_Btn_Click(object sender, EventArgs e)

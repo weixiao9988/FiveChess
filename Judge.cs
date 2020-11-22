@@ -115,6 +115,9 @@ namespace FiveChess
                 case 1:
                     returnPt = PrimaryAI(pt, flg);
                     break;
+                case 2:
+                    returnPt = MiddleAI();
+                    break;
                 default:
                     break;
             }
@@ -333,52 +336,95 @@ namespace FiveChess
             return result;
         }
 
+        public Point MiddleAI()
+        {
+            Point returnPt = new Point() ;
+            //黑色棋子的判断、评分
+            string blackPcsType=null;    //最高得分的棋型
+            int blackPcsScore=0;     //最高得分
+            List<Point> blackPcsScorePos=null;     //最高得分的棋型的坐标
+            bool hasValue;
+            //遍历所有黑子的落点，查找形成的评分最高的棋型
+            for (int i = 0; i < Chess.blackPtsLst.Count; i++)
+            {
+                hasValue = GetPcsTypeScorePos(Chess.blackPtsLst[i], 1, TypeScore, out string rePcsType, out int rePcsScore, out List<Point> rePcsScorePos);
+                if (hasValue&& rePcsScore> blackPcsScore)
+                {
+                    blackPcsScore = rePcsScore;
+                    blackPcsType = rePcsType;
+                    blackPcsScorePos = rePcsScorePos;
+                }
+            }
+            
+            //在棋型中找个要落子的空位，使得新棋型评分最高
+            Dictionary<int, Point> bDict = GetScoreAndPos(blackPcsType, blackPcsScorePos, TypeScore, 1);
+
+            //-----------------------------------------------------------------------------------------------//
+            //白色棋子的判断、评分
+            string whitePcsType=null;     //最高得分的棋型
+            int whitePcsScore=0;     //最高得分
+            List<Point> whitePcsScorePos=null;     //最高得分的棋型的坐标
+
+            Dictionary<string, int> minax = GetPosMinMax(Chess.whitePtsLst);
+            for (int col = minax["yMin"]; col <= minax["yMax"]; col++)
+            {
+                for (int row = minax["xMin"]; row <= minax["xMin"]; row++)
+                {
+                    //获得评分最高的棋型及相对应的坐标数组            
+                    hasValue=GetPcsTypeScorePos(new Point(row,col), 2, TypeScore, out string rePcsType, out int rePcsScore, out List<Point> rePcsScorePos);
+                    if (hasValue && rePcsScore > whitePcsScore)
+                    {
+                        whitePcsScore = rePcsScore;
+                        whitePcsType = rePcsType;
+                        whitePcsScorePos = rePcsScorePos;
+                    }
+                }
+            }
+            //获得最高评分和点
+            Dictionary<int, Point> wDict = GetScoreAndPos(whitePcsType, whitePcsScorePos, TypeScore, 2);
+
+            if (whitePcsScore >= 70)
+                return wDict.Values.FirstOrDefault();
+            else
+                returnPt = blackPcsScore > whitePcsScore || blackPcsScore >= 45 ? bDict.Values.FirstOrDefault() : wDict.Values.FirstOrDefault();
+
+
+            return returnPt;
+        }
         public Point PrimaryAI(Point pt,int flg)
         {
             Point returnPt;// = new Point();
           
             //黑色棋子的判断、评分
-            List<string> blackPcsType;// = new List<string>();     //四个方向的棋型
-            List<int> blackPcsScore;// = new List<int>();     //四个方向的棋型的得分
-            List<List<Point>> blackPcsScorePos;// = new List<List<Point>>();     //四个方向的棋型的坐标
-                        
-            GetPcsTypeScorePos(pt, flg, TypeScore, out blackPcsType, out blackPcsScore, out blackPcsScorePos);
-
+            string blackPcsType;// = new List<string>();     //最高得分的棋型
+            int blackPcsScore;// = new List<int>();     //最高得分
+            List<Point> blackPcsScorePos;// = new List<List<Point>>();     //最高得分的棋型的坐标
             //获得评分最高的棋型及相对应的坐标数组            
-            string tmpblackType = blackPcsType[blackPcsScore.IndexOf(blackPcsScore.Max())];
-            List<Point> tmpblackPts = blackPcsScorePos[blackPcsScore.IndexOf(blackPcsScore.Max())];
-            //获取此棋型的评分
-            int blackScore = TypeScore[RestOldStr(tmpblackType, 1)];
+            GetPcsTypeScorePos(pt, flg, TypeScore, out blackPcsType, out blackPcsScore, out blackPcsScorePos);
+                      
             //在棋型中找个要落子的空位，使得新棋型评分最高
-            Dictionary<int, Point> bDict = GetScoreAndPos(tmpblackType, tmpblackPts, TypeScore, 1);
+            Dictionary<int, Point> bDict = GetScoreAndPos(blackPcsType, blackPcsScorePos, TypeScore, 1);
             
             //-----------------------------------------------------------------------------------------------//
             //白色棋子的判断、评分
-            List<string> whitePcsType;// = new List<string>();     //四个方向的棋型
-            List<int> whitePcsScore;// = new List<int>();     //四个方向的棋型的得分
-            List<List<Point>> whitePcsScorePos;// = new List<List<Point>>();     //四个方向的棋型的坐标
-
-            bool hasRslt= GetPcsTypeScorePos(Chess.whitePtsLst.Last(), 2, TypeScore, out whitePcsType, out whitePcsScore, out whitePcsScorePos);
-
-            int whiteScore;
-            string tmpWhiteType;
-            List<Point> tmpWhitePts;
+            string whitePcsType;// = new List<string>();     //最高得分的棋型
+            int whitePcsScore;// = new List<int>();     //最高得分
+            List<Point> whitePcsScorePos;// = new List<List<Point>>();     //最高得分的棋型的坐标
+            // 获得评分最高的棋型及相对应的坐标数组
+            bool hasRslt = GetPcsTypeScorePos(Chess.whitePtsLst.Last(), 2, TypeScore, out whitePcsType, out whitePcsScore, out whitePcsScorePos);
+                        
             Dictionary<int, Point> wDict;
             if (hasRslt)
             {
-                // 获得评分最高的棋型及相对应的坐标数组
-                tmpWhiteType = whitePcsType[whitePcsScore.IndexOf(whitePcsScore.Max())];
-                tmpWhitePts = whitePcsScorePos[whitePcsScore.IndexOf(whitePcsScore.Max())];
                 //获得最高评分和点
-                wDict = GetScoreAndPos(tmpWhiteType, tmpWhitePts, TypeScore, 2);
-
-                GetPcsTypeScorePos(wDict.Values.FirstOrDefault(), 2, TypeScore, out whitePcsType, out whitePcsScore, out whitePcsScorePos);
-
+                wDict = GetScoreAndPos(whitePcsType, whitePcsScorePos, TypeScore, 2);
                 //获得最大评分的棋型            
-                tmpWhiteType = whitePcsType[whitePcsScore.IndexOf(whitePcsScore.Max())];
-                //得到棋型的评分
-                whiteScore = TypeScore[RestOldStr(tmpWhiteType, 2)];
-                returnPt = blackScore >= whiteScore || blackScore >= 45 ? bDict.Values.FirstOrDefault() : wDict.Values.FirstOrDefault();
+                GetPcsTypeScorePos(wDict.Values.FirstOrDefault(), 2, TypeScore, out whitePcsType, out whitePcsScore, out whitePcsScorePos);
+                              
+                if(whitePcsScore >= 70)
+                    return wDict.Values.FirstOrDefault();
+                else                    
+                    returnPt = blackPcsScore > whitePcsScore || blackPcsScore >= 45 ? bDict.Values.FirstOrDefault() : wDict.Values.FirstOrDefault();
             }
             else
                 return bDict.Values.FirstOrDefault();//上一回合白棋落子后如果没有形成有效的棋型时直接返回黑子坐标
@@ -408,7 +454,7 @@ namespace FiveChess
         }
         
         /// <summary>
-        /// 在输入点周围四个方向获取符合要求的棋型、棋型评分、棋型坐标
+        /// 在输入点周围四个方向获取符合要求的评分最高的棋型、棋型评分、棋型坐标
         /// </summary>
         /// <param name="pcsInfo">输入的棋子信息</param>
         /// <param name="pcsPos">输入的棋子信息的坐标</param>
@@ -418,7 +464,7 @@ namespace FiveChess
         /// <param name="pcsScore">返回棋型得分</param>
         /// <param name="pcsScorePos">返回棋型坐标</param>
         public bool GetPcsTypeScorePos(Point pt, int flg, Dictionary<string,int> pcsTypeScore, 
-            out List<string> pcsType, out List<int> pcsScore, out List<List<Point>> pcsScorePos)
+            out string pcsType, out int pcsScore, out List<Point> pcsScorePos)
         {           
             char tmpChar = flg == 1 ? '1' : '2';
             /// 存储4个方向的棋子信息
@@ -457,11 +503,12 @@ namespace FiveChess
                     pScorePos.Add(pts); 
                 }
             }
-            pcsType = pType;
-            pcsScore = pScore;
-            pcsScorePos = pScorePos;
-
-            return pcsType.Count > 0;
+           
+            pcsScore = pScore.Count > 0 ? pScore[pScore.IndexOf(pScore.Max())] : 0;
+            pcsType = pScore.Count > 0 ? pType[pScore.IndexOf(pScore.Max())] : null;
+            pcsScorePos = pScore.Count > 0 ? pScorePos[pScore.IndexOf(pScore.Max())] : null;
+            
+            return pScore.Count > 0;
         }
 
         /// <summary>
@@ -680,6 +727,26 @@ namespace FiveChess
                 direct = 0;            
 
             return direct;
+        }
+
+        public Dictionary<string,int> GetPosMinMax(List<Point> pts)
+        {
+            Dictionary<string, int> dict = new Dictionary<string, int>();
+            int xMin =pts[0].X, xMax = pts[0].X, yMin = pts[0].Y, yMax = pts[0].Y;
+            foreach (Point pt in pts)
+            {
+                xMin = pt.X < xMin ? pt.X : xMin;
+                xMax = pt.X > xMax ? pt.X : xMax;
+                yMin = pt.Y < yMin ? pt.Y : yMin;
+                yMax = pt.Y> yMax ? pt.Y : yMax;
+            }
+
+            dict.Add("xMin", xMin);
+            dict.Add("xMax", xMax);
+            dict.Add("yMin", yMin);
+            dict.Add("yMax", yMax);
+
+            return dict;
         }
 
     }
