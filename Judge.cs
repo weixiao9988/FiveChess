@@ -124,141 +124,6 @@ namespace FiveChess
             return returnPt;
         }
         
-        /// <summary>
-        /// 返回对应标志的棋型字符串
-        /// </summary>
-        /// <param name="str">通用的棋型字符串</param>
-        /// <param name="flag">棋子标志</param>
-        /// <returns>对应棋子的棋型字符串</returns>
-        public string GetNewStr(string str, int flag)
-        {
-            string s = null;
-            switch (flag)
-            {
-                case 1:
-                    s = str.Replace('A', '1');
-                    s = s.Replace('B', '2');
-                    s = s.Replace('C', '5');
-                    break;
-                case 2:
-                    s = str.Replace('A', '2');
-                    s = s.Replace('B', '1');
-                    s = s.Replace('C', '6');
-                    break;
-                default:
-                    break;
-            }
-            return s;
-        }
-
-        /// <summary>
-        /// /还原字符串为棋型通用格式
-        /// </summary>
-        /// <param name="str">标志型的棋型字符串</param>
-        /// <param name="flag">棋子标志</param>
-        /// <returns></returns>
-        public string RestOldStr(string str, int flag)
-        {
-            string s = null;
-            switch (flag)
-            {
-                case 1:
-                    s = str.Replace('1', 'A');
-                    s = s.Replace('2', 'B');
-                    s = s.Replace('5', 'C');
-                    break;
-                case 2:
-                    s = str.Replace('2', 'A');
-                    s = s.Replace('1', 'B');
-                    s = s.Replace('6', 'C');
-                    break;
-                default:
-                    break;
-            }
-            return s;
-        }
-              
-        /// <summary>
-        /// 落子后在四个方向一定范围内获取棋盘中的棋子信息和坐标
-        /// </summary>
-        /// <param name="lstPad">棋盘信息</param>
-        /// <param name="pt">输入点</param>
-        /// <param name="incr">距离落子的范围</param>
-        /// <param name="flg">棋子标志</param>
-        /// <param name="pcsInfo">输出棋子信息</param>
-        /// <param name="posInfo">输出坐标信息</param>
-        public void GetPointRoundInfo(List<List<int>> lstPad, Point pt, int incr, int flg, out List<string> pcsInfo, out List<List<Point>> posInfo)
-        {
-            int[] xArr = GetMinMax(pt.X, lstPad.Count, incr);
-            int[] yArr = GetMinMax(pt.Y, lstPad.Count, incr);
-            int vMin, vMax;
-            List<string> pcsLSt = new List<string>();
-            List<List<Point>> posLst = new List<List<Point>>();
-            for (int t = 1; t <= 4; t++)
-            {
-                string str = null;
-                List<Point> pts = new List<Point>();
-                switch (t)
-                {
-                    case 1:  /// 根据输入点和范围返回水平方向结果
-                        {
-                            vMin = xArr[0];
-                            vMax = xArr[1];
-                            for (int i = vMin; i <= vMax; i++)
-                            {                                
-                                str = i == pt.X && lstPad[pt.Y][i] == 0 ? str + flg.ToString() : str +lstPad[pt.Y][i].ToString();
-                                pts.Add(new Point(i, pt.Y));
-                            }
-                            pcsLSt.Add(str);
-                            posLst.Add(pts);
-                            break;
-                        }
-                    case 2:     // 根据输入点和范围返回垂直方向结果
-                        {
-                            vMin = yArr[0];
-                            vMax = yArr[1];
-                            for (int i = vMin; i <= vMax; i++)
-                            {
-                                str = i == pt.Y && lstPad[i][pt.X] == 0 ? str + flg.ToString() : str + lstPad[i][pt.X].ToString();
-                                pts.Add(new Point(pt.X, i));
-                            }
-                            pcsLSt.Add(str);
-                            posLst.Add(pts);
-                            break;
-                        }
-                    case 3:     // 根据输入点和范围返回撇[/]方向结果
-                        {
-                            vMin = pt.Y - yArr[0] < xArr[1] - pt.X ? pt.Y - yArr[0] : xArr[1] - pt.X;
-                            vMax = pt.X - xArr[0] < yArr[1] - pt.Y ? pt.X - xArr[0] : yArr[1] - pt.Y;
-                            for (int i = -vMin; i <= vMax; i++)
-                            {
-                                str = i ==0 && lstPad[pt.Y + i][pt.X - i] == 0 ? str + flg.ToString() : str + lstPad[pt.Y + i][pt.X - i].ToString();
-                                pts.Add(new Point(pt.X - i, pt.Y + i));
-                            }
-                            pcsLSt.Add(str);
-                            posLst.Add(pts);
-                            break;
-                        }
-                    case 4:    // 根据输入点和范围返回捺[\]方向结果
-                        {
-                            vMin = pt.Y - yArr[0] < pt.X - xArr[0] ? pt.Y - yArr[0] : pt.X - xArr[0];
-                            vMax = xArr[1] - pt.X < yArr[1] - pt.Y ? xArr[1] - pt.X : yArr[1] - pt.Y;
-                            for (int i = -vMin; i <= vMax; i++)
-                            {
-                                str = i == 0 && lstPad[pt.Y + i][pt.X + i] == 0 ? str + flg.ToString() : str + lstPad[pt.Y + i][pt.X + i].ToString();
-                                pts.Add(new Point(pt.X + i, pt.Y + i));
-                            }
-                            pcsLSt.Add(str);
-                            posLst.Add(pts);
-                            break;
-                        }
-                    default:
-                        break;
-                }
-            }
-            pcsInfo = pcsLSt;
-            posInfo = posLst;
-        }
 
         /// <summary>
         /// 落子后判断胜负
@@ -336,6 +201,10 @@ namespace FiveChess
             return result;
         }
 
+        /// <summary>
+        /// 中级机器智力
+        /// </summary>
+        /// <returns></returns>
         public Point MiddleAI()
         {
             Point returnPt = new Point() ;
@@ -391,6 +260,13 @@ namespace FiveChess
 
             return returnPt;
         }
+
+        /// <summary>
+        /// 初级机器智力
+        /// </summary>
+        /// <param name="pt">输入点</param>
+        /// <param name="flg">输入点标志</param>
+        /// <returns></returns>
         public Point PrimaryAI(Point pt,int flg)
         {
             Point returnPt;// = new Point();
@@ -452,7 +328,89 @@ namespace FiveChess
 
             return returnPt;
         }
-        
+
+        /// <summary>
+        /// 落子后在四个方向一定范围内获取棋盘中的棋子信息和坐标
+        /// </summary>
+        /// <param name="lstPad">棋盘信息</param>
+        /// <param name="pt">输入点</param>
+        /// <param name="incr">距离落子的范围</param>
+        /// <param name="flg">棋子标志</param>
+        /// <param name="pcsInfo">输出棋子信息</param>
+        /// <param name="posInfo">输出坐标信息</param>
+        public void GetPointRoundInfo(List<List<int>> lstPad, Point pt, int incr, int flg, out List<string> pcsInfo, out List<List<Point>> posInfo)
+        {
+            int[] xArr = GetMinMax(pt.X, lstPad.Count, incr);
+            int[] yArr = GetMinMax(pt.Y, lstPad.Count, incr);
+            int vMin, vMax;
+            List<string> pcsLSt = new List<string>();
+            List<List<Point>> posLst = new List<List<Point>>();
+            for (int t = 1; t <= 4; t++)
+            {
+                string str = null;
+                List<Point> pts = new List<Point>();
+                switch (t)
+                {
+                    case 1:  /// 根据输入点和范围返回水平方向结果
+                        {
+                            vMin = xArr[0];
+                            vMax = xArr[1];
+                            for (int i = vMin; i <= vMax; i++)
+                            {
+                                str = i == pt.X && lstPad[pt.Y][i] == 0 ? str + flg.ToString() : str + lstPad[pt.Y][i].ToString();
+                                pts.Add(new Point(i, pt.Y));
+                            }
+                            pcsLSt.Add(str);
+                            posLst.Add(pts);
+                            break;
+                        }
+                    case 2:     // 根据输入点和范围返回垂直方向结果
+                        {
+                            vMin = yArr[0];
+                            vMax = yArr[1];
+                            for (int i = vMin; i <= vMax; i++)
+                            {
+                                str = i == pt.Y && lstPad[i][pt.X] == 0 ? str + flg.ToString() : str + lstPad[i][pt.X].ToString();
+                                pts.Add(new Point(pt.X, i));
+                            }
+                            pcsLSt.Add(str);
+                            posLst.Add(pts);
+                            break;
+                        }
+                    case 3:     // 根据输入点和范围返回撇[/]方向结果
+                        {
+                            vMin = pt.Y - yArr[0] < xArr[1] - pt.X ? pt.Y - yArr[0] : xArr[1] - pt.X;
+                            vMax = pt.X - xArr[0] < yArr[1] - pt.Y ? pt.X - xArr[0] : yArr[1] - pt.Y;
+                            for (int i = -vMin; i <= vMax; i++)
+                            {
+                                str = i == 0 && lstPad[pt.Y + i][pt.X - i] == 0 ? str + flg.ToString() : str + lstPad[pt.Y + i][pt.X - i].ToString();
+                                pts.Add(new Point(pt.X - i, pt.Y + i));
+                            }
+                            pcsLSt.Add(str);
+                            posLst.Add(pts);
+                            break;
+                        }
+                    case 4:    // 根据输入点和范围返回捺[\]方向结果
+                        {
+                            vMin = pt.Y - yArr[0] < pt.X - xArr[0] ? pt.Y - yArr[0] : pt.X - xArr[0];
+                            vMax = xArr[1] - pt.X < yArr[1] - pt.Y ? xArr[1] - pt.X : yArr[1] - pt.Y;
+                            for (int i = -vMin; i <= vMax; i++)
+                            {
+                                str = i == 0 && lstPad[pt.Y + i][pt.X + i] == 0 ? str + flg.ToString() : str + lstPad[pt.Y + i][pt.X + i].ToString();
+                                pts.Add(new Point(pt.X + i, pt.Y + i));
+                            }
+                            pcsLSt.Add(str);
+                            posLst.Add(pts);
+                            break;
+                        }
+                    default:
+                        break;
+                }
+            }
+            pcsInfo = pcsLSt;
+            posInfo = posLst;
+        }
+
         /// <summary>
         /// 在输入点周围四个方向获取符合要求的评分最高的棋型、棋型评分、棋型坐标
         /// </summary>
@@ -665,6 +623,60 @@ namespace FiveChess
         }
 
         /// <summary>
+        /// 返回对应标志的棋型字符串
+        /// </summary>
+        /// <param name="str">通用的棋型字符串</param>
+        /// <param name="flag">棋子标志</param>
+        /// <returns>对应棋子的棋型字符串</returns>
+        public string GetNewStr(string str, int flag)
+        {
+            string s = null;
+            switch (flag)
+            {
+                case 1:
+                    s = str.Replace('A', '1');
+                    s = s.Replace('B', '2');
+                    s = s.Replace('C', '5');
+                    break;
+                case 2:
+                    s = str.Replace('A', '2');
+                    s = s.Replace('B', '1');
+                    s = s.Replace('C', '6');
+                    break;
+                default:
+                    break;
+            }
+            return s;
+        }
+
+        /// <summary>
+        /// /还原字符串为棋型通用格式
+        /// </summary>
+        /// <param name="str">标志型的棋型字符串</param>
+        /// <param name="flag">棋子标志</param>
+        /// <returns></returns>
+        public string RestOldStr(string str, int flag)
+        {
+            string s = null;
+            switch (flag)
+            {
+                case 1:
+                    s = str.Replace('1', 'A');
+                    s = s.Replace('2', 'B');
+                    s = s.Replace('5', 'C');
+                    break;
+                case 2:
+                    s = str.Replace('2', 'A');
+                    s = s.Replace('1', 'B');
+                    s = s.Replace('6', 'C');
+                    break;
+                default:
+                    break;
+            }
+            return s;
+        }
+
+        /// <summary>
         /// 根据输入的值计算可能的最小、最大编号;
         /// </summary>
         /// <param name="inVal">输入值</param>
@@ -729,6 +741,11 @@ namespace FiveChess
             return direct;
         }
 
+        /// <summary>
+        /// 输入一组坐标点，判断点的分布范围
+        /// </summary>
+        /// <param name="pts">坐标点数组</param>
+        /// <returns>返回xy方向的最小和最大值</returns>
         public Dictionary<string,int> GetPosMinMax(List<Point> pts)
         {
             Dictionary<string, int> dict = new Dictionary<string, int>();
