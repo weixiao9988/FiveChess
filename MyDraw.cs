@@ -21,10 +21,14 @@ namespace FiveChess
         
         private List<Color> pcsColor;
 
-        
-
-
         public MyDraw() { }
+        /// <summary>
+        /// 构造函数
+        /// </summary>
+        /// <param name="rect">需要绘图的矩形区域</param>
+        /// <param name="num">棋盘线总数</param>
+        /// <param name="margin">棋盘外框留白间隙</param>
+        /// <param name="colors">绘图所需颜色集合</param>
         public MyDraw(Rectangle rect, int num, int margin, List<Color> colors)
         {
             p0.X = margin;
@@ -39,6 +43,18 @@ namespace FiveChess
             
         }
 
+        public void InitData(Rectangle rc,int count,int margin,List<Color> colors)
+        {
+            p0.X = margin;
+            p0.Y = margin;
+            pd = rc.Width / count - 1;
+            lineCount = count;
+            pp0.X = p0.X + pd * (count - 1) / 2;
+            pp0.Y = pp0.X;
+            pcsColor = colors;
+
+            Chess.InitPadInfo(count, pd);
+        }
         /// <summary>
         /// 绘制棋盘
         /// </summary>
@@ -46,7 +62,8 @@ namespace FiveChess
         public void DrawChessPad(Graphics grp)
         {
             Pen mPen = new Pen(Color.Black, 1);
-
+            grp.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;    // 图形抗锯齿
+            grp.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias; // 文字抗锯齿
             for (int i = 0; i < lineCount; i++)
             {
                 //绘制棋盘垂直线                
@@ -70,9 +87,10 @@ namespace FiveChess
             Point pt = new Point();
             pt.X = Chess.crossArry[xySeir.Y][xySeir.X].X;
             pt.Y = Chess.crossArry[xySeir.Y][xySeir.X].Y;
-            
+            grp.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;    // 图形抗锯齿
+            grp.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias; // 文字抗锯齿
             //判断输入的行、列有没有棋子
-            if (Chess.pcsFlg[xySeir.Y][ xySeir.X] == 0)
+            if (Chess.pcsFlag[xySeir.Y][ xySeir.X] == 0)
             {
                 grp.FillEllipse(new SolidBrush(pcsColor[nflag]), 
                     new Rectangle(p0.X + pt.X - Chess.PcsSize, p0.Y + pt.Y - Chess.PcsSize,
@@ -82,7 +100,7 @@ namespace FiveChess
                 strFmt1.Alignment = StringAlignment.Center;
                 grp.DrawString(count.ToString(), new Font("微软雅黑", 10,FontStyle.Bold), new SolidBrush(pcsColor[index]), p0.X + pt.X - Chess.PcsSize+16, p0.Y + pt.Y - Chess.PcsSize+7, strFmt1);
 
-                Chess.pcsFlg[xySeir.Y][ xySeir.X] = nflag;
+                Chess.pcsFlag[xySeir.Y][ xySeir.X] = nflag;
                 Chess.isMyPcs = !Chess.isMyPcs;
             }
             else
@@ -103,6 +121,8 @@ namespace FiveChess
             int xx, yy;
             StringFormat strFmt1 = new StringFormat(StringFormatFlags.NoWrap);
             strFmt1.Alignment = StringAlignment.Center;
+            grp.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;    // 图形抗锯齿
+            grp.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias; // 文字抗锯齿
             for (int i = 0; i < Pcs.Count; i++)
             {
                 xx = Chess.crossArry[Pcs[i].Y][Pcs[i].X].X;

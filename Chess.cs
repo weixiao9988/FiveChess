@@ -49,7 +49,7 @@ namespace FiveChess
         /// <summary>
         /// 棋盘中棋子的颜色标志，0:空，1:黑色，2:白色，5:黑色最边缘棋子，6:白色最边缘棋子
         /// </summary>
-        public static List<List<int>> pcsFlg;
+        public static List<List<int>> pcsFlag;
 
         public static List<Color> pcsColors = new List<Color>();
 
@@ -70,7 +70,7 @@ namespace FiveChess
         {
             LineCount = count;
             crossArry = new List<List<Point>>();
-            pcsFlg = new List<List<int>>();
+            pcsFlag = new List<List<int>>();
             PadWid = (int)((count - 1) * space);
             LineSpace = space;
             isMyPcs = true;
@@ -90,7 +90,7 @@ namespace FiveChess
                     listInt.Add(0);
                 }
                 crossArry.Add(listPt);
-                pcsFlg.Add(listInt);
+                pcsFlag.Add(listInt);
             }
         }
 
@@ -257,11 +257,11 @@ namespace FiveChess
                 (pt.X==1&&pt.Y==1) || (pt.X == 1 && pt.Y == 13) || 
                 (pt.X == 13 && pt.Y == 1) || (pt.X == 13 && pt.Y == 13))
             {
-                pcsFlg[pt.Y][pt.X] = flg+4;
+                pcsFlag[pt.Y][pt.X] = flg+4;
             }
             else
             {
-                pcsFlg[pt.Y][pt.X] = flg;
+                pcsFlag[pt.Y][pt.X] = flg;
             }
         }
         

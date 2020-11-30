@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.panel1 = new System.Windows.Forms.Panel();
+            this.Btn_panel = new System.Windows.Forms.Panel();
             this.listBox1 = new System.Windows.Forms.ListBox();
             this.Cancel_Btn = new System.Windows.Forms.Button();
             this.Back_Btn = new System.Windows.Forms.Button();
@@ -39,7 +39,7 @@
             this.StatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.StatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
             this.StatusLabel3 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.Set_gBox = new System.Windows.Forms.GroupBox();
             this.ChsPadColor_Btn = new System.Windows.Forms.Button();
             this.label6 = new System.Windows.Forms.Label();
             this.gameMode_cbBox = new System.Windows.Forms.ComboBox();
@@ -51,25 +51,25 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.lstView = new System.Windows.Forms.ListView();
-            this.panel1.SuspendLayout();
+            this.Btn_panel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picBox)).BeginInit();
             this.statusStrip1.SuspendLayout();
-            this.groupBox1.SuspendLayout();
+            this.Set_gBox.SuspendLayout();
             this.SuspendLayout();
             // 
-            // panel1
+            // Btn_panel
             // 
-            this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.panel1.Controls.Add(this.listBox1);
-            this.panel1.Controls.Add(this.Cancel_Btn);
-            this.panel1.Controls.Add(this.Back_Btn);
-            this.panel1.Controls.Add(this.label1);
-            this.panel1.Controls.Add(this.StartPlaye_Btn);
-            this.panel1.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.panel1.Location = new System.Drawing.Point(801, 195);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(123, 408);
-            this.panel1.TabIndex = 0;
+            this.Btn_panel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.Btn_panel.Controls.Add(this.listBox1);
+            this.Btn_panel.Controls.Add(this.Cancel_Btn);
+            this.Btn_panel.Controls.Add(this.Back_Btn);
+            this.Btn_panel.Controls.Add(this.label1);
+            this.Btn_panel.Controls.Add(this.StartPlaye_Btn);
+            this.Btn_panel.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.Btn_panel.Location = new System.Drawing.Point(801, 195);
+            this.Btn_panel.Name = "Btn_panel";
+            this.Btn_panel.Size = new System.Drawing.Size(123, 408);
+            this.Btn_panel.TabIndex = 0;
             // 
             // listBox1
             // 
@@ -174,30 +174,30 @@
             this.StatusLabel3.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left;
             this.StatusLabel3.BorderStyle = System.Windows.Forms.Border3DStyle.Sunken;
             this.StatusLabel3.Name = "StatusLabel3";
-            this.StatusLabel3.Size = new System.Drawing.Size(326, 24);
+            this.StatusLabel3.Size = new System.Drawing.Size(331, 24);
             this.StatusLabel3.Spring = true;
             this.StatusLabel3.Text = "toolStripStatusLabel1";
             // 
-            // groupBox1
+            // Set_gBox
             // 
-            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox1.Controls.Add(this.ChsPadColor_Btn);
-            this.groupBox1.Controls.Add(this.label6);
-            this.groupBox1.Controls.Add(this.gameMode_cbBox);
-            this.groupBox1.Controls.Add(this.label5);
-            this.groupBox1.Controls.Add(this.aiRank_cbBox);
-            this.groupBox1.Controls.Add(this.aiRank_Lab);
-            this.groupBox1.Controls.Add(this.cpuColor_Btn);
-            this.groupBox1.Controls.Add(this.ownColor_Btn);
-            this.groupBox1.Controls.Add(this.label3);
-            this.groupBox1.Controls.Add(this.label2);
-            this.groupBox1.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.groupBox1.Location = new System.Drawing.Point(785, 12);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(170, 168);
-            this.groupBox1.TabIndex = 3;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "设置";
+            this.Set_gBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.Set_gBox.Controls.Add(this.ChsPadColor_Btn);
+            this.Set_gBox.Controls.Add(this.label6);
+            this.Set_gBox.Controls.Add(this.gameMode_cbBox);
+            this.Set_gBox.Controls.Add(this.label5);
+            this.Set_gBox.Controls.Add(this.aiRank_cbBox);
+            this.Set_gBox.Controls.Add(this.aiRank_Lab);
+            this.Set_gBox.Controls.Add(this.cpuColor_Btn);
+            this.Set_gBox.Controls.Add(this.ownColor_Btn);
+            this.Set_gBox.Controls.Add(this.label3);
+            this.Set_gBox.Controls.Add(this.label2);
+            this.Set_gBox.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.Set_gBox.Location = new System.Drawing.Point(785, 12);
+            this.Set_gBox.Name = "Set_gBox";
+            this.Set_gBox.Size = new System.Drawing.Size(170, 168);
+            this.Set_gBox.TabIndex = 3;
+            this.Set_gBox.TabStop = false;
+            this.Set_gBox.Text = "设置";
             // 
             // ChsPadColor_Btn
             // 
@@ -337,22 +337,24 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(949, 637);
             this.Controls.Add(this.lstView);
-            this.Controls.Add(this.groupBox1);
+            this.Controls.Add(this.Set_gBox);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.picBox);
-            this.Controls.Add(this.panel1);
+            this.Controls.Add(this.Btn_panel);
+            this.MinimumSize = new System.Drawing.Size(965, 676);
             this.Name = "MainFrm";
             this.Padding = new System.Windows.Forms.Padding(3, 0, 0, 0);
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "五子棋";
             this.Load += new System.EventHandler(this.MainFrm_Load);
-            this.panel1.ResumeLayout(false);
-            this.panel1.PerformLayout();
+            this.SizeChanged += new System.EventHandler(this.MainFrm_SizeChanged);
+            this.Btn_panel.ResumeLayout(false);
+            this.Btn_panel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picBox)).EndInit();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
+            this.Set_gBox.ResumeLayout(false);
+            this.Set_gBox.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -360,14 +362,14 @@
 
         #endregion
 
-        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Panel Btn_panel;
         private System.Windows.Forms.Button StartPlaye_Btn;
         private System.Windows.Forms.PictureBox picBox;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel StatusLabel1;
         private System.Windows.Forms.ToolStripStatusLabel StatusLabel2;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.GroupBox Set_gBox;
         private System.Windows.Forms.ComboBox gameMode_cbBox;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.ComboBox aiRank_cbBox;
