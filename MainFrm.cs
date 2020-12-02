@@ -344,7 +344,7 @@ namespace FiveChess
 
             if (Chess.blackPtsLst.Count >= 4 || Chess.whitePtsLst.Count >= 4)
             {
-                result = mJudge.JudgeWin(pt, flg, 4);
+                result = mJudge.JudgeWin(pt, flg, 4, Chess.pcsFlag);
             }
             StatusLabel2.Text = result[0].ToString() + " " + result[1].ToString() + " " + result[2].ToString();
             
@@ -379,7 +379,7 @@ namespace FiveChess
                 myDraw.DrawPieces(picGrp, pt, flg, ++PcsCount);
                 Chess.blackPtsLst.Add(pt);
                 UpdatListView(pt, flg, PcsCount);
-                result = mJudge.JudgeWin(pt, flg, 4);
+                result = mJudge.JudgeWin(pt, flg, 4,Chess.pcsFlag);
 
                 if (result[1] >= 5)
                     return;
@@ -393,7 +393,7 @@ namespace FiveChess
                 myDraw.DrawPieces(picGrp, ReBackPos, flg, ++PcsCount);
                 Chess.whitePtsLst.Add(ReBackPos);
                 UpdatListView(ReBackPos,flg, PcsCount);
-                result = mJudge.JudgeWin(ReBackPos, flg, 4);
+                result = mJudge.JudgeWin(ReBackPos, flg, 4, Chess.pcsFlag);
 
                 if (result[1] >= 5)
                     return;
@@ -485,15 +485,27 @@ namespace FiveChess
         {
             int bIndex = Chess.blackPtsLst.Count - 1;
             int wIndex = Chess.whitePtsLst.Count - 1;
-            Chess.pcsFlag[Chess.blackPtsLst[bIndex].Y][Chess.blackPtsLst[bIndex].X] = 0;
-            Chess.pcsFlag[Chess.whitePtsLst[wIndex].Y][Chess.whitePtsLst[wIndex].X] = 0;
-            Chess.blackPtsLst.RemoveAt(bIndex);
-            Chess.whitePtsLst.RemoveAt(wIndex);
-            picBox.Refresh();
+            if (bIndex>wIndex)
+            {
+                Chess.pcsFlag[Chess.blackPtsLst[bIndex].Y][Chess.blackPtsLst[bIndex].X] = 0;
+                Chess.blackPtsLst.RemoveAt(bIndex);
+                lstView.Items.RemoveAt(lstView.Items.Count - 1);
+                PcsCount -= 1;
+                Chess.isMyPcs = true;
+            }
+            else
+            {
+                Chess.pcsFlag[Chess.blackPtsLst[bIndex].Y][Chess.blackPtsLst[bIndex].X] = 0;
+                Chess.pcsFlag[Chess.whitePtsLst[wIndex].Y][Chess.whitePtsLst[wIndex].X] = 0;
+                Chess.blackPtsLst.RemoveAt(bIndex);
+                Chess.whitePtsLst.RemoveAt(wIndex);
+                lstView.Items.RemoveAt(lstView.Items.Count - 1);
+                lstView.Items.RemoveAt(lstView.Items.Count - 1);
+                PcsCount -= 2;
+            }           
+
             IsWin = false;
-            PcsCount -= 2;
-            lstView.Items.RemoveAt(lstView.Items.Count-1);
-            lstView.Items.RemoveAt(lstView.Items.Count-1);
+            picBox.Refresh();
         }
 
         private void Cancel_Btn_Click(object sender, EventArgs e)
@@ -584,6 +596,7 @@ namespace FiveChess
             myDraw.InitData(drawRect, PadLineMax, PadMargin, pcsColors);
             DrawBackImg();
             picBox.Refresh();
+            mJudge.chessPadInfo = Chess.pcsFlag;
         }
 
         private void Timer_Tick(object sender, EventArgs e)

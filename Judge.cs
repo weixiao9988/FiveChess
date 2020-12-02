@@ -12,7 +12,7 @@ namespace FiveChess
 {
     class Judge
     {
-        private List<List<int>> chessPadInfo;
+        public List<List<int>> chessPadInfo;
         private int lineMax;
 
         ///// <summary>
@@ -132,7 +132,7 @@ namespace FiveChess
         /// <param name="flg">棋子标志</param>    
         /// <param name="incr">查找范围</param>    
         /// <returns>返回int[]，[0]棋子标志，[1]连子数量，[2]四个方向之一</returns>
-        public int[] JudgeWin(Point pt, int flg, int incr)
+        public int[] JudgeWin(Point pt, int flg, int incr,List<List<int>> padInfo)
         {
             int[] result={ flg,0,0};
             string part = @flg.ToString() + "+";        //正则表达式
@@ -150,7 +150,7 @@ namespace FiveChess
                             vMin = xArr[0];
                             vMax = xArr[1];
                             for (int i = vMin; i <= vMax; i++)
-                                str += chessPadInfo[pt.Y][i].ToString();
+                                str += padInfo[pt.Y][i].ToString();
                             break;
                         }
                     case 1:     // 根据输入点和范围返回垂直方向结果
@@ -158,7 +158,7 @@ namespace FiveChess
                             vMin = yArr[0];
                             vMax = yArr[1];
                             for (int i = vMin; i <= vMax; i++)
-                                str += chessPadInfo[i][pt.X].ToString();
+                                str += padInfo[i][pt.X].ToString();
                             break;
                         }
                     case 2:     // 根据输入点和范围返回撇[/]方向结果
@@ -166,7 +166,7 @@ namespace FiveChess
                             vMin = pt.Y - yArr[0] < xArr[1] - pt.X ? pt.Y - yArr[0] : xArr[1] - pt.X;
                             vMax = pt.X - xArr[0] < yArr[1] - pt.Y ? pt.X - xArr[0] : yArr[1] - pt.Y;
                             for (int i = -vMin; i <= vMax; i++)
-                                str += chessPadInfo[pt.Y + i][pt.X - i].ToString();
+                                str += padInfo[pt.Y + i][pt.X - i].ToString();
                             break;
                         }
                     case 3:    // 根据输入点和范围返回捺[\]方向结果
@@ -174,7 +174,7 @@ namespace FiveChess
                             vMin = pt.Y - yArr[0] < pt.X - xArr[0] ? pt.Y - yArr[0] : pt.X - xArr[0];
                             vMax = xArr[1] - pt.X < yArr[1] - pt.Y ? xArr[1] - pt.X : yArr[1] - pt.Y;
                             for (int i = -vMin; i <= vMax; i++)
-                                str += chessPadInfo[pt.Y + i][pt.X + i].ToString();
+                                str += padInfo[pt.Y + i][pt.X + i].ToString();
                             break;
                         }
                     default:
