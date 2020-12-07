@@ -61,6 +61,53 @@ namespace FiveChess
         public static List<Point> blackPtsLst = new List<Point>();
         public static List<Point> whitePtsLst = new List<Point>();
 
+        #region
+        /// <summary>
+        /// 连5型
+        /// </summary>
+        public const int LIVE5 = 100000;
+        /// <summary>
+        /// 活4型，4个相连，两边都有空位
+        /// </summary>
+        public const int LIVE4 = 40000;
+        /// <summary>
+        /// 连4型，4个相连，一边有空位
+        /// </summary>
+        public const int CNN4 = 20000;
+        /// <summary>
+        /// 跳4型，4个不相连，加一子可成连5
+        /// </summary>
+        public const int SPRT4 = 10000;
+        /// <summary>
+        /// 活3型，加一子可形成活4
+        /// </summary>
+        public const int LIVE3 = 4000;
+        /// <summary>
+        /// 连3型，加一子可形成连4
+        /// </summary>
+        public const int CNN3 = 2000;
+        /// <summary>
+        /// 跳3型，加一子可形成跳4
+        /// </summary>
+        public const int SPRT3 = 1000;
+        /// <summary>
+        /// 连2型
+        /// </summary>
+        public const int LIVE2 = 200;
+        /// <summary>
+        /// 跳2型
+        /// </summary>
+        public const int SPRT2 = 100;
+        /// <summary>
+        /// 连1型
+        /// </summary>
+        public const int LIVE1 = 10;
+        /// <summary>
+        /// 其他
+        /// </summary>
+        public const int OTHER = 0;
+        #endregion
+
         /// <summary>
         /// 初始化棋盘信息
         /// </summary>

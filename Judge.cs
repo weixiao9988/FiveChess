@@ -39,53 +39,43 @@ namespace FiveChess
         /// </summary>
         public Dictionary<string, int> TypeScore = new Dictionary<string, int>()
         {
-            ["AAAAA"] = 100000, /*连5型*/
-            ["0AAAA0"] = 20000, /*活4型*/
-            ["0AAAA"] = 12000, /*冲4型*/
-            ["AAAA0"] = 12000, /*冲4型*/
-            ["A0AAA"] = 10000, /*冲4型*/
-            ["AA0AA"] = 10000, /*冲4型*/
-            ["AAA0A"] = 10000, /*冲4型*/
-            ["00AAA0"] = 2200, /*活3型*/
-            ["0AAA00"] = 2200, /*活3型*/
-            ["0A0AA0"] = 2000, /*活3型*/
-            ["0AA0A0"] = 2000, /*活3型*/            
-            ["00AAA"] = 1200, /*眠3型*/
-            ["0AAA0"] = 1200, /*眠3型*/
-            ["AAA00"] = 1200, /*眠3型*/
-            ["0A0AA"] = 1000, /*眠3型*/
-            ["0AA0A"] = 1000, /*眠3型*/            
-            ["A0AA0"] = 1000, /*眠3型*/
-            ["AA0A0"] = 1000, /*眠3型*/            
-            ["AA00A"] = 1000, /*眠3型*/
-            ["A0A0A"] = 1000, /*眠3型*/
-            ["A00AA"] = 1000, /*眠3型*/
-            ["000AA0"] = 220, /*活2型*/
-            ["0AA000"] = 220, /*活2型*/
-            ["00AA00"] = 220, /*活2型*/
-            ["00A0A0"] = 200, /*活2型*/            
-            ["0A00A0"] = 200, /*活2型*/
-            ["0A0A00"] = 200, /*活2型*/            
-            ["000AA"] = 120, /*眠2型*/
-            ["00AA0"] = 120, /*眠2型*/
-            ["0AA00"] = 120, /*眠2型*/
-            ["AA000"] = 120, /*眠2型*/
-            ["00A0A"] = 100, /*眠2型*/            
-            ["0A00A"] = 100, /*眠2型*/
-            ["0A0A0"] = 100, /*眠2型*/            
-            ["A00A0"] = 100, /*眠2型*/
-            ["A0A00"] = 100, /*眠2型*/           
-            ["A000A"] = 100, /*眠2型*/
-            ["0000A0"] = 20, /*活1型*/
-            ["000A00"] = 20, /*活1型*/
-            ["00A000"] = 20, /*活1型*/
-            ["0A0000"] = 20, /*活1型*/
-            ["0000A"] = 10, /*眠1型*/
-            ["000A0"] = 10, /*眠1型*/
-            ["00A00"] = 10, /*眠1型*/
-            ["0A000"] = 10, /*眠1型*/
-            ["A0000"] = 10, /*眠1型*/
-            
+            ["AAAAA"] = Chess.LIVE5, /*连5型*/
+            ["0AAAA0"] = Chess.LIVE4, /*活4型*/
+            ["0AAAA"] = Chess.CNN4, /*冲4型*/
+            ["AAAA0"] = Chess.CNN4, /*冲4型*/
+            ["A0AAA"] = Chess.SPRT4, /*冲4型*/
+            ["AA0AA"] = Chess.SPRT4, /*冲4型*/
+            ["AAA0A"] = Chess.SPRT4, /*冲4型*/
+            ["00AAA0"] = Chess.LIVE3, /*活3型*/
+            ["0AAA00"] = Chess.LIVE3, /*活3型*/
+            ["0A0AA0"] = Chess.LIVE3, /*活3型*/
+            ["0AA0A0"] = Chess.LIVE3, /*活3型*/
+            ["00AAA"] = Chess.CNN3, /*眠3型*/
+            ["0AAA0"] = Chess.CNN3, /*眠3型*/
+            ["AAA00"] = Chess.CNN3, /*眠3型*/
+            ["0A0AA"] = Chess.SPRT3, /*眠3型*/
+            ["0AA0A"] = Chess.SPRT3, /*眠3型*/
+            ["A0AA0"] = Chess.SPRT3, /*眠3型*/
+            ["AA0A0"] = Chess.SPRT3, /*眠3型*/
+            ["AA00A"] = Chess.SPRT3, /*眠3型*/
+            ["A0A0A"] = Chess.SPRT3, /*眠3型*/
+            ["A00AA"] = Chess.SPRT3, /*眠3型*/
+            ["000AA"] = Chess.LIVE2, /*眠2型*/
+            ["00AA0"] = Chess.LIVE2, /*眠2型*/
+            ["0AA00"] = Chess.LIVE2, /*眠2型*/
+            ["AA000"] = Chess.LIVE2, /*眠2型*/
+            ["00A0A"] = Chess.SPRT2, /*眠2型*/
+            ["0A00A"] = Chess.SPRT2, /*眠2型*/
+            ["0A0A0"] = Chess.SPRT2, /*眠2型*/
+            ["A00A0"] = Chess.SPRT2, /*眠2型*/
+            ["A0A00"] = Chess.SPRT2, /*眠2型*/
+            ["A000A"] = Chess.SPRT2, /*眠2型*/
+            ["0000A"] = Chess.LIVE1, /*眠1型*/
+            ["000A0"] = Chess.LIVE1, /*眠1型*/
+            ["00A00"] = Chess.LIVE1, /*眠1型*/
+            ["0A000"] = Chess.LIVE1, /*眠1型*/
+            ["A0000"] = Chess.LIVE1, /*眠1型*/
+            ["00000"] = Chess.OTHER
         };
         #endregion
 
@@ -208,16 +198,19 @@ namespace FiveChess
         public Point MiddleAI()
         {
             Point returnPt = new Point() ;
-            //黑色棋子的判断、评分
-            string blackPcsType=null;    //最高得分的棋型
-            int blackPcsScore=0;     //最高得分
-            List<Point> blackPcsScorePos=null;     //最高得分的棋型的坐标
+            //黑色棋子的判断、评分;
+            string blackPcsType=null;    //最高得分的棋型;
+            int blackPcsScore=0;     //最高得分;
+            List<Point> blackPcsScorePos=null;     //最高得分的棋型的坐标;
             bool hasValue;
-            //遍历所有黑子的落点，查找形成的评分最高的棋型
+            string rePcsType;
+            int rePcsScore;
+            List<Point> rePcsScorePos;
+            //遍历所有黑子的落点，查找形成的评分最高的棋型;
             for (int i = 0; i < Chess.blackPtsLst.Count; i++)
             {
                 hasValue = GetPcsTypeScorePos(Chess.blackPtsLst[i], 1, TypeScore, 
-                    out string rePcsType, out int rePcsScore, out List<Point> rePcsScorePos);
+                    out rePcsType, out rePcsScore, out  rePcsScorePos);
                 if (hasValue&& rePcsScore> blackPcsScore)
                 {
                     blackPcsScore = rePcsScore;
@@ -242,8 +235,8 @@ namespace FiveChess
                 {
                     //获得评分最高的棋型及相对应的坐标数组            
                     hasValue=GetPcsTypeScorePos(new Point(row,col), 2, TypeScore,
-                        out string rePcsType, out int rePcsScore, out List<Point> rePcsScorePos);
-                    if (rePcsScore >= 100000)
+                        out rePcsType, out rePcsScore, out rePcsScorePos);
+                    if (rePcsScore >= Chess.LIVE5)
                         return new Point(row, col);
 
                     if (hasValue && rePcsScore > whitePcsScore)
@@ -257,12 +250,12 @@ namespace FiveChess
             //获得最高评分和点
             Dictionary<int, Point> wDict = GetScoreAndPos(whitePcsType, whitePcsScorePos, TypeScore, 2);
 
-            if(whitePcsScore >= 100000)
+            if(whitePcsScore >= Chess.LIVE5)
                 return wDict.Values.FirstOrDefault();
-            else if (whitePcsScore >= 10000)
-                returnPt = blackPcsScore >=10000 ? bDict.Values.FirstOrDefault() : wDict.Values.FirstOrDefault();
+            else if (whitePcsScore >= Chess.SPRT4)
+                returnPt = blackPcsScore >= Chess.SPRT4 ? bDict.Values.FirstOrDefault() : wDict.Values.FirstOrDefault();
              else
-                returnPt = blackPcsScore > whitePcsScore || blackPcsScore >= 1200 ? bDict.Values.FirstOrDefault() : wDict.Values.FirstOrDefault();
+                returnPt = blackPcsScore > whitePcsScore || blackPcsScore >= Chess.LIVE3 ? bDict.Values.FirstOrDefault() : wDict.Values.FirstOrDefault();
 
 
             return returnPt;
@@ -304,10 +297,10 @@ namespace FiveChess
                 //获得最大评分的棋型            
                 GetPcsTypeScorePos(wDict.Values.FirstOrDefault(), 2, TypeScore, out whitePcsType, out whitePcsScore, out whitePcsScorePos);
                               
-                if(whitePcsScore >= 10000)
+                if(whitePcsScore >= Chess.SPRT4)
                     return wDict.Values.FirstOrDefault();
                 else                    
-                    returnPt = blackPcsScore > whitePcsScore || blackPcsScore >= 1000 ? bDict.Values.FirstOrDefault() : wDict.Values.FirstOrDefault();
+                    returnPt = blackPcsScore > whitePcsScore || blackPcsScore >= Chess.SPRT3 ? bDict.Values.FirstOrDefault() : wDict.Values.FirstOrDefault();
             }
             else
                 return bDict.Values.FirstOrDefault();//上一回合白棋落子后如果没有形成有效的棋型时直接返回黑子坐标
