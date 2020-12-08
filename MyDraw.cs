@@ -104,7 +104,11 @@ namespace FiveChess
                 Chess.isMyPcs = !Chess.isMyPcs;
             }
             else
+            {
+                Chess.isMyPcs = !Chess.isMyPcs;
                 MessageBox.Show("此点已有棋子！");
+            }
+                
         }
     
         /// <summary>

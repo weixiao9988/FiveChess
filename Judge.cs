@@ -30,6 +30,7 @@ namespace FiveChess
         ///// </summary>
         //private List<Point> lstCnnPcsPos = new List<Point>();
 
+        private int[][] result = new int[3][];
         public delegate void UpStatInfo(Point pt, string s);
         public event UpStatInfo UpInfoEvt;
 
@@ -86,6 +87,9 @@ namespace FiveChess
         {
             chessPadInfo = arry;
             lineMax = arry[0].Count;
+            result[0] = new int[2];
+            result[1] = new int[2];
+            result[2] = new int[2];
         }
 
         /// <summary>
@@ -122,33 +126,39 @@ namespace FiveChess
         /// <param name="flg">棋子标志</param>    
         /// <param name="incr">查找范围</param>    
         /// <returns>返回int[]，[0]棋子标志，[1]连子数量，[2]四个方向之一</returns>
-        public int[] JudgeWin(Point pt, int flg, int incr,List<List<int>> padInfo)
+        public int[][] JudgeWin(Point pt, int flg, int incr,List<List<int>> padInfo)
         {
-            int[] result={ flg,0,0};
-            string part = @flg.ToString() + "+";        //正则表达式
+            //string part = @flg.ToString() + "+";        //正则表达式
             int[] xArr = GetMinMax(pt.X, lineMax, incr);
             int[] yArr = GetMinMax(pt.Y, lineMax, incr);
-            int vMin, vMax;            
-            
+            int vMin, vMax;
+            List<int> lstCnn = new List<int>();
             for (int t = 0; t < 4; t++)
             {
-                string str = null;
+                //string str = null;
+                int count = 0, tmpCount = 0;
                 switch (t)
                 {
                     case 0:  /// 根据输入点和范围返回水平方向结果
                         {
-                            vMin = xArr[0];
-                            vMax = xArr[1];
+                            vMin = xArr[0]; vMax = xArr[1];
                             for (int i = vMin; i <= vMax; i++)
-                                str += padInfo[pt.Y][i].ToString();
+                            {
+                                tmpCount = padInfo[pt.Y][i] == flg ? ++tmpCount : 0;                                
+                                count = tmpCount > count ? tmpCount : count;
+                            }
+                            lstCnn.Add(count);                                                     
                             break;
                         }
                     case 1:     // 根据输入点和范围返回垂直方向结果
                         {
-                            vMin = yArr[0];
-                            vMax = yArr[1];
+                            vMin = yArr[0]; vMax = yArr[1];
                             for (int i = vMin; i <= vMax; i++)
-                                str += padInfo[i][pt.X].ToString();
+                            {
+                                tmpCount = padInfo[i][pt.X] == flg ? ++tmpCount : 0;
+                                count = tmpCount > count ? tmpCount : count;                                
+                            }
+                            lstCnn.Add(count);                            
                             break;
                         }
                     case 2:     // 根据输入点和范围返回撇[/]方向结果
@@ -156,7 +166,11 @@ namespace FiveChess
                             vMin = pt.Y - yArr[0] < xArr[1] - pt.X ? pt.Y - yArr[0] : xArr[1] - pt.X;
                             vMax = pt.X - xArr[0] < yArr[1] - pt.Y ? pt.X - xArr[0] : yArr[1] - pt.Y;
                             for (int i = -vMin; i <= vMax; i++)
-                                str += padInfo[pt.Y + i][pt.X - i].ToString();
+                            {
+                                tmpCount = padInfo[pt.Y + i][pt.X - i] == flg ? ++tmpCount : 0;
+                                count = tmpCount > count ? tmpCount : count;
+                            }
+                            lstCnn.Add(count);
                             break;
                         }
                     case 3:    // 根据输入点和范围返回捺[\]方向结果
@@ -164,30 +178,35 @@ namespace FiveChess
                             vMin = pt.Y - yArr[0] < pt.X - xArr[0] ? pt.Y - yArr[0] : pt.X - xArr[0];
                             vMax = xArr[1] - pt.X < yArr[1] - pt.Y ? xArr[1] - pt.X : yArr[1] - pt.Y;
                             for (int i = -vMin; i <= vMax; i++)
-                                str += padInfo[pt.Y + i][pt.X + i].ToString();
+                            {
+                                tmpCount = padInfo[pt.Y + i][pt.X - i] == flg ? ++tmpCount : 0;
+                                count = tmpCount > count ? tmpCount : count;
+                                //if (padInfo[pt.Y + i][pt.X + i] == flg)
+                                //    tmpCount++;
+                                //else
+                                //{
+                                //    if (tmpCount > count)
+                                //        count = tmpCount;
+                                //    tmpCount = 0;
+                                //}
+                            }
+                            lstCnn.Add(count);
                             break;
                         }
                     default:
                         break;
                 }
-                MatchCollection matchs = Regex.Matches(str, part);                
-                result[1] = matchs[0].Length > result[1] ? matchs[0].Length : result[1];
-                foreach (Match item in matchs)
-                {
-                    if (item.Length>=5)
-                    {
-                        result[1] = 5;
-                        result[2] = t;
-                        return result;
-                    }
 
-                    if(item.Length > result[1])
-                    {
-                        result[1] = item.Length;
-                        result[2] = t;
-                    }                    
+                if (lstCnn.Max() >= 5)
+                {
+                    result[flg][0] = count;
+                    result[flg][1] = t;
+                    return result;
                 }
             }
+
+            result[flg][0] = lstCnn.Max();
+            result[flg][1] = lstCnn.IndexOf(lstCnn.Max());
             return result;
         }
 

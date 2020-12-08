@@ -72,7 +72,7 @@ namespace FiveChess
         
         private ColorDialog colorDlg = new ColorDialog();
         private List<Color> pcsColors = new List<Color>();
-        private int[] result=new int[3];
+        private int[][] result=new int[3][];
 
         //private List<Point> blackPtsLst = new List<Point>();
         //private List<Point> whitePtsLst = new List<Point>();
@@ -153,20 +153,14 @@ namespace FiveChess
             lstView.Columns.Add("序号", 40, HorizontalAlignment.Center);
             lstView.Columns.Add("位置", 60, HorizontalAlignment.Center);
             lstView.Columns.Add("颜色", 65, HorizontalAlignment.Center);
-                        
-            //ListViewItem ivi = new ListViewItem();
 
-            //ivi.Text = "1";
-            //ivi.SubItems.Add("23");
-            //ivi.SubItems.Add("黑子");
-            
-            //lstView.Items.Add(ivi);
-
-            //myDraw.DrawChessPad(picGrp);
+            result[0] = new int[2];
+            result[1] = new int[2];
+            result[2] = new int[2];
 
             mJudge = new Judge(Chess.pcsFlag);
-            mJudge.UpInfoEvt += this.UpdatStateBar;
-            mJudge.transParAct = (resultArry) => this.result = resultArry;
+            //mJudge.UpInfoEvt += this.UpdatStatuBar;
+            //mJudge.transParAct = (resultArry) => this.result = resultArry;
 
         }
 
@@ -249,13 +243,14 @@ namespace FiveChess
             PcsCount = 0;
 
             for (int i = 0; i < 3; i++)
-                result[i] = 0;
+                for (int j = 0; j < 2; j++)
+                    result[i][j] = 0;                
 
 
             mJudge = null;
             
             mJudge = new Judge(Chess.pcsFlag);
-            mJudge.UpInfoEvt += this.UpdatStateBar;
+            mJudge.UpInfoEvt += this.UpdatStatuBar;
 
             DrawBackImg();
             picBox.Refresh();
@@ -310,10 +305,14 @@ namespace FiveChess
                                     break;
                             }
 
-                            if (result.Length > 0 && result[1] >= 5)
+                            if (result[1][0] >= 5|| result[2][0] >= 5)
                             {
                                 IsWin = true;
-                                ShowInfoDlg(result[0]);
+                                UpdatStatuBar(result);
+                                int k=0;
+                                k = result[1][0] >= 5 ? 1 : k;
+                                k = result[2][0] >= 5 ? 2 : k;                                
+                                ShowInfoDlg(k);
                                 return;
                             }
                         }                        
@@ -346,7 +345,8 @@ namespace FiveChess
             {
                 result = mJudge.JudgeWin(pt, flg, 4, Chess.pcsFlag);
             }
-            StatusLabel2.Text = result[0].ToString() + " " + result[1].ToString() + " " + result[2].ToString();
+            UpdatStatuBar(result);
+            //StatusLabel2.Text = result[0].ToString() + " " + result[1].ToString() + " " + result[2].ToString();
             
         }
 
@@ -380,8 +380,8 @@ namespace FiveChess
                 Chess.blackPtsLst.Add(pt);
                 UpdatListView(pt, flg, PcsCount);
                 result = mJudge.JudgeWin(pt, flg, 4,Chess.pcsFlag);
-
-                if (result[1] >= 5)
+                UpdatStatuBar(result);
+                if (result[1][0] >= 5)
                     return;
                                 
                 ReBackPos = mJudge.AnalysePadInfo(pt, flg, rank);
@@ -394,9 +394,8 @@ namespace FiveChess
                 Chess.whitePtsLst.Add(ReBackPos);
                 UpdatListView(ReBackPos,flg, PcsCount);
                 result = mJudge.JudgeWin(ReBackPos, flg, 4, Chess.pcsFlag);
-
-                if (result[1] >= 5)
-                    return;
+                UpdatStatuBar(result);
+                
             }                
         }
 
@@ -434,23 +433,23 @@ namespace FiveChess
         }
 
         public void ShowInfoDlg(int k)
-        {
+        {            
             switch (k)
             {
                 case 1:
-                    StatusLabel1.Text = "黑棋获胜！";
+                    StatusLabel1.Text += "黑棋获胜！";
                     MessageBox.Show("黑棋获胜！","提示", MessageBoxButtons.OK,MessageBoxIcon.Information);                    
                     return;
                 case 2:
-                    StatusLabel1.Text = "白棋获胜！";
+                    StatusLabel2.Text += "白棋获胜！";
                     MessageBox.Show("白棋获胜！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);                    
                     return;
                 case 3:
-                    StatusLabel1.Text = "游戏已结束！";
+                    StatusLabel1.Text += "游戏已结束！";
                     MessageBox.Show("游戏已结束！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);                    
                     return;
                 case 4:
-                    StatusLabel1.Text = "棋盘已满！";
+                    StatusLabel1.Text += "棋盘已满！";
                     MessageBox.Show("棋盘已满！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);                    
                     return;
                 default:
@@ -464,7 +463,12 @@ namespace FiveChess
             myDraw.DrawPcsAndMark(e.Graphics, Chess.whitePtsLst, pcsColors, 2);
         }
 
-        private void UpdatStateBar(Point pt, string str)
+        private void UpdatStatuBar(int[][] arr)
+        {
+            StatusLabel1.Text = 1.ToString() + "  " + result[1][0].ToString() + "  " + result[1][1].ToString();
+            StatusLabel2.Text = 2.ToString() + "  " + result[2][0].ToString() + "  " + result[2][1].ToString();
+        }
+        private void UpdatStatuBar(Point pt, string str)
         {
             ReBackPos = pt;
             StatusLabel1.Text =pt.X.ToString()+"_"+pt.Y.ToString()+"_"+ str;

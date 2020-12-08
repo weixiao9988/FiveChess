@@ -145,7 +145,7 @@
             this.StatusLabel1,
             this.StatusLabel2,
             this.StatusLabel3});
-            this.statusStrip1.Location = new System.Drawing.Point(3, 608);
+            this.statusStrip1.Location = new System.Drawing.Point(3, 609);
             this.statusStrip1.Margin = new System.Windows.Forms.Padding(0, 0, 0, 3);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(946, 29);
@@ -201,7 +201,7 @@
             // 
             // ChsPadColor_Btn
             // 
-            this.ChsPadColor_Btn.BackColor = System.Drawing.Color.Khaki;
+            this.ChsPadColor_Btn.BackColor = System.Drawing.Color.White;
             this.ChsPadColor_Btn.Cursor = System.Windows.Forms.Cursors.Hand;
             this.ChsPadColor_Btn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.ChsPadColor_Btn.Location = new System.Drawing.Point(75, 26);
@@ -326,7 +326,7 @@
             this.lstView.Margin = new System.Windows.Forms.Padding(0);
             this.lstView.MultiSelect = false;
             this.lstView.Name = "lstView";
-            this.lstView.Size = new System.Drawing.Size(168, 608);
+            this.lstView.Size = new System.Drawing.Size(168, 609);
             this.lstView.TabIndex = 4;
             this.lstView.UseCompatibleStateImageBehavior = false;
             this.lstView.View = System.Windows.Forms.View.Details;
@@ -335,7 +335,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(949, 637);
+            this.ClientSize = new System.Drawing.Size(949, 638);
             this.Controls.Add(this.lstView);
             this.Controls.Add(this.Set_gBox);
             this.Controls.Add(this.statusStrip1);
