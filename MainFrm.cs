@@ -62,25 +62,18 @@ namespace FiveChess
             WHITENESS = 0x00FF0062
         };
         #endregion
-                
-        private Rectangle drawRect = new Rectangle();
-        private Graphics bufGrp, picGrp;
+
+        private Rectangle picRect = new Rectangle();
+        private Graphics picGrp, bufGrp;
+        private Bitmap backBmp;
+
+        private List<Color> pcsColors = new List<Color>() 
+        { Color.Khaki,Color.Black,Color.White};
+        private int[][] result = new int[3][];
+
         private MyDraw myDraw;
-        private Judge mJudge;
-        
-        private static Bitmap backBmp ;
-        
-        private ColorDialog colorDlg = new ColorDialog();
-        private List<Color> pcsColors = new List<Color>();
-        private int[][] result=new int[3][];
+        private Judge myJudge;
 
-        //private List<Point> blackPtsLst = new List<Point>();
-        //private List<Point> whitePtsLst = new List<Point>();
-
-        /// <summary>
-        /// 评分后返回的点
-        /// </summary>
-        private Point ReBackPos = new Point();
 
         /// <summary>
         /// 棋盘线的最大值
@@ -93,33 +86,39 @@ namespace FiveChess
         public int PadMargin { get; set; } = 30;
 
         /// <summary>
-        /// 游戏模式
+        /// 游戏对战模式，0：人人对战；1：人机对战
         /// </summary>
         public int GameMode { get; set; } = 0;
-
-        /// <summary>
-        /// 电脑AI等级
-        /// </summary>
-        public int AIRank { get; set; }
         
         /// <summary>
-        /// 棋盘中棋子的最大值
+        /// AI难度等级，0，1，2，3
         /// </summary>
-        public int PcsMax { get; set ; }
+        public int AIRank { get; set; } = 0;
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        public int PcsCount { get; set; }
 
         /// <summary>
         /// 是否胜利
         /// </summary>
         public bool IsWin { get; set; } = false;
 
-        public int PcsCount { get; set; }
-       
+        /// <summary>
+        /// 评分后返回的点
+        /// </summary>
+        private Point ReBackPos = new Point();
 
-       
+
 
         public MainFrm()
         {
             InitializeComponent();
+
+            pcsColors.Add(BoardColor_Btn.BackColor);
+            pcsColors.Add(PlayerColor_Btn.BackColor);
+            pcsColors.Add(CpuColor_Btn.BackColor);
 
             Timer timer = new Timer();
             timer.Interval = 1000;
@@ -127,40 +126,35 @@ namespace FiveChess
             timer.Tick += new EventHandler(Timer_Tick);
             StatusLabel3.Text = string.Format("{0:yyyy-MM-dd  HH:mm:ss}", DateTime.Now);
 
-            drawRect = picBox.ClientRectangle;
+            for (int i = 0; i < 3; i++)
+                result[i] = new int[2];
         }
 
         private void MainFrm_Load(object sender, EventArgs e)
         {
-            InitCtrls();
-            //pcsColors.Add(Color.Khaki);
-            pcsColors.Add(ChsPadColor_Btn.BackColor);
-            pcsColors.Add(ownColor_Btn.BackColor);
-            pcsColors.Add(cpuColor_Btn.BackColor);
+            //InitCtrls();
 
-            picGrp = picBox.CreateGraphics();
-            myDraw = new MyDraw(drawRect, PadLineMax, PadMargin, pcsColors);
-
-            DrawBackImg();
             
 
-            gameMode_cbBox.SelectedIndex = 1;
-            GameMode = 1;
-            PcsMax = PadLineMax * PadLineMax;
-            aiRank_cbBox.SelectedIndex = 1;
-            AIRank = 1;
+            GameMode_cBox.SelectedIndex = 1;
+            AIRank_cBox.SelectedIndex = 1;
 
-            lstView.Columns.Add("序号", 40, HorizontalAlignment.Center);
-            lstView.Columns.Add("位置", 60, HorizontalAlignment.Center);
-            lstView.Columns.Add("颜色", 65, HorizontalAlignment.Center);
 
-            result[0] = new int[2];
-            result[1] = new int[2];
-            result[2] = new int[2];
+            listView.Columns.Add("序号", 40, HorizontalAlignment.Center);
+            listView.Columns.Add("位置", 60, HorizontalAlignment.Center);
+            listView.Columns.Add("颜色", 65, HorizontalAlignment.Center);
 
-            mJudge = new Judge(Chess.pcsFlag);
-            //mJudge.UpInfoEvt += this.UpdatStatuBar;
-            //mJudge.transParAct = (resultArry) => this.result = resultArry;
+            StatusLabel3.Width = 200;
+            StatusLabel1.Width = (this.Width - 200) / 2;
+            StatusLabel2.Width = (this.Width - 200) / 2;
+
+            picGrp = picBox.CreateGraphics();
+            picRect = picBox.ClientRectangle;
+            myDraw = new MyDraw(picRect, PadLineMax, PadMargin, pcsColors);
+
+            DrawBackBmp();
+
+            myJudge = new Judge();
 
         }
 
@@ -180,15 +174,14 @@ namespace FiveChess
         /// <summary>
         /// 绘制picBox的背景为棋盘
         /// </summary>
-        public void DrawBackImg()
+        public void DrawBackBmp()
         {
-            backBmp = new Bitmap(drawRect.Width, drawRect.Height);
+            backBmp = new Bitmap(picRect.Width, picRect.Height);
             bufGrp = Graphics.FromImage(backBmp);
             bufGrp.Clear(pcsColors[0]);
 
-            myDraw.DrawChessPad(bufGrp);
-
-            picBox.BackgroundImage = GetCopyBmp(drawRect, backBmp);
+            myDraw.DrawChessBoard(bufGrp);
+            picBox.BackgroundImage = backBmp;
         }
 
         /// <summary>
@@ -221,46 +214,72 @@ namespace FiveChess
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void StartPlaye_Btn_Click(object sender, EventArgs e)
+        private void Start_Btn_Click(object sender, EventArgs e)
         {
-            Chess.pcsFlag.Clear();
-            Chess.InitPadInfo(PadLineMax, drawRect.Width / PadLineMax - 1);
+            Chess.RestData();
             IsWin = false;
             Chess.blackPtsLst.Clear();
             Chess.whitePtsLst.Clear();
+            
+
 
             //pcsColors.Clear();
             pcsColors.Add(Color.Khaki);
-            //pcsColors.Add(Color.White);
-            pcsColors.Add(ownColor_Btn.BackColor);
-            pcsColors.Add(cpuColor_Btn.BackColor);
+            pcsColors.Add(PlayerColor_Btn.BackColor);
+            pcsColors.Add(CpuColor_Btn.BackColor);
 
-            
-            GameMode = gameMode_cbBox.SelectedIndex;  
-            AIRank = aiRank_cbBox.SelectedIndex;
 
-            lstView.Items.Clear();
+            GameMode = GameMode_cBox.SelectedIndex;
+            AIRank = AIRank_cBox.SelectedIndex;
+
+            listView.Items.Clear();
             PcsCount = 0;
 
             for (int i = 0; i < 3; i++)
                 for (int j = 0; j < 2; j++)
-                    result[i][j] = 0;                
+                    result[i][j] = 0;
 
 
-            mJudge = null;
-            
-            mJudge = new Judge(Chess.pcsFlag);
-            mJudge.UpInfoEvt += this.UpdatStatuBar;
+            myJudge = null;
 
-            DrawBackImg();
+            myJudge = new Judge();
+            //mJudge.UpInfoEvt += this.UpdatStatuBar;
+
+            DrawBackBmp();
             picBox.Refresh();
         }
 
+        private void ReBack_Btn_Click(object sender, EventArgs e)
+        {
+            int bIndex = Chess.blackPtsLst.Count - 1;
+            int wIndex = Chess.whitePtsLst.Count - 1;
+            if (bIndex > wIndex)
+            {
+                Chess.pcsFlag[Chess.blackPtsLst[bIndex].Y][Chess.blackPtsLst[bIndex].X] = 0;
+                Chess.blackPtsLst.RemoveAt(bIndex);
+                listView.Items.RemoveAt(listView.Items.Count - 1);
+                PcsCount -= 1;
+                Chess.IsMyPcs = true;
+            }
+            else
+            {
+                Chess.pcsFlag[Chess.blackPtsLst[bIndex].Y][Chess.blackPtsLst[bIndex].X] = 0;
+                Chess.pcsFlag[Chess.whitePtsLst[wIndex].Y][Chess.whitePtsLst[wIndex].X] = 0;
+                Chess.blackPtsLst.RemoveAt(bIndex);
+                Chess.whitePtsLst.RemoveAt(wIndex);
+                listView.Items.RemoveAt(listView.Items.Count - 1);
+                listView.Items.RemoveAt(listView.Items.Count - 1);
+                PcsCount -= 2;
+            }
+
+            IsWin = false;
+            picBox.Refresh();
+        }
 
         private void picBox_MouseMove(object sender, MouseEventArgs e)
         {
-            float x1 = drawRect.Width / PadLineMax - 1;
-            float y1 = drawRect.Width / PadLineMax - 1;
+            float x1 = picRect.Width / PadLineMax - 1;
+            float y1 = picRect.Width / PadLineMax - 1;
             if ((e.X >= PadMargin && e.X <= (int)(x1 * (PadLineMax - 1) + PadMargin)) &&
                 e.Y >= PadMargin && e.Y <= (int)((y1) * (PadLineMax - 1) + PadMargin))
             {
@@ -276,22 +295,20 @@ namespace FiveChess
             this.Cursor = Cursors.Default;
         }
 
-        private void picBox_MouseClick(object sender, MouseEventArgs e)
+        private void picBox_MouseUp(object sender, MouseEventArgs e)
         {
-            float x1 = drawRect.Width / PadLineMax - 1;
-            float y1 = drawRect.Width / PadLineMax - 1;
-            //int flg = Chess.isMyPcs ? 1 : 2;
-            
+            float x1 = picRect.Width / PadLineMax - 1;
+            float y1 = picRect.Width / PadLineMax - 1;
 
-            if (e.Button==MouseButtons.Left)
+            if (e.Button == MouseButtons.Left)
             {
                 if ((e.X >= PadMargin && e.X <= (int)(x1 * (PadLineMax - 1) + PadMargin)) &&
                 e.Y >= PadMargin && e.Y <= (int)((y1) * (PadLineMax - 1) + PadMargin))
                 {
                     if (!IsWin)
                     {
-                        Point pt = Chess.GetRCSeir(e.X - PadMargin, e.Y - PadMargin);
-                        if (Chess.pcsFlag[pt.Y][pt.X] == 0)      //棋盘有空位
+                        Point pt = Chess.GetXYSerial(e.X - PadMargin, e.Y - PadMargin);
+                        if (Chess.pcsFlag[pt.X][pt.Y] == 0)      //棋盘有空位
                         {
                             switch (GameMode)
                             {
@@ -304,23 +321,23 @@ namespace FiveChess
                                 default:
                                     break;
                             }
-
-                            if (result[1][0] >= 5|| result[2][0] >= 5)
+                            if (result[1][0] >= 5 || result[2][0] >= 5)
                             {
                                 IsWin = true;
-                                UpdatStatuBar(result);
-                                int k=0;
+                                DrawRect();
+                                int k = 0;
                                 k = result[1][0] >= 5 ? 1 : k;
-                                k = result[2][0] >= 5 ? 2 : k;                                
+                                k = result[2][0] >= 5 ? 2 : k;
+                                UpdatStatuBar(result);
                                 ShowInfoDlg(k);
                                 return;
                             }
-                        }                        
+                        }
                     }
                     else
                         ShowInfoDlg(3);
-                }                
-            }            
+                }
+            }
         }
 
         /// <summary>
@@ -331,23 +348,22 @@ namespace FiveChess
         /// <returns></returns>
         public void PerVsPer(Point pt)
         {
-            int flg = Chess.isMyPcs ? 1 : 2;
-            
-            myDraw.DrawPieces(picGrp, pt, flg, ++PcsCount);
-            UpdatListView(pt,flg, PcsCount);
+            int flag = Chess.IsMyPcs ? 1 : 2;
+
+            myDraw.DrawPieces(picGrp, pt, flag, ++PcsCount);
+            UpdatListView(pt, flag, PcsCount);
             //保存己方和他方的棋子
-            if (flg == 1)
+            if (flag == 1)
                 Chess.blackPtsLst.Add(pt);
             else
                 Chess.whitePtsLst.Add(pt);
 
             if (Chess.blackPtsLst.Count >= 4 || Chess.whitePtsLst.Count >= 4)
             {
-                result = mJudge.JudgeWin(pt, flg, 4, Chess.pcsFlag);
+                result = myJudge.JudgeWin(pt, flag, 4);
             }
-            UpdatStatuBar(result);
-            //StatusLabel2.Text = result[0].ToString() + " " + result[1].ToString() + " " + result[2].ToString();
-            
+            StatusLabel2.Text = result[0].ToString() + " " + result[1].ToString() + " " + result[2].ToString();
+
         }
 
         /// <summary>
@@ -362,41 +378,40 @@ namespace FiveChess
             int flg;
             if (Chess.blackPtsLst.Count == 0)     //第一个黑子和白子随意落子，不用判断评分
             {
-                flg = Chess.isMyPcs ? 1 : 2;
-                myDraw.DrawPieces(picGrp, pt, flg, ++PcsCount);
-                Chess.blackPtsLst.Add(pt);
-                UpdatListView(pt,flg, PcsCount);
-
-                flg = Chess.isMyPcs ? 1 : 2;
-                Point tPt = GetRandPt(pt,PadLineMax,Chess.pcsFlag);
-                myDraw.DrawPieces(picGrp, tPt, flg, ++PcsCount);
-                Chess.whitePtsLst.Add(tPt);
-                UpdatListView(tPt,flg, PcsCount);
-            }
-            else
-            {
-                flg = Chess.isMyPcs ? 1 : 2;
+                flg = Chess.IsMyPcs ? 1 : 2;
                 myDraw.DrawPieces(picGrp, pt, flg, ++PcsCount);
                 Chess.blackPtsLst.Add(pt);
                 UpdatListView(pt, flg, PcsCount);
-                result = mJudge.JudgeWin(pt, flg, 4,Chess.pcsFlag);
-                UpdatStatuBar(result);
-                if (result[1][0] >= 5)
+
+                flg = Chess.IsMyPcs ? 1 : 2;
+                Point tPt = myJudge.GetRandPt(pt);
+                myDraw.DrawPieces(picGrp, tPt, flg, ++PcsCount);
+                Chess.whitePtsLst.Add(tPt);
+                UpdatListView(tPt, flg, PcsCount);
+            }
+            else
+            {
+                flg = Chess.IsMyPcs ? 1 : 2;
+                myDraw.DrawPieces(picGrp, pt, flg, ++PcsCount);
+                Chess.blackPtsLst.Add(pt);
+                UpdatListView(pt, flg, PcsCount);
+                result = myJudge.JudgeWin(pt, flg, 4);
+
+                if (result[flg][0] >= 5)
                     return;
-                                
-                ReBackPos = mJudge.AnalysePadInfo(pt, flg, rank);
+
+                ReBackPos = myJudge.AnalysePadInfo(pt, flg, rank);
 
                 if (ReBackPos.X == -1 && ReBackPos.Y == -1)
-                    ReBackPos = GetRandPt(pt, PadLineMax, Chess.pcsFlag);
+                    ReBackPos = myJudge.GetRandPt(pt);
 
-                flg = Chess.isMyPcs ? 1 : 2;
+                flg = Chess.IsMyPcs ? 1 : 2;
                 myDraw.DrawPieces(picGrp, ReBackPos, flg, ++PcsCount);
                 Chess.whitePtsLst.Add(ReBackPos);
-                UpdatListView(ReBackPos,flg, PcsCount);
-                result = mJudge.JudgeWin(ReBackPos, flg, 4, Chess.pcsFlag);
-                UpdatStatuBar(result);
-                
-            }                
+                UpdatListView(ReBackPos, flg, PcsCount);
+                result = myJudge.JudgeWin(ReBackPos, flg, 4);
+
+            }
         }
 
         /// <summary>
@@ -458,9 +473,24 @@ namespace FiveChess
         }
 
         private void picBox_Paint(object sender, PaintEventArgs e)
-        {            
-            myDraw.DrawPcsAndMark(e.Graphics, Chess.blackPtsLst, pcsColors, 1);
-            myDraw.DrawPcsAndMark(e.Graphics, Chess.whitePtsLst, pcsColors, 2);
+        {
+            if (Chess.blackPtsLst.Count > 0 && Chess.whitePtsLst.Count > 0)
+            {
+                myDraw.DrawPcsAndMark(e.Graphics, Chess.blackPtsLst, 1);
+                myDraw.DrawPcsAndMark(e.Graphics, Chess.whitePtsLst, 2);
+            }
+        }
+
+        /// <summary>
+        /// 绘制边框
+        /// </summary>
+        private void DrawRect()
+        {
+            int flag = Chess.blackPtsLst.Count > Chess.whitePtsLst.Count ? 1 : 2;
+            Point pt = flag == 1 ? Chess.blackPtsLst[Chess.blackPtsLst.Count - 1] : Chess.whitePtsLst[Chess.whitePtsLst.Count - 1];
+
+            List<Point> pts = myJudge.GetFiveCnnPos(Chess.pcsFlag, pt, flag, result[flag][1], 4);
+            myDraw.DrawRectangle(picGrp, pts[0], pts[1], result[flag][1]);
         }
 
         private void UpdatStatuBar(int[][] arr)
@@ -474,43 +504,19 @@ namespace FiveChess
             StatusLabel1.Text =pt.X.ToString()+"_"+pt.Y.ToString()+"_"+ str;
         }
 
-        private void UpdatListView(Point pt, int flg, int count)
+        private void UpdatListView(Point pt, int flag, int count)
         {
             ListViewItem ivi = new ListViewItem();
-            string sColor = flg == 1 ? "黑子" : "白子";
+            string sColor = flag == 1 ? "黑子" : "白子";
+            char chr = (char)(pt.X + 65);
             ivi.Text = count.ToString();
-            ivi.SubItems.Add(pt.X.ToString()+","+pt.Y.ToString());
+            ivi.SubItems.Add(chr.ToString() + "," + pt.Y.ToString());
             ivi.SubItems.Add(sColor);
 
-            lstView.Items.Add(ivi);
+            listView.Items.Add(ivi);
         }
 
-        private void Back_Btn_Click(object sender, EventArgs e)
-        {
-            int bIndex = Chess.blackPtsLst.Count - 1;
-            int wIndex = Chess.whitePtsLst.Count - 1;
-            if (bIndex>wIndex)
-            {
-                Chess.pcsFlag[Chess.blackPtsLst[bIndex].Y][Chess.blackPtsLst[bIndex].X] = 0;
-                Chess.blackPtsLst.RemoveAt(bIndex);
-                lstView.Items.RemoveAt(lstView.Items.Count - 1);
-                PcsCount -= 1;
-                Chess.isMyPcs = true;
-            }
-            else
-            {
-                Chess.pcsFlag[Chess.blackPtsLst[bIndex].Y][Chess.blackPtsLst[bIndex].X] = 0;
-                Chess.pcsFlag[Chess.whitePtsLst[wIndex].Y][Chess.whitePtsLst[wIndex].X] = 0;
-                Chess.blackPtsLst.RemoveAt(bIndex);
-                Chess.whitePtsLst.RemoveAt(wIndex);
-                lstView.Items.RemoveAt(lstView.Items.Count - 1);
-                lstView.Items.RemoveAt(lstView.Items.Count - 1);
-                PcsCount -= 2;
-            }           
-
-            IsWin = false;
-            picBox.Refresh();
-        }
+       
 
         private void Cancel_Btn_Click(object sender, EventArgs e)
         {
@@ -518,89 +524,81 @@ namespace FiveChess
         }
 
 
-        private void ChsPadColor_Btn_Click(object sender, EventArgs e)
+        private void BoardColor_Btn_Click(object sender, EventArgs e)
         {
-            if (colorDlg.ShowDialog()==DialogResult.OK)
-            {
-                ChsPadColor_Btn.BackColor = colorDlg.Color;
-                ChsPadColor_Btn.Text = colorDlg.Color.Name;
-            }
-            pcsColors[0] = ChsPadColor_Btn.BackColor;
-            lstView.BackColor = ChsPadColor_Btn.BackColor;
+            ColorDialog colorDialog = new ColorDialog();
+            if (colorDialog.ShowDialog() == DialogResult.OK)
+                BoardColor_Btn.BackColor = colorDialog.Color;
+            pcsColors[0] = BoardColor_Btn.BackColor;
+            listView.BackColor = BoardColor_Btn.BackColor;
+            picBox.BackColor = BoardColor_Btn.BackColor;
         }
 
-        private void ownColor_Btn_Click(object sender, EventArgs e)
+        private void PlayerColor_Btn_Click(object sender, EventArgs e)
         {
-            if (colorDlg.ShowDialog()==DialogResult.OK)
-            {
-                ownColor_Btn.BackColor = colorDlg.Color;
-                ownColor_Btn.Text = colorDlg.Color.Name;
-            }
-            pcsColors[1] = ownColor_Btn.BackColor;
+            ColorDialog colorDialog = new ColorDialog();
+            if (colorDialog.ShowDialog() == DialogResult.OK)
+                PlayerColor_Btn.BackColor = colorDialog.Color;
+            pcsColors[1] = PlayerColor_Btn.BackColor;
         }
 
-        private void cpuColor_Btn_Click(object sender, EventArgs e)
+        private void CpuColor_Btn_Click(object sender, EventArgs e)
         {
-            if (colorDlg.ShowDialog()==DialogResult.OK)
-            {
-                cpuColor_Btn.BackColor = colorDlg.Color;
-                cpuColor_Btn.Text = colorDlg.Color.Name;
-            }
-            pcsColors[2] = cpuColor_Btn.BackColor;
+            ColorDialog colorDialog = new ColorDialog();
+            if (colorDialog.ShowDialog() == DialogResult.OK)
+                CpuColor_Btn.BackColor = colorDialog.Color;
+            pcsColors[2] = CpuColor_Btn.BackColor;
         }
 
-        private void gameMode_cbBox_SelectedIndexChanged(object sender, EventArgs e)
+        private void GameMode_cBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            switch (gameMode_cbBox.SelectedIndex)
+            switch (GameMode_cBox.SelectedIndex)
             {
                 case 0:
                     {
-                        aiRank_Lab.Visible = false;
-                        aiRank_cbBox.Visible = false;
-                        PcsMax = PadLineMax * PadLineMax;
+                        AIRank_Lab.Visible = false;
+                        AIRank_cBox.Visible = false;                        
                         break;
                     }
                 case 1:
                     {
-                        aiRank_Lab.Visible = true;
-                        aiRank_cbBox.Visible = true;
-                        PcsMax = PadLineMax * PadLineMax / 2;
+                        AIRank_Lab.Visible = true;
+                        AIRank_cBox.Visible = true;                        
                         break;
                     }
                 default:
                     break;
             }
-            GameMode = gameMode_cbBox.SelectedIndex;
+            GameMode = GameMode_cBox.SelectedIndex;
         }
 
-        private void aiRank_cbBox_SelectedIndexChanged(object sender, EventArgs e)
+        private void AIRank_cBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            AIRank = aiRank_cbBox.SelectedIndex;
+            AIRank = AIRank_cBox.SelectedIndex;
         }
 
         private void MainFrm_SizeChanged(object sender, EventArgs e)
         {
-            //this.Size = new Size(965, 675);
-            //picBox.Location = new Point(170, 0);
-            //picBox.Size = new Size(610, 610);
-            //Set_gBox.Location = new Point(785, 10);
-            //Set_gBox.Size = new Size(168, 168);
-            //Btn_panel.Location = new Point(800, 195);
-            //Btn_panel.Size = new Size(125, 408);
+            int scrWidth = System.Windows.Forms.SystemInformation.PrimaryMonitorSize.Height - 20;
+            int addSize = this.Size.Width - 950;
+            int frmtop = (scrWidth + 20 - 665 - addSize) / 2;
+            //窗体恢复正常时   
+            if (this.WindowState == FormWindowState.Normal)
+            {
+                this.Location = new Point(300, frmtop);
+                this.MaximumSize = new Size(scrWidth + 285, scrWidth);
+                this.Size = new Size(this.Size.Width, addSize + 665);
+                picBox.Size = new Size(this.Size.Height - 65, this.Size.Height - 65);
 
-            int scrWidth = System.Windows.Forms.SystemInformation.PrimaryMonitorSize.Height-20;
-            int frmWidth = this.Size.Width;
-            int addSize = this.Size.Width - 965;
+                picRect = picBox.ClientRectangle;
+                myDraw.InitData(picRect, PadLineMax, PadMargin, pcsColors);
+                DrawBackBmp();
+                picBox.Refresh();
+            }
 
-            this.MaximumSize = new Size(scrWidth + 290, scrWidth);
-            this.Size = new Size(this.Size.Width, addSize + 675);
-            picBox.Size = new Size(this.Size.Height - 65, this.Size.Height - 65);
-
-            drawRect = picBox.ClientRectangle;
-            myDraw.InitData(drawRect, PadLineMax, PadMargin, pcsColors);
-            DrawBackImg();
-            picBox.Refresh();
-            mJudge.chessPadInfo = Chess.pcsFlag;
+            StatusLabel3.Width = 200;
+            StatusLabel1.Width = (this.Width - 200) / 2;
+            StatusLabel2.Width = (this.Width - 200) / 2;
         }
 
         private void Timer_Tick(object sender, EventArgs e)
