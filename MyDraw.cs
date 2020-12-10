@@ -38,6 +38,7 @@ namespace FiveChess
             pcsColors = colors;
 
             Chess.InitChessBoard(count, pd);
+            Chess.InitPecies();
         }
 
         /// <summary>

@@ -30,7 +30,7 @@ namespace FiveChess
             /// 存储4个方向的坐标信息           
             List<List<Point>> lstPosInfo;// = new List<List<Point>>();
                                          //得到四个方向一定范围内的棋子信息                                        
-            GetPointRoundInfo(Chess.pcsFlag, pt, 4, flg, out lstPcsInfo, out lstPosInfo);
+            GetPointRoundInfo(Chess.pcsFlag, pt, 4, flg, flg==2, out lstPcsInfo, out lstPosInfo);
 
             List<string> pType = new List<string>();
             List<int> pScore = new List<int>();
@@ -75,9 +75,10 @@ namespace FiveChess
         /// <param name="pt">输入点</param>
         /// <param name="incr">距离落子的范围</param>
         /// <param name="flg">棋子标志</param>
+        /// <param name="isAdd">是否增加棋子</param>
         /// <param name="pcsInfo">输出棋子信息</param>
         /// <param name="posInfo">输出坐标信息</param>
-        public void GetPointRoundInfo(List<List<int>> lstPad, Point pt, int incr, int flg, out List<string> pcsInfo, out List<List<Point>> posInfo)
+        public void GetPointRoundInfo(List<List<int>> lstPad, Point pt, int incr, int flg,bool isAdd, out List<string> pcsInfo, out List<List<Point>> posInfo)
         {
             int[] xArr = GetMinMax(pt.X, lstPad.Count, incr);
             int[] yArr = GetMinMax(pt.Y, lstPad.Count, incr);
@@ -95,8 +96,8 @@ namespace FiveChess
                             vMin = xArr[0];
                             vMax = xArr[1];
                             for (int i = vMin; i <= vMax; i++)
-                            {
-                                str = flg == 2 && i == pt.X && lstPad[i][pt.Y] == 0 ? str + flg.ToString() : str + lstPad[i][pt.Y].ToString();
+                            {                                
+                                str = isAdd && i == pt.X && lstPad[i][pt.Y] == 0 ? str + flg.ToString() : str + lstPad[i][pt.Y].ToString();
                                 pts.Add(new Point(i, pt.Y));
                             }
                             pcsLSt.Add(str);
@@ -108,8 +109,8 @@ namespace FiveChess
                             vMin = yArr[0];
                             vMax = yArr[1];
                             for (int i = vMin; i <= vMax; i++)
-                            {
-                                str = flg == 2 && i == pt.Y && lstPad[pt.X][i] == 0 ? str + flg.ToString() : str + lstPad[pt.X][i].ToString();
+                            {                                
+                                str = isAdd && i == pt.Y && lstPad[pt.X][i] == 0 ? str + flg.ToString() : str + lstPad[pt.X][i].ToString();
                                 pts.Add(new Point(pt.X, i));
                             }
                             pcsLSt.Add(str);
@@ -122,7 +123,7 @@ namespace FiveChess
                             vMax = pt.X - xArr[0] < yArr[1] - pt.Y ? pt.X - xArr[0] : yArr[1] - pt.Y;
                             for (int i = -vMin; i <= vMax; i++)
                             {
-                                str = flg == 2 && i == 0 && lstPad[pt.X - i][pt.Y + i] == 0 ? str + flg.ToString() : str + lstPad[pt.X - i][pt.Y + i].ToString();
+                                str = isAdd && i == 0 && lstPad[pt.X - i][pt.Y + i] == 0 ? str + flg.ToString() : str + lstPad[pt.X - i][pt.Y + i].ToString();
                                 pts.Add(new Point(pt.X - i, pt.Y + i));
                             }
                             pcsLSt.Add(str);
@@ -135,7 +136,7 @@ namespace FiveChess
                             vMax = xArr[1] - pt.X < yArr[1] - pt.Y ? xArr[1] - pt.X : yArr[1] - pt.Y;
                             for (int i = -vMin; i <= vMax; i++)
                             {
-                                str = flg == 2 && i == 0 && lstPad[pt.X + i][pt.Y + i] == 0 ? str + flg.ToString() : str + lstPad[pt.X + i][pt.Y + i].ToString();
+                                str = isAdd && i == 0 && lstPad[pt.X + i][pt.Y + i] == 0 ? str + flg.ToString() : str + lstPad[pt.X + i][pt.Y + i].ToString();
                                 pts.Add(new Point(pt.X + i, pt.Y + i));
                             }
                             pcsLSt.Add(str);
@@ -149,6 +150,7 @@ namespace FiveChess
             pcsInfo = pcsLSt;
             posInfo = posLst;
         }
+                
 
         /// <summary>
         /// 在棋型中寻找一个空位，使得在此位置落子后得分最高
@@ -450,11 +452,98 @@ namespace FiveChess
         public Point GetMaxScorePos()
         {
             Point pt = new Point();
+            Dictionary<string, int> bRange = GetPosMinMax(Chess.blackPtsLst);
+            Dictionary<string, int> wRange = GetPosMinMax(Chess.whitePtsLst);
+
+            int xMin = bRange["xMin"] > wRange["xMin"] ? bRange["xMin"] : wRange["xMin"];
+            int xMax = bRange["xMax"] > wRange["xMax"] ? bRange["xMax"] : wRange["xMax"];
+            int yMin = bRange["yMin"] > wRange["yMin"] ? bRange["yMin"] : wRange["yMin"];
+            int yMax = bRange["yMax"] > wRange["yMax"] ? bRange["yMax"] : wRange["yMax"];
+
+            List<string> pcsStr = null;
+
+            for (int j = yMin; j <= yMax; j++)
+            {
+                for (int i = xMin; i <= xMax; i++)
+                {
+                    GetPointRoundInfo(Chess.pcsFlag, new Point(i, j), 4, 1, false, out pcsStr);
+                }
+            }
 
 
             return pt;
         }
 
+        /// <summary>
+        /// 在输入点四个方向一定范围内获取棋盘中的棋子信息
+        /// </summary>
+        /// <param name="lstPad">棋盘信息</param>
+        /// <param name="pt">输入点</param>
+        /// <param name="incr">距离落子的范围</param>
+        /// <param name="flg">棋子标志</param>
+        /// <param name="isAdd">是否增加棋子</param>
+        /// <param name="pcsInfo">输出棋子信息</param>        
+        public void GetPointRoundInfo(List<List<int>> lstPad, Point pt, int incr, int flg, bool isAdd, out List<string> pcsInfo)
+        {
+            int[] xArr = GetMinMax(pt.X, lstPad.Count, incr);
+            int[] yArr = GetMinMax(pt.Y, lstPad.Count, incr);
+            int vMin, vMax;
+            List<string> pcsLSt = new List<string>();
+            for (int t = 1; t <= 4; t++)
+            {
+                string str = null;
+                switch (t)
+                {
+                    case 1:  /// 根据输入点和范围返回水平方向结果
+                        {
+                            vMin = xArr[0];
+                            vMax = xArr[1];
+                            for (int i = vMin; i <= vMax; i++)
+                                str = isAdd && i == pt.X && lstPad[i][pt.Y] == 0 ? str + flg.ToString() : str + lstPad[i][pt.Y].ToString();
+                            pcsLSt.Add(str);
+                            break;
+                        }
+                    case 2:     // 根据输入点和范围返回垂直方向结果
+                        {
+                            vMin = yArr[0];
+                            vMax = yArr[1];
+                            for (int i = vMin; i <= vMax; i++)
+                                str = isAdd && i == pt.Y && lstPad[pt.X][i] == 0 ? str + flg.ToString() : str + lstPad[pt.X][i].ToString();
+                            pcsLSt.Add(str);
+                            break;
+                        }
+                    case 3:     // 根据输入点和范围返回撇[/]方向结果
+                        {
+                            vMin = pt.Y - yArr[0] < xArr[1] - pt.X ? pt.Y - yArr[0] : xArr[1] - pt.X;
+                            vMax = pt.X - xArr[0] < yArr[1] - pt.Y ? pt.X - xArr[0] : yArr[1] - pt.Y;
+                            for (int i = -vMin; i <= vMax; i++)
+                                str = isAdd && i == 0 && lstPad[pt.X - i][pt.Y + i] == 0 ? str + flg.ToString() : str + lstPad[pt.X - i][pt.Y + i].ToString();
+                            pcsLSt.Add(str);
+                            break;
+                        }
+                    case 4:    // 根据输入点和范围返回捺[\]方向结果
+                        {
+                            vMin = pt.Y - yArr[0] < pt.X - xArr[0] ? pt.Y - yArr[0] : pt.X - xArr[0];
+                            vMax = xArr[1] - pt.X < yArr[1] - pt.Y ? xArr[1] - pt.X : yArr[1] - pt.Y;
+                            for (int i = -vMin; i <= vMax; i++)
+                                str = isAdd && i == 0 && lstPad[pt.X + i][pt.Y + i] == 0 ? str + flg.ToString() : str + lstPad[pt.X + i][pt.Y + i].ToString();
+                            pcsLSt.Add(str);
+                            break;
+                        }
+                    default:
+                        break;
+                }
+            }
+            pcsInfo = pcsLSt;
+        }
+
+        public int GetScoreLst(List<string> pcsInfo,Dictionary<string,int> pcsScore)
+        {
+            int score=0;
+
+
+            return score;
+        }
 
 
 

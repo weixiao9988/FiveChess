@@ -109,8 +109,7 @@ namespace FiveChess
         /// 评分后返回的点
         /// </summary>
         private Point ReBackPos = new Point();
-
-
+        
 
         public MainFrm()
         {
@@ -132,21 +131,9 @@ namespace FiveChess
 
         private void MainFrm_Load(object sender, EventArgs e)
         {
-            //InitCtrls();
-
-            
-
+            InitCtrls();
             GameMode_cBox.SelectedIndex = 1;
             AIRank_cBox.SelectedIndex = 1;
-
-
-            listView.Columns.Add("序号", 40, HorizontalAlignment.Center);
-            listView.Columns.Add("位置", 60, HorizontalAlignment.Center);
-            listView.Columns.Add("颜色", 65, HorizontalAlignment.Center);
-
-            StatusLabel3.Width = 200;
-            StatusLabel1.Width = (this.Width - 200) / 2;
-            StatusLabel2.Width = (this.Width - 200) / 2;
 
             picGrp = picBox.CreateGraphics();
             picRect = picBox.ClientRectangle;
@@ -160,15 +147,21 @@ namespace FiveChess
 
         private void InitCtrls()
         {
-            this.Size = new Size(965, 675);
+            this.Size = new Size(950, 665);
             picBox.Location = new Point(170, 0);
-            picBox.Size = new Size(610, 610);
-            Set_gBox.Location = new Point(785, 10);
-            Set_gBox.Size = new Size(168, 168);
-            Btn_panel.Location = new Point(800, 195);
-            Btn_panel.Size = new Size(125, 408);
+            picBox.Size = new Size(600, 600);
+            Set_gBox.Location = new Point(775, 5);
+            Set_gBox.Size = new Size(159, 192);
+            Btn_panel.Location = new Point(775, 203);
+            Btn_panel.Size = new Size(159, 401);
 
-            
+            listView.Columns.Add("序号", 40, HorizontalAlignment.Center);
+            listView.Columns.Add("位置", 60, HorizontalAlignment.Center);
+            listView.Columns.Add("颜色", 65, HorizontalAlignment.Center);
+
+            StatusLabel3.Width = 200;
+            StatusLabel1.Width = (this.Width - 200) / 2;
+            StatusLabel2.Width = (this.Width - 200) / 2;
         }
 
         /// <summary>
@@ -218,19 +211,6 @@ namespace FiveChess
         {
             Chess.RestData();
             IsWin = false;
-            Chess.blackPtsLst.Clear();
-            Chess.whitePtsLst.Clear();
-            
-
-
-            //pcsColors.Clear();
-            pcsColors.Add(Color.Khaki);
-            pcsColors.Add(PlayerColor_Btn.BackColor);
-            pcsColors.Add(CpuColor_Btn.BackColor);
-
-
-            GameMode = GameMode_cBox.SelectedIndex;
-            AIRank = AIRank_cBox.SelectedIndex;
 
             listView.Items.Clear();
             PcsCount = 0;
@@ -239,10 +219,7 @@ namespace FiveChess
                 for (int j = 0; j < 2; j++)
                     result[i][j] = 0;
 
-
-            myJudge = null;
-
-            myJudge = new Judge();
+            myJudge.InitData();
             //mJudge.UpInfoEvt += this.UpdatStatuBar;
 
             DrawBackBmp();

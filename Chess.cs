@@ -172,20 +172,27 @@ namespace FiveChess
             for (int i = 0; i < LineCount; i++)
             {
                 List<Point> pos = new List<Point>();
-                List<int> arry = new List<int>();
                 Point point = new Point();
                 for (int j = 0; j < LineCount; j++)
                 {
                     point.X = i * space;
                     point.Y = j * space;
-                    pos.Add(point);
-                    arry.Add(0);
+                    pos.Add(point);                   
                 }
-                crossPoint.Add(pos);
-                pcsFlag.Add(arry);
+                crossPoint.Add(pos);                
             }
         }
 
+        public static void InitPecies()
+        {
+            for (int j = 0; j < LineCount; j++)
+            {
+                List<int> arry = new List<int>();                
+                for (int i = 0; i < LineCount; i++)
+                    arry.Add(0);
+                pcsFlag.Add(arry);
+            }
+        }
         public static void RestData()
         {
             blackPtsLst.Clear();

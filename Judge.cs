@@ -232,7 +232,7 @@ namespace FiveChess
             /// 存储4个方向的坐标信息           
             List<List<Point>> lstPosInfo;// = new List<List<Point>>();
 
-            myMethod.GetPointRoundInfo(Chess.pcsFlag, pt, 4, flg, out lstPcsInfo, out lstPosInfo);
+            myMethod.GetPointRoundInfo(Chess.pcsFlag, pt, 4, flg, flg==2, out lstPcsInfo, out lstPosInfo);
             List<Point> pts = myMethod.GetMaxCnnInfo(flg, lstPcsInfo, lstPosInfo);
             returnPt = myMethod.GetPcsPos(Chess.pcsFlag, Chess.LineCount, pts);
 
@@ -253,11 +253,14 @@ namespace FiveChess
             int blackPcsScore = 0;     //最高得分
             List<Point> blackPcsScorePos = null;     //最高得分的棋型的坐标
             bool hasValue;
+            string rePcsType;
+            int rePcsScore;
+            List<Point> rePcsScorePos;
             //遍历所有黑子的落点，查找形成的评分最高的棋型
             for (int i = 0; i < Chess.blackPtsLst.Count; i++)
             {
                 hasValue = myMethod.GetPcsTypeScorePos(Chess.blackPtsLst[i], 1, Chess.TypeScore,
-                    out string rePcsType, out int rePcsScore, out List<Point> rePcsScorePos);
+                    out rePcsType, out rePcsScore, out rePcsScorePos);
                 if (hasValue && rePcsScore > blackPcsScore)
                 {
                     blackPcsScore = rePcsScore;
@@ -282,7 +285,7 @@ namespace FiveChess
                 {
                     //获得评分最高的棋型及相对应的坐标数组            
                     hasValue = myMethod.GetPcsTypeScorePos(new Point(row, col), 2, Chess.TypeScore,
-                        out string rePcsType, out int rePcsScore, out List<Point> rePcsScorePos);
+                        out rePcsType, out rePcsScore, out rePcsScorePos);
                     if (rePcsScore >= 100000)
                         return new Point(row, col);
 
