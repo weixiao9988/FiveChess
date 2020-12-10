@@ -61,6 +61,7 @@ namespace FiveChess
         public static List<Point> blackPtsLst = new List<Point>();
         public static List<Point> whitePtsLst = new List<Point>();
 
+
         #region //各种棋型的评分值
         /// <summary>
         /// 各种棋型的评分值
@@ -191,7 +192,7 @@ namespace FiveChess
                 for (int i = 0; i < LineCount; i++)
                     arry.Add(0);
                 pcsFlag.Add(arry);
-            }
+            }           
         }
         public static void RestData()
         {

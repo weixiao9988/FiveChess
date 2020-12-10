@@ -16,14 +16,15 @@ namespace FiveChess
         private int lineCount;
         private int[][] result = new int[3][];
         private Method myMethod;
-
+        
+        
         public Judge()
         {
             pcsFlag = Chess.pcsFlag;
             lineCount = Chess.LineCount;
             myMethod = new Method();
             for (int i = 0; i < 3; i++)
-                result[i] = new int[2];
+                result[i] = new int[2];          
         }
         public Judge(List<List<int>> arry)
         {
@@ -317,10 +318,7 @@ namespace FiveChess
         /// <returns></returns>
         public Point MiddleAI()
         {
-            Point returnPt = new Point();
-
-
-            return returnPt;
+            return myMethod.GetMaxScorePos(lineCount, Chess.TypeScore);
         }
 
         /// <summary>

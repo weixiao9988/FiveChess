@@ -133,7 +133,7 @@ namespace FiveChess
         {
             InitCtrls();
             GameMode_cBox.SelectedIndex = 1;
-            AIRank_cBox.SelectedIndex = 1;
+            AIRank_cBox.SelectedIndex = 2;
 
             picGrp = picBox.CreateGraphics();
             picRect = picBox.ClientRectangle;
@@ -210,6 +210,7 @@ namespace FiveChess
         private void Start_Btn_Click(object sender, EventArgs e)
         {
             Chess.RestData();
+            Chess.InitPecies();
             IsWin = false;
 
             listView.Items.Clear();
@@ -576,6 +577,26 @@ namespace FiveChess
             StatusLabel3.Width = 200;
             StatusLabel1.Width = (this.Width - 200) / 2;
             StatusLabel2.Width = (this.Width - 200) / 2;
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            List<List<int>> tmp = new List<List<int>>();
+            List<int> arry1 = new List<int>() { 1, 2, 3 };
+            List<int> arry2 = new List<int>() { 4, 5, 6 };
+            List<int> arry3 = new List<int>() { 7, 8, 9 };
+            tmp.Add(arry1);
+            tmp.Add(arry2);
+            tmp.Add(arry3);
+
+            List<int> tmp2 = new List<int>();
+            foreach (List<int> item in tmp)
+            {
+                tmp2.Add(item.Max());
+            }
+
+            //int m = tmp.IndexOf(tmp.Max());
+            //textBox1.Text = m.ToString();
         }
 
         private void Timer_Tick(object sender, EventArgs e)

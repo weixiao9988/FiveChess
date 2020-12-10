@@ -49,6 +49,8 @@
             this.Cancel_Btn = new System.Windows.Forms.Button();
             this.ReBack_Btn = new System.Windows.Forms.Button();
             this.Start_Btn = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
+            this.textBox1 = new System.Windows.Forms.TextBox();
             this.statusBar.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picBox)).BeginInit();
             this.Set_gBox.SuspendLayout();
@@ -111,7 +113,7 @@
             // 
             this.StatusLabel3.Font = new System.Drawing.Font("Microsoft YaHei UI", 10.5F);
             this.StatusLabel3.Name = "StatusLabel3";
-            this.StatusLabel3.Size = new System.Drawing.Size(488, 20);
+            this.StatusLabel3.Size = new System.Drawing.Size(519, 20);
             this.StatusLabel3.Spring = true;
             this.StatusLabel3.Text = "toolStripStatusLabel3";
             // 
@@ -262,6 +264,8 @@
             // 
             this.Btn_panel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.Btn_panel.Controls.Add(this.textBox1);
+            this.Btn_panel.Controls.Add(this.button1);
             this.Btn_panel.Controls.Add(this.Cancel_Btn);
             this.Btn_panel.Controls.Add(this.ReBack_Btn);
             this.Btn_panel.Controls.Add(this.Start_Btn);
@@ -303,6 +307,23 @@
             this.Start_Btn.UseVisualStyleBackColor = true;
             this.Start_Btn.Click += new System.EventHandler(this.Start_Btn_Click);
             // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(35, 194);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 3;
+            this.button1.Text = "button1";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(35, 243);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(100, 23);
+            this.textBox1.TabIndex = 4;
+            // 
             // MainFrm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
@@ -326,6 +347,7 @@
             this.Set_gBox.ResumeLayout(false);
             this.Set_gBox.PerformLayout();
             this.Btn_panel.ResumeLayout(false);
+            this.Btn_panel.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -354,6 +376,8 @@
         private System.Windows.Forms.Button Cancel_Btn;
         private System.Windows.Forms.Button ReBack_Btn;
         private System.Windows.Forms.Button Start_Btn;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.TextBox textBox1;
     }
 }
 
