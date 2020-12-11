@@ -109,8 +109,8 @@ namespace FiveChess
         /// 评分后返回的点
         /// </summary>
         private Point ReBackPos = new Point();
-        
 
+        private int oldLeft, oldTop, oldWidth, oldHeight;
         public MainFrm()
         {
             InitializeComponent();
@@ -121,7 +121,7 @@ namespace FiveChess
 
             Timer timer = new Timer();
             timer.Interval = 1000;
-            //timer.Enabled = true;
+            timer.Enabled = true;
             timer.Tick += new EventHandler(Timer_Tick);
             StatusLabel3.Text = string.Format("{0:yyyy-MM-dd  HH:mm:ss}", DateTime.Now);
 
@@ -132,6 +132,11 @@ namespace FiveChess
         private void MainFrm_Load(object sender, EventArgs e)
         {
             InitCtrls();
+            oldWidth = this.Width;
+            oldHeight = this.Height;
+            oldLeft = this.Left;
+            oldTop = this.Top;
+
             GameMode_cBox.SelectedIndex = 1;
             AIRank_cBox.SelectedIndex = 2;
 
@@ -169,6 +174,7 @@ namespace FiveChess
         /// </summary>
         public void DrawBackBmp()
         {
+            picBox.BackgroundImage = null;
             backBmp = new Bitmap(picRect.Width, picRect.Height);
             bufGrp = Graphics.FromImage(backBmp);
             bufGrp.Clear(pcsColors[0]);
@@ -233,7 +239,7 @@ namespace FiveChess
             int wIndex = Chess.whitePtsLst.Count - 1;
             if (bIndex > wIndex)
             {
-                Chess.pcsFlag[Chess.blackPtsLst[bIndex].Y][Chess.blackPtsLst[bIndex].X] = 0;
+                Chess.pcsFlag[Chess.blackPtsLst[bIndex].X][Chess.blackPtsLst[bIndex].Y] = 0;
                 Chess.blackPtsLst.RemoveAt(bIndex);
                 listView.Items.RemoveAt(listView.Items.Count - 1);
                 PcsCount -= 1;
@@ -241,8 +247,8 @@ namespace FiveChess
             }
             else
             {
-                Chess.pcsFlag[Chess.blackPtsLst[bIndex].Y][Chess.blackPtsLst[bIndex].X] = 0;
-                Chess.pcsFlag[Chess.whitePtsLst[wIndex].Y][Chess.whitePtsLst[wIndex].X] = 0;
+                Chess.pcsFlag[Chess.blackPtsLst[bIndex].X][Chess.blackPtsLst[bIndex].Y] = 0;
+                Chess.pcsFlag[Chess.whitePtsLst[wIndex].X][Chess.whitePtsLst[wIndex].Y] = 0;
                 Chess.blackPtsLst.RemoveAt(bIndex);
                 Chess.whitePtsLst.RemoveAt(wIndex);
                 listView.Items.RemoveAt(listView.Items.Count - 1);
@@ -560,29 +566,7 @@ namespace FiveChess
             AIRank = AIRank_cBox.SelectedIndex;
         }
 
-        private void MainFrm_SizeChanged(object sender, EventArgs e)
-        {
-            int scrWidth = System.Windows.Forms.SystemInformation.PrimaryMonitorSize.Height - 20;
-            int addSize = this.Size.Width - 950;
-            int frmtop = (scrWidth + 20 - 665 - addSize) / 2;
-            //窗体恢复正常时   
-            if (this.WindowState == FormWindowState.Normal)
-            {
-                this.Location = new Point(300, frmtop);
-                this.MaximumSize = new Size(scrWidth + 285, scrWidth);
-                this.Size = new Size(this.Size.Width, addSize + 665);
-                picBox.Size = new Size(this.Size.Height - 65, this.Size.Height - 65);
-
-                picRect = picBox.ClientRectangle;
-                myDraw.InitData(picRect, PadLineMax, PadMargin, pcsColors);
-                DrawBackBmp();
-                picBox.Refresh();
-            }
-
-            StatusLabel3.Width = 200;
-            StatusLabel1.Width = (this.Width - 200) / 2;
-            StatusLabel2.Width = (this.Width - 200) / 2;
-        }
+        
 
         private void button1_Click(object sender, EventArgs e)
         {
@@ -603,6 +587,38 @@ namespace FiveChess
             //int m = tmp.IndexOf(tmp.Max());
             //textBox1.Text = m.ToString();
         }
+
+        private void MainFrm_Resize(object sender, EventArgs e)
+        {
+            int scrWidth = System.Windows.Forms.SystemInformation.PrimaryMonitorSize.Height - 20;
+            int addSize = this.Width - oldWidth;
+            ///窗体恢复正常时   
+            if (this.WindowState==FormWindowState.Normal)
+            {
+                this.Left = oldLeft - addSize / 2;
+                this.Top = oldTop - addSize / 2;
+                this.Height = oldHeight + addSize;
+                this.MaximumSize = new Size(scrWidth + 285, scrWidth);
+                //picBox.Size = new Size(this.Size.Height - 65, this.Size.Height - 65);
+                picBox.Width = this.Height - 65;
+                picBox.Height = this.Height - 65;
+
+                picRect = picBox.ClientRectangle;
+                myDraw.InitData(picRect, PadLineMax, PadMargin, pcsColors);
+                DrawBackBmp();
+                picBox.Refresh();
+                oldWidth = this.Width;
+                oldHeight = this.Height;
+                oldLeft = this.Left;
+                oldTop = this.Top;
+            }
+            
+            StatusLabel3.Width = 200;
+            StatusLabel1.Width = (this.Width - 200) / 2;
+            StatusLabel2.Width = (this.Width - 200) / 2;
+        }
+
+
 
         private void Timer_Tick(object sender, EventArgs e)
         {
