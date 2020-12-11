@@ -91,18 +91,18 @@ namespace FiveChess
         /// 绘制棋子
         /// </summary>
         /// <param name="grp">绘图设备</param>
-        /// <param name="xySeir">输入点的行列编号</param>
+        /// <param name="xySeri">输入点的行列编号</param>
         /// <param name="nflag">输入点标志，1:为己方颜色标志，2：他方颜色标志</param>
-        public void DrawPieces(Graphics grp, Point xySeir, int nflag, int count)
+        public void DrawPieces(Graphics grp, Point xySeri, int nflag, int count)
         {
             int index = nflag == 1 ? 2 : 1;
             Point pt = new Point();
-            pt.X = Chess.crossPoint[xySeir.X][xySeir.Y].X;
-            pt.Y = Chess.crossPoint[xySeir.X][xySeir.Y].Y;
+            pt.X = Chess.crossPoint[xySeri.X][xySeri.Y].X;
+            pt.Y = Chess.crossPoint[xySeri.X][xySeri.Y].Y;
             grp.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;    // 图形抗锯齿
             grp.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias; // 文字抗锯齿
             //判断输入的行、列有没有棋子
-            if (Chess.pcsFlag[xySeir.X][xySeir.Y] == 0)
+            if (Chess.pcsFlag[xySeri.X][xySeri.Y] == 0)
             {
                 grp.FillEllipse(new SolidBrush(pcsColors[nflag]),
                     new Rectangle(p0.X + pt.X - Chess.PcsSize, p0.Y + pt.Y - Chess.PcsSize,
@@ -113,7 +113,7 @@ namespace FiveChess
                 grp.DrawString(count.ToString(), new Font("微软雅黑", 10, FontStyle.Bold), new SolidBrush(pcsColors[index]),
                     p0.X + pt.X, p0.Y + pt.Y - Chess.PcsSize / 2, strFmt1);
 
-                Chess.pcsFlag[xySeir.X][xySeir.Y] = nflag;
+                Chess.pcsFlag[xySeri.X][xySeri.Y] = nflag;
                 Chess.IsMyPcs = !Chess.IsMyPcs;
             }
             else

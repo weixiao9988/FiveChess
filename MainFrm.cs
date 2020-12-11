@@ -342,6 +342,8 @@ namespace FiveChess
             }
             StatusLabel2.Text = result[0].ToString() + " " + result[1].ToString() + " " + result[2].ToString();
 
+            if (Chess.blackPtsLst.Count + Chess.whitePtsLst.Count == PadLineMax * PadLineMax)
+                ShowInfoDlg(4);
         }
 
         /// <summary>
@@ -377,7 +379,10 @@ namespace FiveChess
 
                 if (result[flg][0] >= 5)
                     return;
+                if (Chess.blackPtsLst.Count + Chess.whitePtsLst.Count == PadLineMax * PadLineMax)
+                    ShowInfoDlg(4);
 
+                ////////////////////////////////////////////////////////////////////////////
                 ReBackPos = myJudge.AnalysePadInfo(pt, flg, rank);
 
                 if (ReBackPos.X == -1 && ReBackPos.Y == -1)
@@ -442,8 +447,8 @@ namespace FiveChess
                     MessageBox.Show("游戏已结束！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);                    
                     return;
                 case 4:
-                    StatusLabel1.Text += "棋盘已满！";
-                    MessageBox.Show("棋盘已满！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);                    
+                    StatusLabel1.Text += "游戏已结束！";
+                    MessageBox.Show("棋盘已满，本局平局！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);                    
                     return;
                 default:
                     break;

@@ -237,7 +237,7 @@ namespace FiveChess
 
             myMethod.GetPointRoundInfo(Chess.pcsFlag, pt, 4, flg, flg==2, out lstPcsInfo, out lstPosInfo);
             List<Point> pts = myMethod.GetMaxCnnInfo(flg, lstPcsInfo, lstPosInfo);
-            returnPt = myMethod.GetPcsPos(Chess.pcsFlag, Chess.LineCount, pts);
+            returnPt = myMethod.GetPcsPos(Chess.pcsFlag, pts);
 
             return returnPt;
         }

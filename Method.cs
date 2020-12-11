@@ -9,7 +9,164 @@ using System.Threading.Tasks;
 namespace FiveChess
 {
     class Method
-    { 
+    {
+        /// <summary>
+        /// 落子后在四个方向一定范围内获取棋盘中的棋子信息和坐标
+        /// </summary>
+        /// <param name="lstPad">棋盘信息</param>
+        /// <param name="pt">输入点</param>
+        /// <param name="incr">距离落子的范围</param>
+        /// <param name="flg">棋子标志</param>
+        /// <param name="isAdd">是否增加棋子</param>
+        /// <param name="pcsInfo">输出棋子信息</param>
+        /// <param name="posInfo">输出坐标信息</param>
+        public void GetPointRoundInfo(List<List<int>> lstPad, Point pt, int incr, int flg, bool isAdd, out List<string> pcsInfo, out List<List<Point>> posInfo)
+        {
+            int[] xArr = GetMinMax(pt.X, lstPad.Count, incr);
+            int[] yArr = GetMinMax(pt.Y, lstPad.Count, incr);
+            int vMin, vMax;
+            List<string> pcsLSt = new List<string>();
+            List<List<Point>> posLst = new List<List<Point>>();
+
+            for (int t = 0; t < 4; t++)
+            {
+                string str = null;
+                List<Point> pts = new List<Point>();
+                switch (t)
+                {
+                    case 1:  /// 根据输入点和范围返回水平方向结果
+                        {
+                            vMin = xArr[0];
+                            vMax = xArr[1];
+                            for (int i = vMin; i <= vMax; i++)
+                            {
+                                str = isAdd && i == pt.X && lstPad[i][pt.Y] == 0 ? str + flg.ToString() : str + lstPad[i][pt.Y].ToString();
+                                pts.Add(new Point(i, pt.Y));
+                            }
+                            pcsLSt.Add(str);
+                            posLst.Add(pts);
+                            break;
+                        }
+                    case 2:     // 根据输入点和范围返回垂直方向结果
+                        {
+                            vMin = yArr[0];
+                            vMax = yArr[1];
+                            for (int i = vMin; i <= vMax; i++)
+                            {
+                                str = isAdd && i == pt.Y && lstPad[pt.X][i] == 0 ? str + flg.ToString() : str + lstPad[pt.X][i].ToString();
+                                pts.Add(new Point(pt.X, i));
+                            }
+                            pcsLSt.Add(str);
+                            posLst.Add(pts);
+                            break;
+                        }
+                    case 3:     // 根据输入点和范围返回撇[/]方向结果
+                        {
+                            vMin = pt.Y - yArr[0] < xArr[1] - pt.X ? pt.Y - yArr[0] : xArr[1] - pt.X;
+                            vMax = pt.X - xArr[0] < yArr[1] - pt.Y ? pt.X - xArr[0] : yArr[1] - pt.Y;
+                            for (int i = -vMin; i <= vMax; i++)
+                            {
+                                str = isAdd && i == 0 && lstPad[pt.X - i][pt.Y + i] == 0 ? str + flg.ToString() : str + lstPad[pt.X - i][pt.Y + i].ToString();
+                                pts.Add(new Point(pt.X - i, pt.Y + i));
+                            }
+                            pcsLSt.Add(str);
+                            posLst.Add(pts);
+                            break;
+                        }
+                    case 4:    // 根据输入点和范围返回捺[\]方向结果
+                        {
+                            vMin = pt.Y - yArr[0] < pt.X - xArr[0] ? pt.Y - yArr[0] : pt.X - xArr[0];
+                            vMax = xArr[1] - pt.X < yArr[1] - pt.Y ? xArr[1] - pt.X : yArr[1] - pt.Y;
+                            for (int i = -vMin; i <= vMax; i++)
+                            {
+                                str = isAdd && i == 0 && lstPad[pt.X + i][pt.Y + i] == 0 ? str + flg.ToString() : str + lstPad[pt.X + i][pt.Y + i].ToString();
+                                pts.Add(new Point(pt.X + i, pt.Y + i));
+                            }
+                            pcsLSt.Add(str);
+                            posLst.Add(pts);
+                            break;
+                        }
+                    default:
+                        break;
+                }
+            }
+            pcsInfo = pcsLSt;
+            posInfo = posLst;
+        }
+
+        /// <summary>
+        /// 得到最大连接时棋子的连接信息和坐标信息
+        /// </summary>
+        /// <param name="flg">棋子标志</param>
+        /// <param name="pcsInfo">输入的棋子信息</param>
+        /// <param name="posInfo">输入的坐标信息</param>
+        /// <returns>返回字典类型</returns>
+        public List<Point> GetMaxCnnInfo(int flg, List<string> pcsInfo, List<List<Point>> posInfo)
+        {
+            string part = @flg.ToString() + "+";        //正则表达式
+            List<int> count = new List<int>() { };
+            List<List<Point>> tmpLstPts = new List<List<Point>>() { };
+
+            //查找4个方向
+            for (int i = 0; i < pcsInfo.Count; i++)
+            {
+                List<Point> tmpPts = new List<Point>();
+                //搜索字符串中标志相同的连在一起的
+                MatchCollection match = Regex.Matches(pcsInfo[i], part);
+                Match mt;
+                if (match.Count > 0)
+                {
+                    mt = match[0];
+                    foreach (Match item in match)
+                    {
+                        if (item.Length > mt.Length)
+                            mt = item;
+                    }
+                    for (int k = mt.Index; k < mt.Length + mt.Index; k++)
+                    {
+                        tmpPts.Add(posInfo[i][k]);
+                    }
+                    tmpLstPts.Add(tmpPts);
+                    count.Add(mt.Length);
+                }
+            }
+
+            return tmpLstPts[count.IndexOf(count.Max())];
+        }
+
+        /// <summary>
+        /// 得到相连棋子旁边的一个点
+        /// </summary>
+        /// <param name="chessPad">棋盘中棋子的信息</param>
+        /// <param name="lineCount">棋盘线总数</param>
+        /// <param name="lstPts">相连棋子的坐标</param>
+        /// <param name="direct">相连棋子的方向[- | / \]</param>
+        /// <returns></returns>
+        public Point GetPcsPos(List<List<int>> chessPad, List<Point> lstPts)
+        {
+            int direct = JudgePtsDirect(lstPts);
+            Point backPt = new Point(-1, -1);
+            ///x,y坐标值在横【-】竖【|】撇【/】捺【\】四个方向的变化规律;
+            
+            int[] x0= new int[] { 1, 0, -1, 1 };
+            int[] y0 = new int[] { 0, 1, 1, 1 };
+
+            Point fistPt = new Point(lstPts[0].X - x0[direct], lstPts[0].Y - y0[direct]);
+            Point endPt = new Point(lstPts[lstPts.Count - 1].X + x0[direct], lstPts[lstPts.Count - 1].Y + y0[direct]);
+
+            if (bInPad(fistPt, chessPad.Count) && bInPad(endPt, chessPad.Count))
+            {
+                if (chessPad[fistPt.X][fistPt.Y] == 0)
+                    backPt = fistPt;
+                else if (chessPad[endPt.X][endPt.Y] == 0)
+                    backPt = endPt;
+               
+            }
+                        
+            return backPt;
+        }
+
+
         /// <summary>
         /// 在输入点周围四个方向获取符合要求的评分最高的棋型、棋型评分、棋型坐标
         /// </summary>
@@ -68,89 +225,6 @@ namespace FiveChess
             return pScore.Count > 0;
         }
 
-        /// <summary>
-        /// 落子后在四个方向一定范围内获取棋盘中的棋子信息和坐标
-        /// </summary>
-        /// <param name="lstPad">棋盘信息</param>
-        /// <param name="pt">输入点</param>
-        /// <param name="incr">距离落子的范围</param>
-        /// <param name="flg">棋子标志</param>
-        /// <param name="isAdd">是否增加棋子</param>
-        /// <param name="pcsInfo">输出棋子信息</param>
-        /// <param name="posInfo">输出坐标信息</param>
-        public void GetPointRoundInfo(List<List<int>> lstPad, Point pt, int incr, int flg,bool isAdd, out List<string> pcsInfo, out List<List<Point>> posInfo)
-        {
-            int[] xArr = GetMinMax(pt.X, lstPad.Count, incr);
-            int[] yArr = GetMinMax(pt.Y, lstPad.Count, incr);
-            int vMin, vMax;
-            List<string> pcsLSt = new List<string>();
-            List<List<Point>> posLst = new List<List<Point>>();
-            for (int t = 1; t <= 4; t++)
-            {
-                string str = null;
-                List<Point> pts = new List<Point>();
-                switch (t)
-                {
-                    case 1:  /// 根据输入点和范围返回水平方向结果
-                        {
-                            vMin = xArr[0];
-                            vMax = xArr[1];
-                            for (int i = vMin; i <= vMax; i++)
-                            {                                
-                                str = isAdd && i == pt.X && lstPad[i][pt.Y] == 0 ? str + flg.ToString() : str + lstPad[i][pt.Y].ToString();
-                                pts.Add(new Point(i, pt.Y));
-                            }
-                            pcsLSt.Add(str);
-                            posLst.Add(pts);
-                            break;
-                        }
-                    case 2:     // 根据输入点和范围返回垂直方向结果
-                        {
-                            vMin = yArr[0];
-                            vMax = yArr[1];
-                            for (int i = vMin; i <= vMax; i++)
-                            {                                
-                                str = isAdd && i == pt.Y && lstPad[pt.X][i] == 0 ? str + flg.ToString() : str + lstPad[pt.X][i].ToString();
-                                pts.Add(new Point(pt.X, i));
-                            }
-                            pcsLSt.Add(str);
-                            posLst.Add(pts);
-                            break;
-                        }
-                    case 3:     // 根据输入点和范围返回撇[/]方向结果
-                        {
-                            vMin = pt.Y - yArr[0] < xArr[1] - pt.X ? pt.Y - yArr[0] : xArr[1] - pt.X;
-                            vMax = pt.X - xArr[0] < yArr[1] - pt.Y ? pt.X - xArr[0] : yArr[1] - pt.Y;
-                            for (int i = -vMin; i <= vMax; i++)
-                            {
-                                str = isAdd && i == 0 && lstPad[pt.X - i][pt.Y + i] == 0 ? str + flg.ToString() : str + lstPad[pt.X - i][pt.Y + i].ToString();
-                                pts.Add(new Point(pt.X - i, pt.Y + i));
-                            }
-                            pcsLSt.Add(str);
-                            posLst.Add(pts);
-                            break;
-                        }
-                    case 4:    // 根据输入点和范围返回捺[\]方向结果
-                        {
-                            vMin = pt.Y - yArr[0] < pt.X - xArr[0] ? pt.Y - yArr[0] : pt.X - xArr[0];
-                            vMax = xArr[1] - pt.X < yArr[1] - pt.Y ? xArr[1] - pt.X : yArr[1] - pt.Y;
-                            for (int i = -vMin; i <= vMax; i++)
-                            {
-                                str = isAdd && i == 0 && lstPad[pt.X + i][pt.Y + i] == 0 ? str + flg.ToString() : str + lstPad[pt.X + i][pt.Y + i].ToString();
-                                pts.Add(new Point(pt.X + i, pt.Y + i));
-                            }
-                            pcsLSt.Add(str);
-                            posLst.Add(pts);
-                            break;
-                        }
-                    default:
-                        break;
-                }
-            }
-            pcsInfo = pcsLSt;
-            posInfo = posLst;
-        }
-                
 
         /// <summary>
         /// 在棋型中寻找一个空位，使得在此位置落子后得分最高
@@ -297,144 +371,6 @@ namespace FiveChess
             dict.Add("yMax", yMax);
 
             return dict;
-        }
-
-        /// <summary>
-        /// 得到相连棋子旁边的一个点
-        /// </summary>
-        /// <param name="chessPad">棋盘中棋子的信息</param>
-        /// <param name="lineCount">棋盘线总数</param>
-        /// <param name="lstPts">相连棋子的坐标</param>
-        /// <param name="direct">相连棋子的方向[- | / \]</param>
-        /// <returns></returns>
-        public Point GetPcsPos(List<List<int>> chessPad, int lineCount, List<Point> lstPts)
-        {
-            int direct = JudgePtsDirect(lstPts);
-            Point backPt = new Point(-1, -1);
-            switch (direct)
-            {
-                case 0: //在水平方向相连的两端落子，如果两端都不能落子返回(-1,-1)点
-                    {
-                        Point fistPt = new Point(lstPts[0].X - 1, lstPts[0].Y);
-                        Point endPt = new Point(lstPts[lstPts.Count - 1].X + 1, lstPts[0].Y);
-                        if (bInPad(fistPt, lineCount) && bInPad(endPt, lineCount))
-                        {
-                            if (chessPad[fistPt.Y][fistPt.X] == 0)
-                                backPt = fistPt;
-                            else if (chessPad[endPt.Y][endPt.X] == 0)
-                                backPt = endPt;
-                            else
-                                backPt = new Point(-1, -1);
-                        }
-                        break;
-                    }
-                case 1:     //在垂直方向相连的两端落子，如果两端都不能落子返回(-1,-1)点
-                    {
-                        Point fistPt = new Point(lstPts[0].X, lstPts[0].Y - 1);
-                        Point endPt = new Point(lstPts[0].X, lstPts[lstPts.Count - 1].Y + 1);
-                        if (bInPad(fistPt, lineCount) && bInPad(endPt, lineCount))
-                        {
-                            if (chessPad[fistPt.Y][fistPt.X] == 0)
-                                backPt = fistPt;
-                            else if (chessPad[endPt.Y][endPt.X] == 0)
-                                backPt = endPt;
-                            else
-                                backPt = new Point(-1, -1);
-                        }
-                        break;
-                    }
-                case 2:     //在撇[/]方向相连的两端落子，如果两端都不能落子返回(-1,-1)点
-                    {
-                        Point fistPt = new Point(lstPts[0].X + 1, lstPts[0].Y - 1);
-                        Point endPt = new Point(lstPts[lstPts.Count - 1].X - 1, lstPts[lstPts.Count - 1].Y + 1);
-                        if (bInPad(fistPt, lineCount) && bInPad(endPt, lineCount))
-                        {
-                            if (chessPad[fistPt.Y][fistPt.X] == 0)
-                                backPt = fistPt;
-                            else if (chessPad[endPt.Y][endPt.X] == 0)
-                                backPt = endPt;
-                            else
-                                backPt = new Point(-1, -1);
-                        }
-                        break;
-                    }
-                case 3:     //在捺[\]方向相连的两端落子，如果两端都不能落子返回(-1,-1)点
-                    {
-                        Point fistPt = new Point(lstPts[0].X - 1, lstPts[0].Y - 1);
-                        Point endPt = new Point(lstPts[lstPts.Count - 1].X + 1, lstPts[lstPts.Count - 1].Y + 1);
-                        if (bInPad(fistPt, lineCount) && bInPad(endPt, lineCount))
-                        {
-                            if (chessPad[fistPt.Y][fistPt.X] == 0)
-                                backPt = fistPt;
-                            else if (chessPad[endPt.Y][endPt.X] == 0)
-                                backPt = endPt;
-                            else
-                                backPt = new Point(-1, -1);
-                        }
-                        break;
-                    }
-                default:
-                    break;
-            }
-            return backPt;
-        }
-
-        /// <summary>
-        /// 得到最大连接时棋子的连接信息和坐标信息
-        /// </summary>
-        /// <param name="flg">棋子标志</param>
-        /// <param name="pcsInfo">输入的棋子信息</param>
-        /// <param name="posInfo">输入的坐标信息</param>
-        /// <returns>返回字典类型</returns>
-        public List<Point> GetMaxCnnInfo(int flg, List<string> pcsInfo, List<List<Point>> posInfo)
-        {
-            string part = @flg.ToString() + "+";        //正则表达式
-            List<int> count = new List<int>() { };
-            List<List<Point>> tmpLstPts = new List<List<Point>>() { };
-            
-            //查找4个方向
-            for (int i = 0; i < pcsInfo.Count; i++)
-            {
-                int count1=0;
-                int start = 0, end = 0,tmpV=0;
-                for (int k = 0; k < pcsInfo[i].Length; k++)
-                {
-                    if (pcsInfo[i][k].ToString() == flg.ToString())
-                    {
-                        tmpV++;
-                        start = tmpV == 1 ? k : start;
-
-                    }
-                    else
-                    {
-                        tmpV = 0;                        
-                    }
-                    
-                    count1 = tmpV > count1 ? tmpV : count1;
-                }
-
-                List<Point> tmpPts = new List<Point>();
-                //搜索字符串中标志相同的连在一起的
-                MatchCollection match = Regex.Matches(pcsInfo[i], part);
-                Match mt;
-                if (match.Count > 0)
-                {
-                    mt = match[0];
-                    foreach (Match item in match)
-                    {
-                        if (item.Length > mt.Length)
-                            mt = item;
-                    }
-                    for (int k = mt.Index; k < mt.Length + mt.Index; k++)
-                    {
-                        tmpPts.Add(posInfo[i][k]);
-                    }
-                    tmpLstPts.Add(tmpPts);
-                    count.Add(mt.Length);
-                }
-            }
-
-            return tmpLstPts[count.IndexOf(count.Max())];
         }
 
         /// <summary>

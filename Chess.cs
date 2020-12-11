@@ -208,6 +208,7 @@ namespace FiveChess
             whitePtsLst.Clear();
 
             pcsFlag.Clear();
+            IsMyPcs = true;
         }
 
         /// <summary>
