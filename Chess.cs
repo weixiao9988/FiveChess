@@ -10,6 +10,7 @@ namespace FiveChess
 {
     static class Chess
     {
+        #region///属性和成员
         /// <summary>
         /// 棋盘线总数
         /// </summary>
@@ -60,7 +61,7 @@ namespace FiveChess
 
         public static List<Point> blackPtsLst = new List<Point>();
         public static List<Point> whitePtsLst = new List<Point>();
-
+        #endregion
 
         #region //各种棋型的评分值
         /// <summary>
@@ -184,6 +185,9 @@ namespace FiveChess
             }
         }
 
+        /// <summary>
+        /// 初始化棋盘的棋子
+        /// </summary>
         public static void InitPecies()
         {
             for (int j = 0; j < LineCount; j++)
@@ -194,6 +198,10 @@ namespace FiveChess
                 pcsFlag.Add(arry);
             }           
         }
+
+        /// <summary>
+        /// 重置棋盘棋子和保存的棋子
+        /// </summary>
         public static void RestData()
         {
             blackPtsLst.Clear();

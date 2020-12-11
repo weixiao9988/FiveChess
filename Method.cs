@@ -267,8 +267,11 @@ namespace FiveChess
         /// 输入一组坐标点，判断点的分布范围
         /// </summary>
         /// <param name="pts">坐标点数组</param>
+        /// <param name="lineCount">棋盘线总数</param>
+        /// <param name="isCreat">是否向外扩展</param>
+        /// <param name="add">向外扩展数</param>
         /// <returns>返回xy方向的最小和最大值</returns>
-        public Dictionary<string, int> GetPosMinMax(List<Point> pts)
+        public Dictionary<string, int> GetPosMinMax(List<Point> pts,int lineCount,bool isCreat,int add)
         {
             Dictionary<string, int> dict = new Dictionary<string, int>();
             int xMin = pts[0].X, xMax = pts[0].X, yMin = pts[0].Y, yMax = pts[0].Y;
@@ -278,6 +281,14 @@ namespace FiveChess
                 xMax = pt.X > xMax ? pt.X : xMax;
                 yMin = pt.Y < yMin ? pt.Y : yMin;
                 yMax = pt.Y > yMax ? pt.Y : yMax;
+            }
+
+            if(isCreat)
+            {
+                xMin = xMin - add > 0 ? xMin - add : xMin;
+                xMax = xMax + add < lineCount ? xMax + add : xMax;
+                yMin = yMin - add > 0 ? yMin - add : yMin;
+                yMax = yMax + add < lineCount ? yMax + add : yMax;
             }
 
             dict.Add("xMin", xMin);
@@ -380,10 +391,28 @@ namespace FiveChess
             string part = @flg.ToString() + "+";        //正则表达式
             List<int> count = new List<int>() { };
             List<List<Point>> tmpLstPts = new List<List<Point>>() { };
-
+            
             //查找4个方向
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < pcsInfo.Count; i++)
             {
+                int count1=0;
+                int start = 0, end = 0,tmpV=0;
+                for (int k = 0; k < pcsInfo[i].Length; k++)
+                {
+                    if (pcsInfo[i][k].ToString() == flg.ToString())
+                    {
+                        tmpV++;
+                        start = tmpV == 1 ? k : start;
+
+                    }
+                    else
+                    {
+                        tmpV = 0;                        
+                    }
+                    
+                    count1 = tmpV > count1 ? tmpV : count1;
+                }
+
                 List<Point> tmpPts = new List<Point>();
                 //搜索字符串中标志相同的连在一起的
                 MatchCollection match = Regex.Matches(pcsInfo[i], part);
@@ -449,33 +478,26 @@ namespace FiveChess
             return direct;
         }
 
-        public Point GetMaxScorePos(int lineCount, Dictionary<string,int> typeSocre)
+        /// <summary>
+        /// 根据输入的范围，在其每个空位分别计算黑棋和白棋的评分，并获得最大评分的点
+        /// </summary>
+        /// <param name="pcsFlag">棋盘中的棋子信息</param>
+        /// <param name="range">范围</param>
+        /// <param name="typeSocre">棋型评分标准</param>
+        /// <returns></returns>
+        public Point GetMaxScorePos(List<List<int>> pcsFlag, Dictionary<string, int> range, Dictionary<string,int> typeSocre)
         {
             Point pt = new Point();
-            Dictionary<string, int> bRange = GetPosMinMax(Chess.blackPtsLst);
-            Dictionary<string, int> wRange = GetPosMinMax(Chess.whitePtsLst);
-
-            int xMin = bRange["xMin"] < wRange["xMin"] ? bRange["xMin"] : wRange["xMin"];
-            int xMax = bRange["xMax"] > wRange["xMax"] ? bRange["xMax"] : wRange["xMax"];
-            int yMin = bRange["yMin"] < wRange["yMin"] ? bRange["yMin"] : wRange["yMin"];
-            int yMax = bRange["yMax"] > wRange["yMax"] ? bRange["yMax"] : wRange["yMax"];
-            xMin = xMin - 1 > 0 ? xMin - 1 : xMin;
-            xMax = xMax + 1 < lineCount ? xMax + 1 : xMax;
-            yMin = yMin - 1 > 0 ? yMin - 1 : yMin;
-            yMax = yMax + 1 < lineCount ? yMax + 1 : yMax;
-
             List<string> pcsStr;
-            int[,] blackScoreArry = new int[lineCount, lineCount];
-            int[,] whiteScoreArry = new int[lineCount, lineCount];
-            int bValue, wValue, result=0, tmpV;
+            int bValue, wValue, result = 0, tmpV;            
 
-            for (int j = yMin; j <= yMax; j++)
+            for (int j = range["yMin"]; j <= range["yMax"]; j++)
             {
-                for (int i = xMin; i <= xMax; i++)
+                for (int i = range["xMin"]; i <= range["xMax"]; i++)
                 {
-                    if (Chess.pcsFlag[i][j] == 0)
+                    if (pcsFlag[i][j] == 0)
                     {
-                        GetPointRoundInfo(Chess.pcsFlag, i, j, 4, out pcsStr);
+                        pcsStr=GetPointRoundInfo(pcsFlag, i, j, 4);
                         bValue = GetMaxScoreValue(pcsStr, typeSocre, 1);
                         wValue = GetMaxScoreValue(pcsStr, typeSocre, 2);
                         tmpV = bValue > wValue ? bValue : wValue;
@@ -494,6 +516,32 @@ namespace FiveChess
         }
 
         /// <summary>
+        /// 计算两组坐标点的最大范围，并向外扩展一格
+        /// </summary>
+        /// <param name="pts1">坐标集合1</param>
+        /// <param name="pts2">坐标集合2</param>
+        /// <param name="lineCount">棋盘线总数</param>       
+        /// <returns></returns>
+        public Dictionary<string,int> GetRange(List<Point> pts1,List<Point> pts2,int lineCount)
+        {
+            Dictionary<string, int> dict = new Dictionary<string, int>();
+
+            Dictionary<string, int> bRange = GetPosMinMax(pts1, lineCount, false, 0);
+            Dictionary<string, int> wRange = GetPosMinMax(pts2, lineCount, false, 0);
+
+            List<Point> pts = new List<Point>();
+            pts.Add(new Point(bRange["xMin"], bRange["yMin"]));
+            pts.Add(new Point(bRange["xMax"], bRange["yMax"]));
+            pts.Add(new Point(wRange["xMin"], wRange["yMin"]));
+            pts.Add(new Point(wRange["xMax"], wRange["yMax"]));
+
+            dict= GetPosMinMax(pts, lineCount, true, 1);
+
+            return dict;
+        } 
+
+
+        /// <summary>
         /// 在输入点四个方向一定范围内获取棋盘中的棋子信息
         /// </summary>
         /// <param name="lstPad">棋盘信息</param>
@@ -502,7 +550,7 @@ namespace FiveChess
         /// <param name="flg">棋子标志</param>
         /// <param name="isAdd">是否增加棋子</param>
         /// <param name="pcsInfo">输出棋子信息</param>        
-        public void GetPointRoundInfo(List<List<int>> lstPad, int x, int y, int incr, out List<string> pcsInfo)
+        public List<string> GetPointRoundInfo(List<List<int>> lstPad, int x, int y, int incr)
         {
             int[] xArr = GetMinMax(x, lstPad.Count, incr);
             int[] yArr = GetMinMax(y, lstPad.Count, incr);
@@ -553,13 +601,20 @@ namespace FiveChess
                         break;
                 }
             }
-            pcsInfo = pcsLSt;
+            return pcsLSt;
         }
 
+        /// <summary>
+        /// 计算一组棋型得分的总和
+        /// </summary>
+        /// <param name="pcsInfo">棋型集合</param>
+        /// <param name="pcsScore">棋型的评分标准</param>
+        /// <param name="flag">棋子标志</param>
+        /// <returns></returns>
         public int GetMaxScoreValue(List<string> pcsInfo,Dictionary<string,int> pcsScore, int flag)
         {            
             int score=0;
-            //从四个方向的棋子信息中找出符合的棋型和评分
+            //从棋子信息中找出符合的棋型和评分总和
             foreach (string item in pcsInfo)
             {
                 MatchCollection match;

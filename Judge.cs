@@ -227,6 +227,8 @@ namespace FiveChess
         /// <returns>返回结果</returns>
         public Point LowLevelAI(Point pt, int flg)
         {
+            ///黑棋每落一个子后会形成相连棋型，白棋策略就是查找黑棋最大相连，然后封堵。
+            
             Point returnPt;// = new Point();
             /// 存储4个方向的棋子信息
             List<string> lstPcsInfo;// = new List<string>();
@@ -279,7 +281,7 @@ namespace FiveChess
             int whitePcsScore = 0;     //最高得分
             List<Point> whitePcsScorePos = null;     //最高得分的棋型的坐标
 
-            Dictionary<string, int> minax = myMethod.GetPosMinMax(Chess.whitePtsLst);
+            Dictionary<string, int> minax = myMethod.GetPosMinMax(Chess.whitePtsLst,lineCount,false, 0);
             for (int col = minax["yMin"]; col <= minax["yMax"]; col++)
             {
                 for (int row = minax["xMin"]; row <= minax["xMax"]; row++)
@@ -318,7 +320,11 @@ namespace FiveChess
         /// <returns></returns>
         public Point MiddleAI()
         {
-            return myMethod.GetMaxScorePos(lineCount, Chess.TypeScore);
+            ///策略：白棋落子前先分析一定范围内的空位，在这些空位分别计算黑棋和白棋在4个方向的总分，
+            ///然后挑选分值最大的点返回。
+
+            Dictionary<string, int> dict = myMethod.GetRange(Chess.blackPtsLst, Chess.whitePtsLst, lineCount);
+            return myMethod.GetMaxScorePos(pcsFlag, dict, Chess.TypeScore);
         }
 
         /// <summary>
