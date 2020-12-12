@@ -80,7 +80,7 @@
             this.StatusLabel1,
             this.StatusLabel2,
             this.StatusLabel3});
-            this.statusBar.Location = new System.Drawing.Point(0, 601);
+            this.statusBar.Location = new System.Drawing.Point(0, 602);
             this.statusBar.Name = "statusBar";
             this.statusBar.Size = new System.Drawing.Size(934, 25);
             this.statusBar.SizingGrip = false;
@@ -242,7 +242,7 @@
             // 
             // BoardColor_Btn
             // 
-            this.BoardColor_Btn.BackColor = System.Drawing.Color.Khaki;
+            this.BoardColor_Btn.BackColor = System.Drawing.Color.OldLace;
             this.BoardColor_Btn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.BoardColor_Btn.Location = new System.Drawing.Point(75, 20);
             this.BoardColor_Btn.Name = "BoardColor_Btn";
@@ -326,9 +326,9 @@
             // 
             // MainFrm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(934, 626);
+            this.ClientSize = new System.Drawing.Size(934, 627);
             this.Controls.Add(this.Btn_panel);
             this.Controls.Add(this.Set_gBox);
             this.Controls.Add(this.listView);

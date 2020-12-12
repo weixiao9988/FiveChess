@@ -124,74 +124,7 @@ namespace FiveChess
             result[flg][1] = lstCnn.IndexOf(lstCnn.Max());
             return result;
         }
-        public int[] JudgeWin(Point pt, int flg, int incr, List<List<int>> padInfo)
-        {
-            int[] result = { flg, 0, 0 };
-            string part = @flg.ToString() + "+";        //正则表达式
-            int[] xArr = myMethod.GetMinMax(pt.X, lineCount, incr);
-            int[] yArr = myMethod.GetMinMax(pt.Y, lineCount, incr);
-            int vMin, vMax;
-
-            for (int t = 0; t < 4; t++)
-            {
-                string str = null;
-                switch (t)
-                {
-                    case 0:  /// 根据输入点和范围返回水平方向结果
-                        {
-                            vMin = xArr[0];
-                            vMax = xArr[1];
-                            for (int i = vMin; i <= vMax; i++)
-                                str += pcsFlag[i][pt.Y].ToString();
-                            break;
-                        }
-                    case 1:     // 根据输入点和范围返回垂直方向结果
-                        {
-                            vMin = yArr[0];
-                            vMax = yArr[1];
-                            for (int i = vMin; i <= vMax; i++)
-                                str += pcsFlag[pt.X][i].ToString();
-                            break;
-                        }
-                    case 2:     // 根据输入点和范围返回撇[/]方向结果
-                        {
-                            vMin = pt.Y - yArr[0] < xArr[1] - pt.X ? pt.Y - yArr[0] : xArr[1] - pt.X;
-                            vMax = pt.X - xArr[0] < yArr[1] - pt.Y ? pt.X - xArr[0] : yArr[1] - pt.Y;
-                            for (int i = -vMin; i <= vMax; i++)
-                                str += pcsFlag[pt.X - i][pt.Y + i].ToString();
-                            break;
-                        }
-                    case 3:    // 根据输入点和范围返回捺[\]方向结果
-                        {
-                            vMin = pt.Y - yArr[0] < pt.X - xArr[0] ? pt.Y - yArr[0] : pt.X - xArr[0];
-                            vMax = xArr[1] - pt.X < yArr[1] - pt.Y ? xArr[1] - pt.X : yArr[1] - pt.Y;
-                            for (int i = -vMin; i <= vMax; i++)
-                                str += pcsFlag[pt.X + i][pt.Y + i].ToString();
-                            break;
-                        }
-                    default:
-                        break;
-                }
-                MatchCollection matchs = Regex.Matches(str, part);
-                result[1] = matchs[0].Length > result[1] ? matchs[0].Length : result[1];
-                foreach (Match item in matchs)
-                {
-                    if (item.Length >= 5)
-                    {
-                        result[1] = 5;
-                        result[2] = t;
-                        return result;
-                    }
-
-                    if (item.Length > result[1])
-                    {
-                        result[1] = item.Length;
-                        result[2] = t;
-                    }
-                }
-            }
-            return result;
-        }
+        
 
         /// <summary>
         /// 分析棋盘信息
@@ -199,7 +132,7 @@ namespace FiveChess
         /// <param name="pt">输入点</param>
         /// <param name="flg">棋子标志</param>
         /// <param name="rank">智力等级</param>
-        public Point AnalysePadInfo(Point pt, int flg, int rank)
+        public Point SelectAIRanke(Point pt, int flg, int rank)
         {
             Point returnPt = new Point();
             switch (rank)
@@ -257,13 +190,14 @@ namespace FiveChess
             List<Point> blackPcsScorePos = null;     //最高得分的棋型的坐标
             bool hasValue;
             string rePcsType;
-            int rePcsScore;
+            
             List<Point> rePcsScorePos;
             //遍历所有黑子的落点，查找形成的评分最高的棋型
             for (int i = 0; i < Chess.blackPtsLst.Count; i++)
             {
                 hasValue = myMethod.GetPcsTypeScorePos(Chess.blackPtsLst[i], 1, Chess.TypeScore,
-                    out rePcsType, out rePcsScore, out rePcsScorePos);
+                    out rePcsType, out rePcsScorePos);
+                int rePcsScore = Chess.TypeScore[myMethod.RestOldStr(rePcsType,1)];
                 if (hasValue && rePcsScore > blackPcsScore)
                 {
                     blackPcsScore = rePcsScore;
@@ -288,8 +222,9 @@ namespace FiveChess
                 {
                     //获得评分最高的棋型及相对应的坐标数组            
                     hasValue = myMethod.GetPcsTypeScorePos(new Point(row, col), 2, Chess.TypeScore,
-                        out rePcsType, out rePcsScore, out rePcsScorePos);
-                    if (rePcsScore >= 100000)
+                        out rePcsType, out rePcsScorePos);
+                    int rePcsScore = Chess.TypeScore[myMethod.RestOldStr(rePcsType, 2)];
+                    if (rePcsScore >= Chess.LIVE5)
                         return new Point(row, col);
 
                     if (hasValue && rePcsScore > whitePcsScore)
@@ -303,12 +238,12 @@ namespace FiveChess
             //获得最高评分和点
             Dictionary<int, Point> wDict = myMethod.GetScoreAndPos(whitePcsType, whitePcsScorePos, Chess.TypeScore, 2);
 
-            if (whitePcsScore >= 100000)
+            if (whitePcsScore >= Chess.LIVE5)
                 return wDict.Values.FirstOrDefault();
-            else if (whitePcsScore >= 10000)
-                returnPt = blackPcsScore >= 10000 ? bDict.Values.FirstOrDefault() : wDict.Values.FirstOrDefault();
+            else if (whitePcsScore >= Chess.SPRT4)
+                returnPt = blackPcsScore >= Chess.SPRT4 ? bDict.Values.FirstOrDefault() : wDict.Values.FirstOrDefault();
             else
-                returnPt = blackPcsScore > whitePcsScore || blackPcsScore >= 1200 ? bDict.Values.FirstOrDefault() : wDict.Values.FirstOrDefault();
+                returnPt = blackPcsScore > whitePcsScore || blackPcsScore >= Chess.LIVE3 ? bDict.Values.FirstOrDefault() : wDict.Values.FirstOrDefault();
 
 
             return returnPt;

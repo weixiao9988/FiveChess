@@ -34,7 +34,7 @@ namespace FiveChess
                 List<Point> pts = new List<Point>();
                 switch (t)
                 {
-                    case 1:  /// 根据输入点和范围返回水平方向结果
+                    case 0:  /// 根据输入点和范围返回水平方向结果
                         {
                             vMin = xArr[0];
                             vMax = xArr[1];
@@ -47,7 +47,7 @@ namespace FiveChess
                             posLst.Add(pts);
                             break;
                         }
-                    case 2:     // 根据输入点和范围返回垂直方向结果
+                    case 1:     // 根据输入点和范围返回垂直方向结果
                         {
                             vMin = yArr[0];
                             vMax = yArr[1];
@@ -60,7 +60,7 @@ namespace FiveChess
                             posLst.Add(pts);
                             break;
                         }
-                    case 3:     // 根据输入点和范围返回撇[/]方向结果
+                    case 2:     // 根据输入点和范围返回撇[/]方向结果
                         {
                             vMin = pt.Y - yArr[0] < xArr[1] - pt.X ? pt.Y - yArr[0] : xArr[1] - pt.X;
                             vMax = pt.X - xArr[0] < yArr[1] - pt.Y ? pt.X - xArr[0] : yArr[1] - pt.Y;
@@ -73,7 +73,7 @@ namespace FiveChess
                             posLst.Add(pts);
                             break;
                         }
-                    case 4:    // 根据输入点和范围返回捺[\]方向结果
+                    case 3:    // 根据输入点和范围返回捺[\]方向结果
                         {
                             vMin = pt.Y - yArr[0] < pt.X - xArr[0] ? pt.Y - yArr[0] : pt.X - xArr[0];
                             vMax = xArr[1] - pt.X < yArr[1] - pt.Y ? xArr[1] - pt.X : yArr[1] - pt.Y;
@@ -178,14 +178,12 @@ namespace FiveChess
         /// <param name="pcsScore">返回棋型得分</param>
         /// <param name="pcsScorePos">返回棋型坐标</param>
         public bool GetPcsTypeScorePos(Point pt, int flg, Dictionary<string, int> pcsTypeScore,
-            out string pcsType, out int pcsScore, out List<Point> pcsScorePos)
-        {
-            char tmpChar = flg == 1 ? '1' : '2';
+            out string pcsType, out List<Point> pcsScorePos)
+        {            
             /// 存储4个方向的棋子信息
-            List<string> lstPcsInfo;// = new List<string>();
-            List<string> tmpStr = new List<string>();
+            List<string> lstPcsInfo;            
             /// 存储4个方向的坐标信息           
-            List<List<Point>> lstPosInfo;// = new List<List<Point>>();
+            List<List<Point>> lstPosInfo;
                                          //得到四个方向一定范围内的棋子信息                                        
             GetPointRoundInfo(Chess.pcsFlag, pt, 4, flg, flg==2, out lstPcsInfo, out lstPosInfo);
 
@@ -197,6 +195,7 @@ namespace FiveChess
             for (int t = 0; t < lstPcsInfo.Count; t++)
             {
                 MatchCollection match;
+                Match mt;
                 string tmpS = null;
                 List<Point> pts = new List<Point>();
                 foreach (string type in pcsTypeScore.Keys)
@@ -205,7 +204,11 @@ namespace FiveChess
                     match = Regex.Matches(lstPcsInfo[t], tmpS);
                     if (match.Count > 0)
                     {
-                        for (int i = match[0].Index; i < match[0].Index + match[0].Length; i++)
+                        mt = match[0];
+                        foreach (Match item in match)
+                            mt = item.Length > mt.Length ? item : mt;
+
+                        for (int i = mt.Index; i < mt.Index + mt.Length; i++)
                             pts.Add(lstPosInfo[t][i]);
                         break;
                     }
@@ -217,12 +220,11 @@ namespace FiveChess
                     pScorePos.Add(pts);
                 }
             }
-
-            pcsScore = pScore.Count > 0 ? pScore[pScore.IndexOf(pScore.Max())] : 0;
+            
             pcsType = pScore.Count > 0 ? pType[pScore.IndexOf(pScore.Max())] : null;
             pcsScorePos = pScore.Count > 0 ? pScorePos[pScore.IndexOf(pScore.Max())] : null;
 
-            return pScore.Count > 0;
+            return pScore.Count > 0 && pcsType != null && pcsScorePos != null;
         }
 
 
@@ -475,8 +477,7 @@ namespace FiveChess
 
             return dict;
         } 
-
-
+        
         /// <summary>
         /// 在输入点四个方向一定范围内获取棋盘中的棋子信息
         /// </summary>

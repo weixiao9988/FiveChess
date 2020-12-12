@@ -115,9 +115,9 @@ namespace FiveChess
         {
             InitializeComponent();
 
-            pcsColors.Add(BoardColor_Btn.BackColor);
-            pcsColors.Add(PlayerColor_Btn.BackColor);
-            pcsColors.Add(CpuColor_Btn.BackColor);
+            pcsColors[0] = BoardColor_Btn.BackColor;
+            pcsColors[1] = PlayerColor_Btn.BackColor;
+            pcsColors[2] = CpuColor_Btn.BackColor;           
 
             Timer timer = new Timer();
             timer.Interval = 1000;
@@ -389,7 +389,7 @@ namespace FiveChess
                     ShowInfoDlg(4);
 
                 ////////////////////////////////////////////////////////////////////////////
-                ReBackPos = myJudge.AnalysePadInfo(pt, flg, rank);
+                ReBackPos = myJudge.SelectAIRanke(pt, flg, rank);
 
                 if (ReBackPos.X == -1 && ReBackPos.Y == -1)
                     ReBackPos = myJudge.GetRandPt(pt);
