@@ -115,13 +115,15 @@ namespace FiveChess
         {
             InitializeComponent();
 
+            
+
             pcsColors[0] = BoardColor_Btn.BackColor;
             pcsColors[1] = PlayerColor_Btn.BackColor;
             pcsColors[2] = CpuColor_Btn.BackColor;           
 
             Timer timer = new Timer();
             timer.Interval = 1000;
-            timer.Enabled = true;
+            //timer.Enabled = true;
             timer.Tick += new EventHandler(Timer_Tick);
             StatusLabel3.Text = string.Format("{0:yyyy-MM-dd  HH:mm:ss}", DateTime.Now);
 
@@ -131,11 +133,7 @@ namespace FiveChess
 
         private void MainFrm_Load(object sender, EventArgs e)
         {
-            InitCtrls();
-            oldWidth = this.Width;
-            oldHeight = this.Height;
-            oldLeft = this.Left;
-            oldTop = this.Top;
+            InitCtrls();            
 
             GameMode_cBox.SelectedIndex = 1;
             AIRank_cBox.SelectedIndex = 2;
@@ -145,6 +143,7 @@ namespace FiveChess
             myDraw = new MyDraw(picRect, PadLineMax, PadMargin, pcsColors);
 
             DrawBackBmp();
+            picBox.BackgroundImage = backBmp;
 
             myJudge = new Judge();
 
@@ -152,13 +151,18 @@ namespace FiveChess
 
         private void InitCtrls()
         {
-            this.Size = new Size(950, 665);
-            picBox.Location = new Point(170, 0);
-            picBox.Size = new Size(600, 600);
-            Set_gBox.Location = new Point(775, 5);
-            Set_gBox.Size = new Size(159, 192);
-            Btn_panel.Location = new Point(775, 203);
-            Btn_panel.Size = new Size(159, 401);
+            //this.Size = new Size(950, 665);
+            //picBox.Location = new Point(170, 0);
+            //picBox.Size = new Size(600, 600);
+            //Set_gBox.Location = new Point(775, 5);
+            //Set_gBox.Size = new Size(159, 192);
+            //Btn_panel.Location = new Point(775, 203);
+            //Btn_panel.Size = new Size(159, 401);
+
+            oldWidth = this.Width;
+            oldHeight = this.Height;
+            oldLeft = this.Left;
+            oldTop = this.Top;
 
             listView.Columns.Add("序号", 40, HorizontalAlignment.Center);
             listView.Columns.Add("位置", 60, HorizontalAlignment.Center);
@@ -180,7 +184,7 @@ namespace FiveChess
             bufGrp.Clear(pcsColors[0]);
 
             myDraw.DrawChessBoard(bufGrp);
-            picBox.BackgroundImage = backBmp;
+            
         }
 
         /// <summary>
@@ -229,7 +233,8 @@ namespace FiveChess
             myJudge.InitData();
             //mJudge.UpInfoEvt += this.UpdatStatuBar;
 
-            DrawBackBmp();
+            //DrawBackBmp();
+            picBox.BackgroundImage = backBmp;
             picBox.Refresh();
         }
 
@@ -321,6 +326,17 @@ namespace FiveChess
                     else
                         ShowInfoDlg(3);
                 }
+            }
+        }
+
+        private void picBox_Paint(object sender, PaintEventArgs e)
+        {
+            picBox.BackgroundImage = backBmp;
+
+            if (Chess.blackPtsLst.Count > 0 && Chess.whitePtsLst.Count > 0)
+            {
+                myDraw.DrawPcsAndMark(e.Graphics, Chess.blackPtsLst, 1);
+                myDraw.DrawPcsAndMark(e.Graphics, Chess.whitePtsLst, 2);
             }
         }
 
@@ -461,14 +477,7 @@ namespace FiveChess
             }
         }
 
-        private void picBox_Paint(object sender, PaintEventArgs e)
-        {
-            if (Chess.blackPtsLst.Count > 0 && Chess.whitePtsLst.Count > 0)
-            {
-                myDraw.DrawPcsAndMark(e.Graphics, Chess.blackPtsLst, 1);
-                myDraw.DrawPcsAndMark(e.Graphics, Chess.whitePtsLst, 2);
-            }
-        }
+        
 
         /// <summary>
         /// 绘制边框
@@ -487,12 +496,7 @@ namespace FiveChess
             StatusLabel1.Text = 1.ToString() + "  " + result[1][0].ToString() + "  " + result[1][1].ToString();
             StatusLabel2.Text = 2.ToString() + "  " + result[2][0].ToString() + "  " + result[2][1].ToString();
         }
-        private void UpdatStatuBar(Point pt, string str)
-        {
-            ReBackPos = pt;
-            StatusLabel1.Text =pt.X.ToString()+"_"+pt.Y.ToString()+"_"+ str;
-        }
-
+       
         private void UpdatListView(Point pt, int flag, int count)
         {
             ListViewItem ivi = new ListViewItem();
@@ -505,13 +509,10 @@ namespace FiveChess
             listView.Items.Add(ivi);
         }
 
-       
-
         private void Cancel_Btn_Click(object sender, EventArgs e)
         {
             Close();
         }
-
 
         private void BoardColor_Btn_Click(object sender, EventArgs e)
         {
@@ -565,9 +566,7 @@ namespace FiveChess
         {
             AIRank = AIRank_cBox.SelectedIndex;
         }
-
         
-
         private void button1_Click(object sender, EventArgs e)
         {
             List<List<int>> tmp = new List<List<int>>();

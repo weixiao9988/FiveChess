@@ -117,7 +117,7 @@ namespace FiveChess
         /// <summary>
         /// 活4型，4个相连，两边都有空位
         /// </summary>
-        public const int LIVE4 = 40000;
+        public const int LIVE4 = 30000;
         /// <summary>
         /// 连4型，4个相连，一边有空位
         /// </summary>
@@ -129,7 +129,7 @@ namespace FiveChess
         /// <summary>
         /// 活3型，加一子可形成活4
         /// </summary>
-        public const int LIVE3 = 4000;
+        public const int LIVE3 = 3000;
         /// <summary>
         /// 连3型，加一子可形成连4
         /// </summary>
@@ -141,7 +141,7 @@ namespace FiveChess
         /// <summary>
         /// 连2型
         /// </summary>
-        public const int LIVE2 = 200;
+        public const int LIVE2 = 150;
         /// <summary>
         /// 跳2型
         /// </summary>

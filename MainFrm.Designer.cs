@@ -111,7 +111,7 @@
             // 
             this.StatusLabel3.Font = new System.Drawing.Font("Microsoft YaHei UI", 10.5F);
             this.StatusLabel3.Name = "StatusLabel3";
-            this.StatusLabel3.Size = new System.Drawing.Size(488, 20);
+            this.StatusLabel3.Size = new System.Drawing.Size(519, 20);
             this.StatusLabel3.Spring = true;
             // 
             // picBox
@@ -239,7 +239,7 @@
             // 
             // BoardColor_Btn
             // 
-            this.BoardColor_Btn.BackColor = System.Drawing.Color.OldLace;
+            this.BoardColor_Btn.BackColor = System.Drawing.Color.Khaki;
             this.BoardColor_Btn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.BoardColor_Btn.Location = new System.Drawing.Point(75, 20);
             this.BoardColor_Btn.Name = "BoardColor_Btn";
@@ -325,7 +325,7 @@
             // 
             // MainFrm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(934, 627);
             this.Controls.Add(this.Btn_panel);

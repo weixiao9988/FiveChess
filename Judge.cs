@@ -287,7 +287,7 @@ namespace FiveChess
                     }
                     break;
                 case 1:
-                    vMin = xArr[0]; vMax = xArr[1];
+                    vMin = yArr[0]; vMax = yArr[1];
                     for (int i = vMin; i <= vMax; i++)
                     {
                         if (pcsFlag[pt.X][i] == flag && pcsFlag[pt.X][i + 1] == flag && pcsFlag[pt.X][i + 2] == flag &&
