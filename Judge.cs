@@ -184,66 +184,26 @@ namespace FiveChess
         public Point PrimaryAI()
         {
             Point returnPt = new Point();
-            //黑色棋子的判断、评分
-            string blackPcsType = null;    //最高得分的棋型
-            int blackPcsScore = 0;     //最高得分
-            List<Point> blackPcsScorePos = null;     //最高得分的棋型的坐标
-            bool hasValue;
-            string rePcsType;
             
-            List<Point> rePcsScorePos;
-            //遍历所有黑子的落点，查找形成的评分最高的棋型
-            for (int i = 0; i < Chess.blackPtsLst.Count; i++)
-            {
-                hasValue = myMethod.GetPcsTypeScorePos(Chess.blackPtsLst[i], 1, Chess.TypeScore,
-                    out rePcsType, out rePcsScorePos);
-                int rePcsScore = Chess.TypeScore[myMethod.RestOldStr(rePcsType,1)];
-                if (hasValue && rePcsScore > blackPcsScore)
-                {
-                    blackPcsScore = rePcsScore;
-                    blackPcsType = rePcsType;
-                    blackPcsScorePos = rePcsScorePos;
-                }
-            }
+            //遍历所有黑子的落点，查找形成的评分最高的棋型,在棋型中找个要落子的空位，使得新棋型评分最高
+            Dictionary<int, Point> bDict = myMethod.GetMaxScoreAndPos(Chess.blackPtsLst, Chess.TypeScore, 1);
 
-            //在棋型中找个要落子的空位，使得新棋型评分最高
-            Dictionary<int, Point> bDict = myMethod.GetScoreAndPos(blackPcsType, blackPcsScorePos, Chess.TypeScore, 1);
+            //遍历所有白子的落点，查找形成的评分最高的棋型,在棋型中找个要落子的空位，使得新棋型评分最高
+            Dictionary<int, Point> wDictold = myMethod.GetMaxScoreAndPos(Chess.whitePtsLst, Chess.TypeScore, 2);
+                        
+            Point[] pts = new Point[Chess.whitePtsLst.Count];
+            Chess.whitePtsLst.CopyTo(pts);
+            List<Point> newWhitePtsLst = pts.ToList();
+            newWhitePtsLst.Add(wDictold.Values.FirstOrDefault());
 
-            //-----------------------------------------------------------------------------------------------//
-            //白色棋子的判断、评分
-            string whitePcsType = null;     //最高得分的棋型
-            int whitePcsScore = 0;     //最高得分
-            List<Point> whitePcsScorePos = null;     //最高得分的棋型的坐标
+            Dictionary<int, Point> wDict = myMethod.GetMaxScoreAndPos(newWhitePtsLst, Chess.TypeScore, 2);
 
-            Dictionary<string, int> minax = myMethod.GetPosMinMax(Chess.whitePtsLst,lineCount,false, 0);
-            for (int col = minax["yMin"]; col <= minax["yMax"]; col++)
-            {
-                for (int row = minax["xMin"]; row <= minax["xMax"]; row++)
-                {
-                    //获得评分最高的棋型及相对应的坐标数组            
-                    hasValue = myMethod.GetPcsTypeScorePos(new Point(row, col), 2, Chess.TypeScore,
-                        out rePcsType, out rePcsScorePos);
-                    int rePcsScore = Chess.TypeScore[myMethod.RestOldStr(rePcsType, 2)];
-                    if (rePcsScore >= Chess.LIVE5)
-                        return new Point(row, col);
-
-                    if (hasValue && rePcsScore > whitePcsScore)
-                    {
-                        whitePcsScore = rePcsScore;
-                        whitePcsType = rePcsType;
-                        whitePcsScorePos = rePcsScorePos;
-                    }
-                }
-            }
-            //获得最高评分和点
-            Dictionary<int, Point> wDict = myMethod.GetScoreAndPos(whitePcsType, whitePcsScorePos, Chess.TypeScore, 2);
-
-            if (whitePcsScore >= Chess.LIVE5)
+            if (wDict.Keys.FirstOrDefault() >= Chess.LIVE5)
                 return wDict.Values.FirstOrDefault();
-            else if (whitePcsScore >= Chess.SPRT4)
-                returnPt = blackPcsScore >= Chess.SPRT4 ? bDict.Values.FirstOrDefault() : wDict.Values.FirstOrDefault();
+            else if (wDict.Keys.FirstOrDefault() >= Chess.SPRT4)
+                returnPt = bDict.Keys.FirstOrDefault() >= Chess.SPRT4 ? bDict.Values.FirstOrDefault() : wDict.Values.FirstOrDefault();
             else
-                returnPt = blackPcsScore > whitePcsScore || blackPcsScore >= Chess.LIVE3 ? bDict.Values.FirstOrDefault() : wDict.Values.FirstOrDefault();
+                returnPt = bDict.Keys.FirstOrDefault() > wDict.Keys.FirstOrDefault() || bDict.Keys.FirstOrDefault() >= Chess.LIVE3 ? bDict.Values.FirstOrDefault() : wDict.Values.FirstOrDefault();
 
 
             return returnPt;

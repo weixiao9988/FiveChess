@@ -95,6 +95,69 @@ namespace FiveChess
         }
 
         /// <summary>
+        /// 在输入点四个方向一定范围内获取棋盘中的棋子信息
+        /// </summary>
+        /// <param name="lstPad">棋盘信息</param>
+        /// <param name="pt">输入点</param>
+        /// <param name="incr">距离落子的范围</param>
+        /// <param name="flg">棋子标志</param>
+        /// <param name="isAdd">是否增加棋子</param>
+        /// <param name="pcsInfo">输出棋子信息</param>        
+        public List<string> GetPointRoundInfo(List<List<int>> lstPad, int x, int y, int incr)
+        {
+            int[] xArr = GetMinMax(x, lstPad.Count, incr);
+            int[] yArr = GetMinMax(y, lstPad.Count, incr);
+            int vMin, vMax;
+            List<string> pcsLSt = new List<string>();
+            for (int t = 1; t <= 4; t++)
+            {
+                string str = null;
+                switch (t)
+                {
+                    case 1:  /// 根据输入点和范围返回水平方向结果
+                        {
+                            vMin = xArr[0];
+                            vMax = xArr[1];
+                            for (int i = vMin; i <= vMax; i++)
+                                str = str + lstPad[i][y].ToString();
+                            pcsLSt.Add(str);
+                            break;
+                        }
+                    case 2:     // 根据输入点和范围返回垂直方向结果
+                        {
+                            vMin = yArr[0];
+                            vMax = yArr[1];
+                            for (int i = vMin; i <= vMax; i++)
+                                str = str + lstPad[x][i].ToString();
+                            pcsLSt.Add(str);
+                            break;
+                        }
+                    case 3:     // 根据输入点和范围返回撇[/]方向结果
+                        {
+                            vMin = y - yArr[0] < xArr[1] - x ? y - yArr[0] : xArr[1] - x;
+                            vMax = x - xArr[0] < yArr[1] - y ? x - xArr[0] : yArr[1] - y;
+                            for (int i = -vMin; i <= vMax; i++)
+                                str = str + lstPad[x - i][y + i].ToString();
+                            pcsLSt.Add(str);
+                            break;
+                        }
+                    case 4:    // 根据输入点和范围返回捺[\]方向结果
+                        {
+                            vMin = y - yArr[0] < x - xArr[0] ? y - yArr[0] : x - xArr[0];
+                            vMax = xArr[1] - x < yArr[1] - y ? xArr[1] - x : yArr[1] - y;
+                            for (int i = -vMin; i <= vMax; i++)
+                                str = str + lstPad[x + i][y + i].ToString();
+                            pcsLSt.Add(str);
+                            break;
+                        }
+                    default:
+                        break;
+                }
+            }
+            return pcsLSt;
+        }
+
+        /// <summary>
         /// 得到最大连接时棋子的连接信息和坐标信息
         /// </summary>
         /// <param name="flg">棋子标志</param>
@@ -259,6 +322,43 @@ namespace FiveChess
 
             dict.Add(smax, pts[idx]);
             return dict;
+        }
+
+        /// <summary>
+        /// 在所有落子中寻找形成的得分最大的棋型，并在此棋型中寻找一个落子点，使得分最大
+        /// </summary>
+        /// <param name="pts">落子集合</param>
+        /// <param name="typeScore">棋型评分标准</param>
+        /// <param name="flag">棋子标志</param>
+        /// <returns></returns>
+        public Dictionary<int,Point> GetMaxScoreAndPos(List<Point> pts,Dictionary<string,int> typeScore,int flag)
+        {            
+            string blackPcsType = null;    //最高得分的棋型
+            int blackPcsScore = 0;     //最高得分
+            List<Point> blackPcsScorePos = null;     //最高得分的棋型的坐标
+            bool hasValue;
+            string rePcsType;
+
+            List<Point> rePcsScorePos;
+            //遍历所有棋子的落点，查找形成的评分最高的棋型
+            for (int i = 0; i < pts.Count; i++)
+            {
+                hasValue = GetPcsTypeScorePos(pts[i], flag, typeScore,
+                    out rePcsType, out rePcsScorePos);
+                int rePcsScore = typeScore[RestOldStr(rePcsType, flag)];
+                if (hasValue && rePcsScore > blackPcsScore)
+                {
+                    blackPcsScore = rePcsScore;
+                    blackPcsType = rePcsType;
+                    blackPcsScorePos = rePcsScorePos;
+                }
+            }
+
+            //在棋型中找个要落子的空位，使得新棋型评分最高
+            Dictionary<int, Point> dict = GetScoreAndPos(blackPcsType, blackPcsScorePos, typeScore, flag);
+
+            return dict;
+
         }
 
         /// <summary>
@@ -478,69 +578,6 @@ namespace FiveChess
             return dict;
         } 
         
-        /// <summary>
-        /// 在输入点四个方向一定范围内获取棋盘中的棋子信息
-        /// </summary>
-        /// <param name="lstPad">棋盘信息</param>
-        /// <param name="pt">输入点</param>
-        /// <param name="incr">距离落子的范围</param>
-        /// <param name="flg">棋子标志</param>
-        /// <param name="isAdd">是否增加棋子</param>
-        /// <param name="pcsInfo">输出棋子信息</param>        
-        public List<string> GetPointRoundInfo(List<List<int>> lstPad, int x, int y, int incr)
-        {
-            int[] xArr = GetMinMax(x, lstPad.Count, incr);
-            int[] yArr = GetMinMax(y, lstPad.Count, incr);
-            int vMin, vMax;
-            List<string> pcsLSt = new List<string>();
-            for (int t = 1; t <= 4; t++)
-            {
-                string str = null;
-                switch (t)
-                {
-                    case 1:  /// 根据输入点和范围返回水平方向结果
-                        {
-                            vMin = xArr[0];
-                            vMax = xArr[1];
-                            for (int i = vMin; i <= vMax; i++)
-                                str = str + lstPad[i][y].ToString();
-                            pcsLSt.Add(str);
-                            break;
-                        }
-                    case 2:     // 根据输入点和范围返回垂直方向结果
-                        {
-                            vMin = yArr[0];
-                            vMax = yArr[1];
-                            for (int i = vMin; i <= vMax; i++)
-                                str = str + lstPad[x][i].ToString();
-                            pcsLSt.Add(str);
-                            break;
-                        }
-                    case 3:     // 根据输入点和范围返回撇[/]方向结果
-                        {
-                            vMin = y - yArr[0] < xArr[1] - x ? y - yArr[0] : xArr[1] - x;
-                            vMax = x - xArr[0] < yArr[1] - y ? x - xArr[0] : yArr[1] - y;
-                            for (int i = -vMin; i <= vMax; i++)
-                                str = str + lstPad[x - i][y + i].ToString();
-                            pcsLSt.Add(str);
-                            break;
-                        }
-                    case 4:    // 根据输入点和范围返回捺[\]方向结果
-                        {
-                            vMin = y - yArr[0] < x - xArr[0] ? y - yArr[0] : x- xArr[0];
-                            vMax = xArr[1] - x < yArr[1] - y ? xArr[1] - x : yArr[1] - y;
-                            for (int i = -vMin; i <= vMax; i++)
-                                str = str + lstPad[x + i][y + i].ToString();
-                            pcsLSt.Add(str);
-                            break;
-                        }
-                    default:
-                        break;
-                }
-            }
-            return pcsLSt;
-        }
-
         /// <summary>
         /// 计算一组棋型得分的总和
         /// </summary>

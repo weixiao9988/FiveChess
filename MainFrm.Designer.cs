@@ -95,7 +95,6 @@
             this.StatusLabel1.Font = new System.Drawing.Font("Microsoft YaHei UI", 10.5F);
             this.StatusLabel1.Name = "StatusLabel1";
             this.StatusLabel1.Size = new System.Drawing.Size(200, 20);
-            this.StatusLabel1.Text = "toolStripStatusLabel1";
             this.StatusLabel1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // StatusLabel2
@@ -106,16 +105,14 @@
             this.StatusLabel2.Font = new System.Drawing.Font("Microsoft YaHei UI", 10.5F);
             this.StatusLabel2.Name = "StatusLabel2";
             this.StatusLabel2.Size = new System.Drawing.Size(200, 20);
-            this.StatusLabel2.Text = "toolStripStatusLabel2";
             this.StatusLabel2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // StatusLabel3
             // 
             this.StatusLabel3.Font = new System.Drawing.Font("Microsoft YaHei UI", 10.5F);
             this.StatusLabel3.Name = "StatusLabel3";
-            this.StatusLabel3.Size = new System.Drawing.Size(519, 20);
+            this.StatusLabel3.Size = new System.Drawing.Size(488, 20);
             this.StatusLabel3.Spring = true;
-            this.StatusLabel3.Text = "toolStripStatusLabel3";
             // 
             // picBox
             // 
@@ -280,6 +277,7 @@
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(100, 23);
             this.textBox1.TabIndex = 4;
+            this.textBox1.Visible = false;
             // 
             // button1
             // 
@@ -289,6 +287,7 @@
             this.button1.TabIndex = 3;
             this.button1.Text = "button1";
             this.button1.UseVisualStyleBackColor = true;
+            this.button1.Visible = false;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // Cancel_Btn
