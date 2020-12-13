@@ -70,6 +70,7 @@ namespace FiveChess
         private List<Color> pcsColors = new List<Color>() 
         { Color.Khaki,Color.Black,Color.White};
         private int[][] result = new int[3][];
+        private float width, height;
 
         private MyDraw myDraw;
         private Judge myJudge;
@@ -147,6 +148,10 @@ namespace FiveChess
 
             myJudge = new Judge();
 
+            width = Convert.ToSingle(this.Width);
+            height = Convert.ToSingle(this.Height);
+
+            SaveInfo(this);
         }
 
         private void InitCtrls()
@@ -589,27 +594,32 @@ namespace FiveChess
 
         private void MainFrm_Resize(object sender, EventArgs e)
         {
+            float newX = this.Width / width;
+            float newY = this.Height / height;
+
+            ResetControlInfo(newX, newY, this);
+
             int scrWidth = System.Windows.Forms.SystemInformation.PrimaryMonitorSize.Height - 20;
             int addSize = this.Width - oldWidth;
             ///窗体恢复正常时   
             if (this.WindowState==FormWindowState.Normal)
             {
-                this.Left = oldLeft - addSize / 2;
-                this.Top = oldTop - addSize / 2;
-                this.Height = oldHeight + addSize;
-                this.MaximumSize = new Size(scrWidth + 285, scrWidth);
-                //picBox.Size = new Size(this.Size.Height - 65, this.Size.Height - 65);
-                picBox.Width = this.Height - 65;
-                picBox.Height = this.Height - 65;
+                //this.Left = oldLeft - addSize / 2;
+                //this.Top = oldTop - addSize / 2;
+                //this.Height = oldHeight + addSize;
+                //this.MaximumSize = new Size(scrWidth + 285, scrWidth);
+                ////picBox.Size = new Size(this.Size.Height - 65, this.Size.Height - 65);
+                //picBox.Width = this.Height - 65;
+                //picBox.Height = this.Height - 65;
 
                 picRect = picBox.ClientRectangle;
                 myDraw.InitData(picRect, PadLineMax, PadMargin, pcsColors);
                 DrawBackBmp();
-                picBox.Refresh();
-                oldWidth = this.Width;
-                oldHeight = this.Height;
-                oldLeft = this.Left;
-                oldTop = this.Top;
+                //picBox.Refresh();
+                //oldWidth = this.Width;
+                //oldHeight = this.Height;
+                //oldLeft = this.Left;
+                //oldTop = this.Top;
             }
             
             StatusLabel3.Width = 200;
@@ -624,7 +634,48 @@ namespace FiveChess
             StatusLabel3.Text = String.Format("{0:yyyy-MM-dd  HH:mm:ss}", DateTime.Now);
         }
 
+        private void SaveInfo(Control cons)
+        {
+            foreach (Control con in cons.Controls)
+            {
+                con.Tag = con.Left + ":" + con.Top + ":" + con.Width + ":" +
+                    con.Height + ":" + con.Font.Size;
 
+                if (con.Controls.Count > 0)
+                    SaveInfo(con);
+
+            }
+        }
+
+
+        private void ResetControlInfo(float scalX, float scalY, Control cons)
+        {
+            foreach (Control con in cons.Controls)
+            {
+                string[] tagStr = con.Tag.ToString().Split(':');
+
+                float tmp = Convert.ToSingle(tagStr[0]) * scalX;
+                con.Left = Convert.ToInt32(tmp);
+
+                tmp = Convert.ToSingle(tagStr[1]) * scalY;
+                con.Top = Convert.ToInt32(tmp);
+
+                tmp = Convert.ToSingle(tagStr[2]) * scalX;
+                con.Width = Convert.ToInt32(tmp);
+
+                tmp = Convert.ToSingle(tagStr[3]) * scalY;
+                con.Height = Convert.ToInt32(tmp);
+
+                tmp = Convert.ToSingle(tagStr[4]) * scalX > Convert.ToSingle(tagStr[4]) * scalY ?
+                    Convert.ToSingle(tagStr[4]) * scalY : Convert.ToSingle(tagStr[4]) * scalX;
+                con.Font = new Font(con.Font.Name, tmp, con.Font.Style);
+
+                if (con.Controls.Count > 0)
+                    ResetControlInfo(scalX, scalY, con);
+
+            }
+
+        }
 
     }
 }
